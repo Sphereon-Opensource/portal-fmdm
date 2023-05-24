@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import Alert from '@shared/atoms/Alert'
 import Footer from '../Footer/Footer'
 import Header from '../Header'
@@ -19,17 +19,31 @@ export default function App({
   children: ReactElement
 }): ReactElement {
   const { siteContent, appConfig } = useMarketMetadata()
-  const { accountId } = useWeb3()
+  const { accountId, web3Modal } = useWeb3()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
   const [show, setShow] = useState(false)
   const [payload, setPayload] = useState<AuthorizationResponsePayload>()
+
+  useEffect(() => {
+    // Retrieves the wallet connect element and replaces the onclick listener
+    const providerWrappers: NodeListOf<Element> = document.querySelectorAll(
+      '[class$=web3modal-provider-wrapper]'
+    )
+    const oldEl = providerWrappers[1]
+    const newEl = oldEl.cloneNode(true)
+    newEl.addEventListener('click', () => {
+      web3Modal.toggleModal()
+      setShow(true)
+    })
+    oldEl.parentNode.replaceChild(newEl, oldEl)
+  })
 
   return (
     <div className={styles.app}>
       {siteContent?.announcement !== '' && (
         <AnnouncementBanner text={siteContent?.announcement} />
       )}
-      <Header setShow={setShow} />
+      <Header />
       {isInPurgatory && (
         <Alert
           title={contentPurgatory.account.title}

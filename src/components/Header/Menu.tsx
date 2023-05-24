@@ -11,8 +11,6 @@ import MenuDropdown from '@components/@shared/MenuDropdown'
 import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import Container from '@components/@shared/atoms/Container'
-import Auth from '@components/ssi/Auth/Auth'
-
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -46,11 +44,7 @@ export function MenuLink({ name, link, className }: MenuItem) {
   )
 }
 
-export default function Menu({
-  setShow
-}: {
-  setShow: React.Dispatch<React.SetStateAction<boolean>>
-}): ReactElement {
+export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
 
   return (
@@ -76,7 +70,6 @@ export default function Menu({
           <SearchButton />
           {appConfig.chainIdsSupported.length > 1 && <Networks />}
           <Wallet />
-          <Auth setShow={() => setShow(true)} />
         </div>
       </nav>
     </Container>

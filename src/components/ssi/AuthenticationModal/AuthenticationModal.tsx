@@ -64,7 +64,7 @@ export default class AuthenticationModal extends Component<
           <div className="walletconnect-modal__close__wrapper">
             <div
               className="walletconnect-modal__close__icon"
-              onClick={this.handleClose}
+              onClick={this.props.onCloseClicked}
             >
               <div className="walletconnect-modal__close__line1"></div>
               <div className="walletconnect-modal__close__line2"></div>
@@ -161,9 +161,5 @@ export default class AuthenticationModal extends Component<
 
   private copyQRCode = (text: string): void => {
     this.setState({ ...this.state, qrCodeData: text })
-  }
-
-  private handleClose = () => {
-    this.props.onCloseClicked?.()
   }
 }
