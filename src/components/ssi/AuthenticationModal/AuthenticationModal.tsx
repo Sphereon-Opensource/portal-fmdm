@@ -2,9 +2,7 @@ import { Col, Container, Modal, Row } from 'react-bootstrap'
 import React, { Component } from 'react'
 import AuthenticationQR from './AuthenticationQR'
 import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
-import Debug from 'debug'
 
-const debug = Debug('sphereon:portal:ssi:AuthenticationModal')
 /* This is a container dialog for the QR code component. It re emits the onSignInComplete callback.  */
 
 export type AuthenticationModalProps = {
@@ -23,9 +21,6 @@ export default class AuthenticationModal extends Component<
   AuthenticationModalProps,
   AuthenticationModalState
 > {
-  private readonly scanText = 'Please scan the QR code with your app.'
-  private readonly authText = 'Please approve the request in your app.'
-
   constructor(props: AuthenticationModalProps) {
     super(props)
     this.state = {
@@ -42,22 +37,13 @@ export default class AuthenticationModal extends Component<
         centered
         fullscreen="true"
         show={this.props.show}
+        className="login-modal"
       >
         <div className="walletconnect-modal__header">
           <div className="walletconnect-modal__headerLogo" />
-          <p
-            style={{
-              fontSize: '20px',
-              fontWeight: '600',
-              margin: '0',
-              alignItems: 'flex-start',
-              display: 'flex',
-              flex: '1 1 0%',
-              marginLeft: '5px'
-            }}
-          >
-            SSI authentication
-          </p>
+
+          <p className="login-modal-heading">Login</p>
+
           <div className="walletconnect-modal__close__wrapper">
             <div
               className="walletconnect-modal__close__icon"
@@ -68,90 +54,49 @@ export default class AuthenticationModal extends Component<
             </div>
           </div>
         </div>
-        <Modal.Header
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            color: '#00205C',
-            alignItems: 'center'
-          }}
-        >
-          <Modal.Title>QR CODE</Modal.Title>
-        </Modal.Header>
-
         <Modal.Body>
           <Container>
-            <Row>
-              <Col
-                className="d-flex justify-content-center"
-                style={{
-                  color: '#AEAEAE'
-                }}
-              >
-                <h6>
-                  {this.state.authRequestRetrieved
-                    ? this.authText
-                    : this.scanText}
-                </h6>
+            <Row className="login-modal-row">
+              <Col className="login-description-container">
+                <p>For the first time access</p>
+
+                <p className="login-step-heading">Step 1. Have a wallet</p>
+                <p>Install a compliant SSI wallet</p>
+
+                <p className="login-step-heading">
+                  Step 2. Get the Guest credential
+                </p>
+                <p>
+                  Request a Guest credential via this form and store it in your
+                  wallet*
+                </p>
+
+                <p className="login-step-heading">Step 3. Scan the QR code</p>
+                <p>
+                  Scan the QR code on the right & share the credential form your
+                  wallet
+                </p>
+
+                <p className="login-description-note">
+                  *In the near future you will be able to choose to login with
+                  other types of credentials
+                </p>
               </Col>
-            </Row>
-            <Row>
-              <Col
-                className="d-flex justify-content-center"
-                style={{ paddingTop: '10px' }}
-              >
+              <Col className="login-qr-code-col">
                 <AuthenticationQR
                   setQrCodeData={this.copyQRCode}
                   onAuthRequestRetrieved={() => {
                     this.setState({ ...this.state, authRequestRetrieved: true })
                   }}
                   onSignInComplete={this.props.onSignInComplete}
+                  className="login-qr-code"
                 />
               </Col>
             </Row>
           </Container>
         </Modal.Body>
-
-        <Modal.Footer
-          style={{
-            fontSize: '15px',
-            fontWeight: '400',
-            lineHeight: '30px',
-            alignSelf: 'center',
-            borderColor: 'white'
-          }}
-        >
-          <a
-            id="copyToClipboard"
-            href="#"
-            onClick={() => this.handleCopyClick()}
-          >
-            {this.state.isCopied ? 'Copied!' : 'Copy to clipboard'}
-          </a>
-        </Modal.Footer>
       </Modal>
     )
-  }
-
-  private copyTextToClipboard = async (
-    text: string
-  ): Promise<boolean | void> => {
-    if ('clipboard' in navigator) {
-      return await navigator.clipboard.writeText(text)
-    } else {
-      return document.execCommand('copy', true, text)
-    }
-  }
-
-  private handleCopyClick = (): void => {
-    this.copyTextToClipboard(this.state.qrCodeData)
-      .then(() => {
-        this.setState({ ...this.state, isCopied: true })
-        setTimeout(() => {
-          this.setState({ ...this.state, isCopied: false })
-        }, 1500)
-      })
-      .catch(debug)
   }
 
   private copyQRCode = (text: string): void => {

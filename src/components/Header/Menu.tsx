@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react'
 import Link from 'next/link'
-import loadable from '@loadable/component'
 import Logo from '@shared/atoms/Logo'
 import Networks from './UserPreferences/Networks'
 import styles from './Menu.module.css'
@@ -13,8 +12,6 @@ import Button from '@components/@shared/atoms/Button'
 import Container from '@components/@shared/atoms/Container'
 import Auth from '@components/ssi/Auth/Auth'
 import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
-
-const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
 
@@ -80,7 +77,6 @@ export default function Menu({
         <div className={styles.actions}>
           <SearchButton />
           {appConfig.chainIdsSupported.length > 1 && <Networks />}
-          <Wallet />
           <Auth
             setShow={() => setShow(true)}
             payload={payload}

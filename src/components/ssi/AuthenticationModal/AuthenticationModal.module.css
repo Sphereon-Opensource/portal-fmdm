@@ -57,9 +57,61 @@
   border: 1px solid rgb(48, 52, 59);
 }
 
+.login-modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+}
+
 .walletconnect-modal__close__line2 {
   position: absolute;
   width: 100%;
   border: 1px solid rgb(48, 52, 59);
   transform: rotate(90deg);
+}
+
+.login-modal-heading {
+  font-size: 28px;
+  font-weight: 600;
+  align-items: flex-start;
+  display: flex;
+  flex: 1 1 0;
+  margin: 0 0 0 5px;
+}
+
+.login-step-heading {
+  font-size: 16px;
+  font-weight: 600;
+  align-items: flex-start;
+  display: flex;
+  flex: 1 1 0;
+  margin: 0 0 0 0;
+}
+
+.login-description-container {
+  position: relative;
+  background-color: #ebebeb;
+  margin: -15px;
+  padding: 35px;
+}
+
+.login-description-note {
+  position: absolute;
+  bottom: 0;
+}
+
+.login-modal {
+  --bs-modal-width: 1100px;
+}
+
+.login-qr-code-col {
+  display: flex;
+  flex-direction: column;
+  padding: 100px 100px 100px 100px;
+  align-items: center;
+}
+
+.login-qr-code {
+  max-width: 50%;
+  max-height: 50%;
 }
