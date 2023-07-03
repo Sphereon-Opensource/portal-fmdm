@@ -21,7 +21,7 @@ export default function Footer(): ReactElement {
     <footer className={styles.footer}>
       <Container className={styles.container}>
         <div className={styles.logo}>
-          <Logo inverted />
+          <Logo />
         </div>
         <div className={styles.content}>
           <div className={styles.links}>

@@ -42,11 +42,11 @@ export default function HomeContent(): ReactElement {
             ))}
           </div>
           <HighlightBox
-            icon="eye"
             title={firstTimeVisiting.title}
             body={firstTimeVisiting.text}
             buttonLabel={firstTimeVisiting.buttonLabel}
             link={firstTimeVisiting.link}
+            button={{ style: 'text', arrow: true, to: firstTimeVisiting.link }}
           />
         </div>
       </div>

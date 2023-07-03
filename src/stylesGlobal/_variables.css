@@ -14,7 +14,7 @@
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-blue-dark);
-  --font-color-text-inverted: var(--brand-white);
+  --font-color-text-inverted: var(--ocean-grey-dark);
   --font-color-heading: var(--brand-blue-dark);
   --font-color-light: var(--color-secondary);
   --background-body: var(--brand-white);
@@ -35,9 +35,9 @@
   --menu-logo-color-hover: var(--color-primary);
   --menu-logo-size-sm: 17rem;
   --menu-logo-size-lg: 20rem;
-  --menu-font-color: var(--color-primary);
+  --menu-font-color: var(--sphereon-black);
   --menu-font-color-active: var(--brand-blue-light);
-  --menu-font-color-hover: var(--brand-blue-light);
+  --menu-font-color-hover: var(--sphereon-light-blue);
   --menu-active-indicator-color: var(--brand-blue);
   --menu-mobile-navigation-border-size: var(--border-size-sm);
   --menu-mobile-navigation-border-color: none;
@@ -55,9 +55,9 @@
   --menu-network-badge-font-color: var(--brand-white);
 
   /* Footer */
-  --footer-background-color: var(--brand-blue-dark);
-  --footer-font-color: var(--brand-white);
-  --footer-font-color-highlight: var(--brand-cyan);
+  --footer-background-color: var(--sphereon-white);
+  --footer-font-color: var(--sphereon-black);
+  --footer-font-color-highlight: var(--sphereon-light-blue);
   --footer-link-category-font-color: var(--brand-white);
 
   /* Input elements */

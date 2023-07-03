@@ -86,25 +86,21 @@ export default function PageHeader(): ReactElement {
           {body && <Markdown text={body} className={styles.body} />}
           <div className={styles.actions}>
             {cta.map((e, i) => (
-              <Button
-                key={e.label}
-                style={i % 2 === 0 ? 'primary' : 'ghost'}
-                to={e.link}
-              >
+              <Button key={e.label} style="text" arrow to={e.link}>
                 {e.label}
               </Button>
             ))}
           </div>
         </div>
-        <div className={styles.carouselIndicators}>
-          {carousel.map((e, i) => (
-            <div
-              key={e}
-              className={cx({ indicator: true, active: index === i })}
-              onClick={() => setIndex(i)}
-            />
-          ))}
-        </div>
+        {/* <div className={styles.carouselIndicators}> */}
+        {/*  {carousel.map((e, i) => ( */}
+        {/*    <div */}
+        {/*      key={e} */}
+        {/*      className={cx({ indicator: true, active: index === i })} */}
+        {/*      onClick={() => setIndex(i)} */}
+        {/*    /> */}
+        {/*  ))} */}
+        {/* </div> */}
       </Container>
     </header>
   )

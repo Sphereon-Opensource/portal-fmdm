@@ -36,7 +36,7 @@
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
   },
   "footer": {
-    "designedBy": "Designed by The Goodplace",
+    "designedBy": "",
     "links": [
       { "label": "About this demo", "link": "/about" },
       { "label": "About Gaia-X", "link": "/gaia-x" },

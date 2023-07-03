@@ -3,7 +3,7 @@ import styles from './HighlightBox.module.css'
 import Eye from '@images/eye.svg'
 import Catalogue from '@images/catalogueIcon.svg'
 import Markdown from '@components/@shared/Markdown'
-import Button from '@components/@shared/atoms/Button'
+import Button, { ButtonProps } from '@components/@shared/atoms/Button'
 
 const icons = {
   eye: <Eye />,
@@ -15,13 +15,15 @@ export default function HighlightBox({
   title,
   body,
   buttonLabel,
-  link
+  link,
+  button
 }: {
-  icon: keyof typeof icons
+  icon?: keyof typeof icons
   title: string
   body: string
   buttonLabel: string
   link: string
+  button?: ButtonProps
 }): ReactElement {
   return (
     <div className={styles.container}>
@@ -30,7 +32,11 @@ export default function HighlightBox({
         <h3>{title}</h3>
       </span>
       <Markdown text={body} />
-      <Button style="primary" to={link}>
+      <Button
+        style={button?.style ?? 'primary'}
+        arrow={button?.arrow}
+        to={link}
+      >
         {buttonLabel}
       </Button>
     </div>

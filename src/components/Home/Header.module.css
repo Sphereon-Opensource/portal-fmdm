@@ -32,6 +32,15 @@
   width: 100%;
 }
 
+.actions > a {
+  color: var(--font-color-text-inverted);
+}
+
+.actions > a:hover,
+.actions > a:active {
+  color: var(--sphereon-light-blue);
+}
+
 .carouselImageContainer {
   position: relative;
 }
@@ -79,7 +88,8 @@
 
 @media screen and (min-width: 40rem) {
   .actions {
-    flex-direction: row;
+    flex-direction: column;
+    margin-top: 10%;
   }
   .title {
     font-size: 3.5rem;

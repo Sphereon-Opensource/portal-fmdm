@@ -51,8 +51,7 @@
 .content button:focus,
 .link:hover,
 .link:focus {
-  color: var(--footer-font-color);
-  text-decoration: underline;
+  color: var(--footer-font-color-highlight);
 }
 
 .content p {

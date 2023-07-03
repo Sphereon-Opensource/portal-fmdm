@@ -1,6 +1,6 @@
 .container {
   --grid-layout-gap: calc(var(--spacer) / 2);
-  --grid-column-count: 4;
+  --grid-column-count: 5;
   --grid-item-min-width: 10rem;
 
   --gap-count: calc(var(--grid-column-count) - 1);
