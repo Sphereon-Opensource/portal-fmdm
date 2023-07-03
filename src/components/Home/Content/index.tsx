@@ -5,6 +5,7 @@ import HighlightBox from './HighlightBox'
 import content from '../../../../content/pages/home/content.json'
 import Container from '@components/@shared/atoms/Container'
 import Markdown from '@components/@shared/Markdown'
+import Button from '@shared/atoms/Button'
 
 interface HomeContentData {
   teaser: {
@@ -14,6 +15,12 @@ interface HomeContentData {
   points: {
     text: string
   }[]
+  getInvolved: {
+    title: string
+    text: string
+    buttonLabel: string
+    link: string
+  }
   firstTimeVisiting: {
     title: string
     text: string
@@ -23,7 +30,8 @@ interface HomeContentData {
 }
 
 export default function HomeContent(): ReactElement {
-  const { teaser, points, firstTimeVisiting }: HomeContentData = content
+  const { teaser, points, firstTimeVisiting, getInvolved }: HomeContentData =
+    content
 
   return (
     <Container className={styles.wrapper}>
@@ -41,14 +49,33 @@ export default function HomeContent(): ReactElement {
               </span>
             ))}
           </div>
-          <HighlightBox
-            title={firstTimeVisiting.title}
-            body={firstTimeVisiting.text}
-            buttonLabel={firstTimeVisiting.buttonLabel}
-            link={firstTimeVisiting.link}
-            button={{ style: 'text', arrow: true, to: firstTimeVisiting.link }}
-          />
         </div>
+      </div>
+      <Button className={styles.learnMore} style="text" arrow to="#">
+        Learn more
+      </Button>
+      <div
+        className={styles.highlightBox}
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'left',
+          marginTop: 'calc(var(--spacer) * 2)',
+          gap: 'calc(var(--spacer) * 3)'
+        }}
+      >
+        <HighlightBox
+          title={getInvolved.title}
+          body={getInvolved.text}
+          buttonLabel={getInvolved.buttonLabel}
+          button={{ style: 'text', arrow: true, to: firstTimeVisiting.link }}
+        />
+        <HighlightBox
+          title={firstTimeVisiting.title}
+          body={firstTimeVisiting.text}
+          buttonLabel={firstTimeVisiting.buttonLabel}
+          button={{ style: 'text', arrow: true, to: firstTimeVisiting.link }}
+        />
       </div>
     </Container>
   )

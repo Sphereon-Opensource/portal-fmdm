@@ -22,7 +22,7 @@ export default function HighlightBox({
   title: string
   body: string
   buttonLabel: string
-  link: string
+  link?: string
   button?: ButtonProps
 }): ReactElement {
   return (

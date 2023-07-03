@@ -26,19 +26,46 @@
   gap: calc(var(--spacer) * 2);
 }
 
-.secondarySection > div:nth-child(2) {
+.learnMore {
+  color: var(--ocean-grey-dark);
+}
+
+.learnMore:hover,
+.learnMore:active {
+  color: var(--sphereon-light-blue);
+}
+
+.highlightBox > div {
+  border-radius: 12px;
+}
+
+.highlightBox > div:first-child {
+  width: 340px;
+  height: 240px;
+  background: var(--sphereon-light-blue);
+}
+
+.highlightBox > div:nth-child(2) {
+  width: 340px;
+  height: 240px;
   background: var(--sphereon-light-green);
 }
 
-.secondarySection > div:nth-child(2) h3,
-.secondarySection > div:nth-child(2) p,
-.secondarySection > div:nth-child(2) a {
+.highlightBox > div h3,
+.highlightBox > div p,
+.highlightBox > div button {
   color: var(--sphereon-white-gray);
 }
 
-.secondarySection > div:nth-child(2) a:hover,
-.secondarySection > div:nth-child(2) a:focus,
-.secondarySection > div:nth-child(2) a:active {
+.highlightBox > div:first-child button:hover,
+.highlightBox > div:first-child button:focus,
+.highlightBox > div:first-child button:active {
+  color: var(--ocean-grey-dark);
+}
+
+.highlightBox > div:nth-child(2) button:hover,
+.highlightBox > div:nth-child(2) button:focus,
+.highlightBox > div:nth-child(2) button:active {
   color: var(--ocean-grey-dark);
 }
 
