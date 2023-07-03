@@ -20,6 +20,15 @@
   color: var(--font-color-text-inverted);
 }
 
+.subtitleGrey {
+  color: var(--sphereon-light-gray);
+  font-size: 15px;
+  font-family: TT Commons, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
 .secondarySection {
   display: flex;
   flex-direction: column;

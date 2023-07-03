@@ -9,12 +9,17 @@ import Button from '@shared/atoms/Button'
 
 interface HomeContentData {
   teaser: {
+    caption: string
     title: string
     text: string
   }
-  points: {
-    text: string
-  }[]
+  points?: {
+    list: {
+      text: string
+      subtext?: string
+    }[]
+    caption: string
+  }
   getInvolved: {
     title: string
     text: string
@@ -35,6 +40,7 @@ export default function HomeContent(): ReactElement {
 
   return (
     <Container className={styles.wrapper}>
+      <span className={styles.subtitleGrey}>{teaser.caption}</span>
       <h2>{teaser.title}</h2>
       <div className={styles.container}>
         <div className={styles.teaser}>
@@ -42,10 +48,15 @@ export default function HomeContent(): ReactElement {
         </div>
         <div className={styles.secondarySection}>
           <div className={styles.points}>
-            {points.map((point, i) => (
+            <span className={styles.subtitleGrey}>{points.caption}</span>
+            {points.list.map((point, i) => (
               <span key={i}>
                 <Checkmark className={styles.checkmark} />
-                <Markdown className={styles.pointText} text={point.text} />
+                <Markdown
+                  className={styles.pointText}
+                  text={point.text}
+                  subtext={point.subtext}
+                />
               </span>
             ))}
           </div>

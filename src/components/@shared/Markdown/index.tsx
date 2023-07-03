@@ -4,10 +4,12 @@ import styles from './index.module.css'
 
 const Markdown = ({
   text,
+  subtext,
   blockImages,
   className
 }: {
   text: string
+  subtext?: string
   blockImages?: boolean
   className?: string
 }): ReactElement => {
@@ -17,14 +19,28 @@ const Markdown = ({
         /<img[\w\W]+?\/?>/g,
         `<img src="/images/image_blocked_placeholder.png" alt="Blocked image placeholder" class="${styles.blockedContentImage}" />`
       )
-
+  const subContent = subtext ? markdownToHtml(subtext) : null
+  const mergedClassName = `${styles.markdown} ${className || ''}`
   return (
-    <div
-      className={`${styles.markdown} ${className}`}
-      // Note: We serialize and kill all embedded HTML over in markdownToHtml()
-      // so the danger here is gone.
-      dangerouslySetInnerHTML={{ __html: content }}
-    />
+    <div className={mergedClassName}>
+      <div
+        dangerouslySetInnerHTML={{ __html: content }}
+        /*
+            style={{
+              ...(className !== 'firstTime' && { color: 'black' }),
+              ...(className === 'firstTime' && { color: 'white' }),
+              ...{ fontSize: 'var(--font-size-base)', fontWeight: 'var(-font-weight-base)' }
+            }}
+    */
+      />
+      {subContent && (
+        <div
+          style={{ fontWeight: 'var(--font-weight-base)' }}
+          className={styles.subtext} // add a class for subtext styling
+          dangerouslySetInnerHTML={{ __html: subContent }}
+        />
+      )}
+    </div>
   )
 }
 
