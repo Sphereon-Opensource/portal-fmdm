@@ -51,7 +51,7 @@
   --menu-link-font-weight: var(--font-weight-bold);
   --menu-link-font-weight-active: var(--font-weight-bold);
   --menu-caret-size: var(--font-size-small);
-  --menu-caret-fill-color: var(--color-primary);
+  --menu-caret-fill-color: var(--sphereon-black);
   --menu-network-badge-font-color: var(--brand-white);
 
   /* Footer */
@@ -121,10 +121,10 @@
   --teaser-border-color: var(--brand-grey-white);
   --teaser-box-shadow: none;
   --teaser-hover-box-shadow: 0 10px 25px 0 var(--box-shadow-color);
-  --teaser-algo-label-background: var(--brand-green);
-  --teaser-algo-label-font-color: var(--brand-white);
-  --teaser-dataset-label-background: var(--brand-green-light);
-  --teaser-dataset-label-font-color: var(--brand-white);
+  --teaser-algo-label-background: var(--sphereon-light-green);
+  --teaser-algo-label-font-color: var(--sphereon-white-gray);
+  --teaser-dataset-label-background: var(--sphereon-light-blue);
+  --teaser-dataset-label-font-color: var(--sphereon-white-gray);
 
   /* Pagination component */
   --pagination-font-color: var(--color-secondary);
