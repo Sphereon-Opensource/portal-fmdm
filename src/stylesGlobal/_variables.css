@@ -128,8 +128,8 @@
 
   /* Pagination component */
   --pagination-font-color: var(--color-secondary);
-  --pagination-selected-font-color: var(--font-color-heading);
-  --pagination-hover-font-color: var(--color-highlight);
+  --pagination-selected-font-color: var(--ocean-grey-dark);
+  --pagination-hover-font-color: var(--ocean-grey-dark);
 
   /* Filter and sort */
   --filter-font-color: var(--color-secondary);
