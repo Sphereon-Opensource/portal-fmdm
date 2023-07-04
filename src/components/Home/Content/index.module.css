@@ -33,6 +33,8 @@
 
 .learnMore {
   color: var(--ocean-grey-dark);
+  font-weight: 600;
+  font-size: 18px;
 }
 
 .learnMore:hover,
@@ -65,11 +67,19 @@
   font-weight: var(--font-weight-base);
 }
 
-.highlightBox > div h3,
-.highlightBox > div p,
+.highlightBox > div p {
+  color: var(--sphereon-white-gray);
+}
+
+.highlightBox > div h3 {
+  color: var(--sphereon-white-gray);
+  font-weight: 600;
+}
+
 .highlightBox > div a {
   color: var(--sphereon-white-gray);
   font-weight: 600;
+  font-size: 18px;
 }
 
 .highlightBox > div:first-child a:hover,
