@@ -22,7 +22,9 @@
 
 .title,
 .body {
-  color: var(--font-color-text-inverted);
+  color: var(--sphereon-white-gray);
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.14);
+  font-weight: 600;
 }
 
 .actions {
@@ -33,7 +35,8 @@
 }
 
 .actions > a {
-  color: var(--font-color-text-inverted);
+  color: var(--sphereon-white-gray);
+  font-weight: 600;
 }
 
 .actions > a:hover,

@@ -19,6 +19,9 @@ export default function Footer(): ReactElement {
 
   return (
     <footer className={styles.footer}>
+      <div
+        style={{ border: '1px solid var(--sphereon-black)', width: '57%' }}
+      ></div>
       <Container className={styles.container}>
         <div className={styles.logo}>
           <Logo />

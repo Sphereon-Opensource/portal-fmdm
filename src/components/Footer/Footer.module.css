@@ -2,6 +2,9 @@
   min-height: 10rem;
   background-color: var(--footer-background-color);
   color: var(--footer-font-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .container {
