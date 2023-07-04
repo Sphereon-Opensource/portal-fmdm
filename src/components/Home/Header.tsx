@@ -92,15 +92,15 @@ export default function PageHeader(): ReactElement {
             ))}
           </div>
         </div>
-        {/* <div className={styles.carouselIndicators}> */}
-        {/*  {carousel.map((e, i) => ( */}
-        {/*    <div */}
-        {/*      key={e} */}
-        {/*      className={cx({ indicator: true, active: index === i })} */}
-        {/*      onClick={() => setIndex(i)} */}
-        {/*    /> */}
-        {/*  ))} */}
-        {/* </div> */}
+        <div className={styles.carouselIndicators}>
+          {carousel.map((e, i) => (
+            <div
+              key={e}
+              className={cx({ indicator: true, active: index === i })}
+              onClick={() => setIndex(i)}
+            />
+          ))}
+        </div>
       </Container>
     </header>
   )

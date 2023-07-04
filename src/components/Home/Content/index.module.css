@@ -62,19 +62,19 @@
 
 .highlightBox > div h3,
 .highlightBox > div p,
-.highlightBox > div button {
+.highlightBox > div a {
   color: var(--sphereon-white-gray);
 }
 
-.highlightBox > div:first-child button:hover,
-.highlightBox > div:first-child button:focus,
-.highlightBox > div:first-child button:active {
+.highlightBox > div:first-child a:hover,
+.highlightBox > div:first-child a:focus,
+.highlightBox > div:first-child a:active {
   color: var(--ocean-grey-dark);
 }
 
-.highlightBox > div:nth-child(2) button:hover,
-.highlightBox > div:nth-child(2) button:focus,
-.highlightBox > div:nth-child(2) button:active {
+.highlightBox > div:nth-child(2) a:hover,
+.highlightBox > div:nth-child(2) a:focus,
+.highlightBox > div:nth-child(2) a:active {
   color: var(--ocean-grey-dark);
 }
 

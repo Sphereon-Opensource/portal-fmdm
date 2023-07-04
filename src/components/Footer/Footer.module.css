@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border-top: var(--sphereon-black);
 }
 
 .logo,
@@ -27,6 +28,34 @@
   flex-direction: column;
   justify-content: center;
   gap: var(--spacer);
+}
+
+.partners {
+  display: flex;
+  flex-direction: column;
+  width: 18.3rem;
+}
+
+.partnerText {
+  font-family: TT Commons, sans-serif;
+  font-size: 0.85rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.partnerImageContainer {
+  display: flex;
+  gap: 2.2rem;
+  margin-left: -7px;
+}
+
+.partnerImageContainer > div:first-child {
+  width: 8rem;
+}
+
+.partnerImageContainer > div:nth-child(2) {
+  width: 5rem;
 }
 
 .content {
@@ -84,11 +113,11 @@
   .container {
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
   }
   .logo {
     justify-content: flex-start;
     align-items: flex-start;
-    margin-top: var(--spacer);
     margin-right: auto;
     padding: 0;
   }

@@ -37,6 +37,7 @@
   },
   "footer": {
     "designedBy": "",
+    "partners": "Centre for Energy System Intelligence",
     "links": [
       { "label": "About this demo", "link": "/about" },
       { "label": "About Gaia-X", "link": "/gaia-x" },

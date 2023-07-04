@@ -79,13 +79,15 @@ export default function HomeContent(): ReactElement {
           title={getInvolved.title}
           body={getInvolved.text}
           buttonLabel={getInvolved.buttonLabel}
-          button={{ style: 'text', arrow: true, to: firstTimeVisiting.link }}
+          link={firstTimeVisiting.link}
+          button={{ style: 'text', arrow: true }}
         />
         <HighlightBox
           title={firstTimeVisiting.title}
           body={firstTimeVisiting.text}
           buttonLabel={firstTimeVisiting.buttonLabel}
-          button={{ style: 'text', arrow: true, to: firstTimeVisiting.link }}
+          link={firstTimeVisiting.link}
+          button={{ style: 'text', arrow: true }}
         />
       </div>
     </Container>
