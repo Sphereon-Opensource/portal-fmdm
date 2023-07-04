@@ -38,7 +38,7 @@
 
 .partnerText {
   font-family: TT Commons, sans-serif;
-  font-size: 0.85rem;
+  font-size: var(--font-size-small);
   font-style: normal;
   font-weight: 600;
   line-height: normal;

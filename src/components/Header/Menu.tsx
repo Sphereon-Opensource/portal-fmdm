@@ -61,7 +61,12 @@ export default function Menu({
     <Container>
       <nav className={styles.menu}>
         <Link href="/" className={styles.logo}>
-          <Logo />
+          <Logo
+            style={{
+              width: '20rem',
+              height: '5rem'
+            }}
+          />
         </Link>
 
         <ul className={styles.navigation}>
