@@ -44,7 +44,7 @@
   font-family: TT Commons, sans-serif;
   font-size: var(--font-size-small);
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--font-weight-bolder);
   line-height: normal;
 }
 
@@ -96,15 +96,19 @@
   grid-template-columns: minmax(max-content 1fr);
 }
 
+.links > a {
+  font-weight: var(--font-weight-bolder);
+}
+
 .copyright {
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-bolder);
   min-width: fit-content;
 }
 
 .legal,
 .linkButton {
   font-size: var(--font-size-small);
-  font-weight: var(--font-weight-light);
+  font-weight: var(--font-weight-bolder);
 }
 
 @media screen and (min-width: 25rem) {

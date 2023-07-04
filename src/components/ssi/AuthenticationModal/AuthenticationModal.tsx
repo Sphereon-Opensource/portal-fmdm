@@ -45,7 +45,7 @@ export default class AuthenticationModal extends Component<
           <p
             style={{
               fontSize: '28px',
-              fontWeight: '600',
+              fontWeight: 'var(--font-weight-bolder);',
               alignItems: 'flex-start',
               display: 'flex',
               flex: '1 1 0%',

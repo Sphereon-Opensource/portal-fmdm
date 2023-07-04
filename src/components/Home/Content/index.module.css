@@ -4,7 +4,7 @@
 
 .wrapper > h2 {
   color: var(--font-color-text-inverted);
-  font-weight: 600;
+  font-weight: var(--font-weight-bolder);
 }
 
 .container {
@@ -33,7 +33,7 @@
 
 .learnMore {
   color: var(--ocean-grey-dark);
-  font-weight: 600;
+  font-weight: var(--font-weight-bolder);
   font-size: 18px;
 }
 
@@ -59,7 +59,7 @@
 }
 
 .highlightBox > div > h3 {
-  font-weight: 600;
+  font-weight: var(--font-weight-bolder);
 }
 
 .highlightBox div > p,
@@ -73,12 +73,12 @@
 
 .highlightBox > div h3 {
   color: var(--sphereon-white-gray);
-  font-weight: 600;
+  font-weight: var(--font-weight-bolder);
 }
 
 .highlightBox > div a {
   color: var(--sphereon-white-gray);
-  font-weight: 600;
+  font-weight: var(--font-weight-bolder);
   font-size: 18px;
 }
 
