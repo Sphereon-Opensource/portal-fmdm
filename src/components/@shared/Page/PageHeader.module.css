@@ -5,6 +5,7 @@
 
 .title {
   font-size: var(--font-size-h3);
+  color: var(--ocean-grey-dark);
   margin-top: 0;
   margin-bottom: 0;
   display: inline-flex;
