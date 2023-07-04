@@ -36,7 +36,7 @@
   --menu-logo-size-sm: 17rem;
   --menu-logo-size-lg: 20rem;
   --menu-font-color: var(--sphereon-black);
-  --menu-font-color-active: var(--brand-blue-light);
+  --menu-font-color-active: var(--sphereon-light-blue);
   --menu-font-color-hover: var(--sphereon-light-blue);
   --menu-active-indicator-color: var(--brand-blue);
   --menu-mobile-navigation-border-size: var(--border-size-sm);

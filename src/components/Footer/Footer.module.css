@@ -113,7 +113,7 @@
 
 @media screen and (min-width: 25rem) {
   .links {
-    grid-template-columns: repeat(2, calc(var(--spacer) * 4));
+    grid-template-columns: repeat(2, calc(var(--spacer) * 5));
   }
 }
 
