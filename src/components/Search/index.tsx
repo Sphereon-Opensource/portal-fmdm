@@ -3,7 +3,11 @@ import AssetList from '@shared/AssetList'
 import queryString from 'query-string'
 import Filters from './Filters'
 import Sort from './sort'
-import { getResults, updateQueryStringParameter } from './utils'
+import {
+  AggregationResult,
+  getResults,
+  updateQueryStringParameter
+} from './utils'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
@@ -20,6 +24,7 @@ export default function SearchPage({
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const { chainIds } = useUserPreferences()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
+  const [aggregations, setAggregations] = useState<AggregationResult>()
   const [loading, setLoading] = useState<boolean>()
   const [serviceType, setServiceType] = useState<string>()
   const [accessType, setAccessType] = useState<string>()
@@ -62,7 +67,12 @@ export default function SearchPage({
       setLoading(true)
       setTotalResults(undefined)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
-      setQueryResult(queryResult)
+      const aggs = queryResult.aggregations
+      const qResult = { ...queryResult, aggregations: undefined }
+      if (aggs) {
+        setAggregations(aggs)
+      }
+      setQueryResult(qResult)
 
       setTotalResults(queryResult?.totalResults || 0)
       setTotalPagesNumber(queryResult?.totalPages || 0)
@@ -79,6 +89,7 @@ export default function SearchPage({
   useEffect(() => {
     if (!parsed || !chainIds) return
     fetchAssets(parsed, chainIds)
+    console.log(aggregations)
   }, [parsed, chainIds, newCancelToken, fetchAssets])
 
   return (

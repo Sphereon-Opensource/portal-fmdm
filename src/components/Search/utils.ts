@@ -137,8 +137,12 @@ export function getSearchQuery(
   return query
 }
 
-interface AggregationQuery {
+export interface AggregationQuery {
   [x: string]: { terms: { field: string; size?: number } }
+}
+
+export interface AggregationResult {
+  [x: string]: { buckets: { key: string; doc_count: number }[] }
 }
 
 export const facetedQuery = (): AggregationQuery => {
@@ -198,7 +202,10 @@ export async function getResults(
     accessType,
     complianceType
   )
-  const query = { ...searchQuery, aggs: facetedQuery() }
+  const query =
+    !params.accessType && !params.serviceType && !params.complianceType
+      ? { ...searchQuery, aggs: facetedQuery() }
+      : searchQuery
   return await queryMetadata(query, cancelToken)
 }
 
