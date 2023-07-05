@@ -137,6 +137,24 @@ export function getSearchQuery(
   return query
 }
 
+interface AggregationQuery {
+  [x: string]: { terms: { field: string; size?: number } }
+}
+
+export const facetedQuery = (): AggregationQuery => {
+  return {
+    tags: {
+      terms: { field: 'metadata.tags.keyword', size: 100 }
+    },
+    access: {
+      terms: { field: 'services.type.keyword', size: 100 }
+    },
+    service: {
+      terms: { field: 'metadata.type.keyword', size: 100 }
+    }
+  }
+}
+
 export async function getResults(
   params: {
     text?: string
@@ -180,8 +198,8 @@ export async function getResults(
     accessType,
     complianceType
   )
-  const queryResult = await queryMetadata(searchQuery, cancelToken)
-  return queryResult
+  const query = { ...searchQuery, aggs: facetedQuery() }
+  return await queryMetadata(query, cancelToken)
 }
 
 export async function addExistingParamsToUrl(
