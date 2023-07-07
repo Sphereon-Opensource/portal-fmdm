@@ -23,20 +23,11 @@ const Markdown = ({
   const mergedClassName = `${styles.markdown} ${className || ''}`
   return (
     <div className={mergedClassName}>
-      <div
-        dangerouslySetInnerHTML={{ __html: content }}
-        /*
-            style={{
-              ...(className !== 'firstTime' && { color: 'black' }),
-              ...(className === 'firstTime' && { color: 'white' }),
-              ...{ fontSize: 'var(--font-size-base)', fontWeight: 'var(-font-weight-base)' }
-            }}
-    */
-      />
+      <div dangerouslySetInnerHTML={{ __html: content }} />
       {subContent && (
         <div
           style={{ fontWeight: 'var(--font-weight-base)' }}
-          className={styles.subtext} // add a class for subtext styling
+          className={styles.subtext}
           dangerouslySetInnerHTML={{ __html: subContent }}
         />
       )}

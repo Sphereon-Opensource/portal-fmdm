@@ -23,7 +23,7 @@
 a.link:hover,
 a.link:focus {
   box-shadow: var(--teaser-hover-box-shadow);
-  color: rgba(147, 147, 147); /* What should happen with the text color? */
+  color: rgba(147, 147, 147);
 }
 
 .detailLine {
