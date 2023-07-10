@@ -23,6 +23,8 @@ const Markdown = ({
   const mergedClassName = `${styles.markdown} ${className || ''}`
   return (
     <div className={mergedClassName}>
+      {/* Note: We serialize and kill all embedded HTML over in markdownToHtml() */}
+      {/* so the danger here is gone. */}
       <div dangerouslySetInnerHTML={{ __html: content }} />
       {subContent && (
         <div
