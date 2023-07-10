@@ -43,6 +43,7 @@
 }
 
 .actions > a:hover,
+.actions > a:focus,
 .actions > a:active {
   color: var(--sphereon-light-blue);
 }
