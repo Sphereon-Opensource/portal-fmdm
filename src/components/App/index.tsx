@@ -11,7 +11,7 @@ import { ToastContainer } from 'react-toastify'
 import contentPurgatory from '../../../content/purgatory.json'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
-import AuthenticationModal from '@components/ssi/AuthenticationModal/AuthenticationModal'
+import LoginModal from '@components/OIDC'
 
 export default function App({
   children
@@ -51,11 +51,7 @@ export default function App({
       )}
 
       <ToastContainer position="bottom-right" newestOnTop />
-      <AuthenticationModal
-        show={show}
-        onCloseClicked={() => setShow(false)}
-        onSignInComplete={onSignInComplete}
-      />
+      <LoginModal show={show} setShow={setShow} />
     </div>
   )
 }
