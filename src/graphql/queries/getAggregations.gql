@@ -24,5 +24,6 @@ query getAggregations {
       doc_count_error_upper_bound
       sum_other_doc_count
     }
+    total_doc_count
   }
 }

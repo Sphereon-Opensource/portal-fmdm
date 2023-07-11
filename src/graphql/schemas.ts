@@ -20,6 +20,7 @@ const typeDefs = gql`
     access: Aggregation
     service: Aggregation
     tags: Aggregation
+    total_doc_count: Int
   }
 `
 export default typeDefs

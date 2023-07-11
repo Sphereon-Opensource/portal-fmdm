@@ -142,7 +142,7 @@ export interface AggregationQuery {
 }
 
 export interface AggregationResult {
-  [x: string]: { buckets: { key: string; doc_count: number }[] }
+  [x: string]: { buckets: { key: string; doc_count: number }[] | number }
 }
 
 export const facetedQuery = (): AggregationQuery => {

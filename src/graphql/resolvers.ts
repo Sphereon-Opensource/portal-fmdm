@@ -1,5 +1,5 @@
 import appConfig from '../../app.config'
-import { getResults } from '@components/Search/utils'
+import { AggregationResult, getResults } from '@components/Search/utils'
 
 export const getChainIds = async (): Promise<number[]> => {
   const { chainIds } = appConfig
@@ -8,16 +8,16 @@ export const getChainIds = async (): Promise<number[]> => {
 
 const resolvers = {
   Query: {
-    aggregations: async () =>
-      (
-        await getResults(
-          {
-            faceted: 'true',
-            offset: '0'
-          },
-          await getChainIds()
-        )
-      ).aggregations
+    aggregations: async (): Promise<AggregationResult> => {
+      const results = await getResults(
+        {
+          faceted: 'true',
+          offset: '0'
+        },
+        await getChainIds()
+      )
+      return { ...results.aggregations, total_doc_count: results.totalResults }
+    }
   }
 }
 
