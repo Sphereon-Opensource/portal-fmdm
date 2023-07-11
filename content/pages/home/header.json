@@ -3,7 +3,7 @@
   "cta": [
     {
       "label": "Go to catalogue",
-      "link": "/search?sort=_score&sortOrder=desc&text="
+      "link": "/search?faceted=true&sort=_score&sortOrder=desc&text="
     },
     { "label": "About this demo", "link": "/about" }
   ],

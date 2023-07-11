@@ -67,12 +67,10 @@ export default function SearchPage({
       setLoading(true)
       setTotalResults(undefined)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
-      const aggs = queryResult.aggregations
-      const qResult = { ...queryResult, aggregations: undefined }
-      if (aggs) {
-        setAggregations(aggs)
+      if (queryResult.aggregations) {
+        setAggregations(queryResult.aggregations)
       }
-      setQueryResult(qResult)
+      setQueryResult({ ...queryResult, aggregations: undefined })
 
       setTotalResults(queryResult?.totalResults || 0)
       setTotalPagesNumber(queryResult?.totalPages || 0)

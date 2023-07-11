@@ -127,9 +127,9 @@ export function getSearchQuery(
     nestedQuery,
     esPaginationOptions: {
       from: (Number(page) - 1 || 0) * (Number(offset) || 21),
-      size: Number(offset) || 21
+      size: Number(offset) >= 0 ? Number(offset) : 21
     },
-    sortOptions: { sortBy: sort, sortDirection },
+    sortOptions: sort ? { sortBy: sort, sortDirection } : undefined,
     filters
   } as BaseQueryParams
 
@@ -172,6 +172,7 @@ export async function getResults(
     serviceType?: string
     accessType?: string
     complianceType?: string
+    faceted?: string
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -186,7 +187,8 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    complianceType
+    complianceType,
+    faceted
   } = params
 
   const searchQuery = getSearchQuery(
@@ -203,9 +205,7 @@ export async function getResults(
     complianceType
   )
   const query =
-    !params.accessType && !params.serviceType && !params.complianceType
-      ? { ...searchQuery, aggs: facetedQuery() }
-      : searchQuery
+    faceted === 'true' ? { ...searchQuery, aggs: facetedQuery() } : searchQuery
   return await queryMetadata(query, cancelToken)
 }
 
