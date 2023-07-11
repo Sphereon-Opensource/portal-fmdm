@@ -146,7 +146,21 @@ export interface AggregationResult {
 }
 
 export const facetedQuery = (): AggregationQuery => {
-  return {
+  const customFacetedSearch = process.env.NEXT_PUBLIC_FACETED_SEARCH_BUCKETS
+  const props = customFacetedSearch ? customFacetedSearch.split(';') : []
+  const terms = props.map((p) => p.split(','))
+  let customAgg: AggregationQuery = {}
+  terms.forEach((t) => {
+    customAgg = Object.assign(
+      JSON.parse(
+        `{ "${t[0]}": { "terms": { "field": "${t[1]}", "size": "${
+          t[2] ?? 100
+        }" } } }`
+      ),
+      customAgg
+    )
+  })
+  const basicAgg = {
     tags: {
       terms: { field: 'metadata.tags.keyword', size: 100 }
     },
@@ -157,6 +171,7 @@ export const facetedQuery = (): AggregationQuery => {
       terms: { field: 'metadata.type.keyword', size: 100 }
     }
   }
+  return { ...basicAgg, ...customAgg }
 }
 
 export async function getResults(

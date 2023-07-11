@@ -24,7 +24,7 @@ export default function SearchPage({
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const { chainIds } = useUserPreferences()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
-  const [aggregations, setAggregations] = useState<AggregationResult>()
+  const [aggregations, setAggregations] = useState<PagedAssets>()
   const [loading, setLoading] = useState<boolean>()
   const [serviceType, setServiceType] = useState<string>()
   const [accessType, setAccessType] = useState<string>()
@@ -67,10 +67,14 @@ export default function SearchPage({
       setLoading(true)
       setTotalResults(undefined)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
-      if (queryResult.aggregations) {
-        setAggregations(queryResult.aggregations)
-      }
-      setQueryResult({ ...queryResult, aggregations: undefined })
+      const aggregationResult = await getResults(
+        { faceted: 'true', offset: '0' },
+        chainIds,
+        newCancelToken()
+      )
+
+      setAggregations(aggregationResult)
+      setQueryResult(queryResult)
 
       setTotalResults(queryResult?.totalResults || 0)
       setTotalPagesNumber(queryResult?.totalPages || 0)
