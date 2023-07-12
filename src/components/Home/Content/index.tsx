@@ -62,9 +62,6 @@ export default function HomeContent(): ReactElement {
           </div>
         </div>
       </div>
-      <Button className={styles.learnMore} style="text" arrow to="#">
-        Learn more
-      </Button>
       <div
         className={styles.highlightBox}
         style={{
