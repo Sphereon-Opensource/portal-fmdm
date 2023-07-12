@@ -39,7 +39,9 @@
 @media screen and (min-width: 70rem) {
   .navigation {
     order: 2;
-    width: auto;
+    width: 43%;
+    display: flex;
+    justify-content: space-between;
     margin: 0;
     text-align: left;
     border: none;
@@ -80,7 +82,7 @@
   composes: text from '../@shared/atoms/Button/index.module.css';
 
   color: var(--menu-font-color);
-  font-weight: var(--menu-link-font-weight);
+  font-weight: var(--font-weight-bolder);
   font-size: var(--menu-link-font-size);
 }
 
@@ -130,7 +132,7 @@
 }
 
 .logo svg {
-  margin-right: calc(var(--spacer) / 3);
+  margin-right: calc(var(--spacer) * 10);
 }
 
 .actions button {

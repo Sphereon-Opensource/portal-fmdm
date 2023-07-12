@@ -22,7 +22,11 @@
 
 .title,
 .body {
-  color: var(--font-color-text-inverted);
+  color: var(--sphereon-white-gray);
+}
+
+.title {
+  font-weight: var(--font-weight-bolder);
 }
 
 .actions {
@@ -32,16 +36,26 @@
   width: 100%;
 }
 
+.actions > a {
+  color: var(--sphereon-white-gray);
+  font-weight: var(--font-weight-bolder);
+  font-size: 18px;
+}
+
+.actions > a:hover,
+.actions > a:focus,
+.actions > a:active {
+  color: var(--sphereon-light-blue);
+}
+
 .carouselImageContainer {
   position: relative;
 }
 
 .carouselImageContainer:after {
   content: '';
-  background-image: linear-gradient(
-    rgba(0, 0, 0, 0.6) 0%,
-    rgba(0, 0, 0, 0.22) 100%
-  );
+  background-color: rgba(0, 0, 0, 0.25);
+  background-repeat: no-repeat;
 }
 
 .image,
@@ -79,7 +93,8 @@
 
 @media screen and (min-width: 40rem) {
   .actions {
-    flex-direction: row;
+    flex-direction: column;
+    margin-top: 10%;
   }
   .title {
     font-size: 3.5rem;
