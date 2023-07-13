@@ -19,6 +19,7 @@ import { getOceanConfig } from '@utils/ocean'
 import { validationSchema } from './_validation'
 import { useAbortController } from '@hooks/useAbortController'
 import { setNFTMetadataAndTokenURI } from '@utils/nft'
+import Wallet from '@components/Header/Wallet'
 
 export default function PublishPage({
   content
@@ -279,10 +280,15 @@ export default function PublishPage({
     >
       {({ values }) => (
         <>
-          <PageHeader
-            title={<Title networkId={values.user.chainId} />}
-            description={content.description}
-          />
+          <div className={styles.header}>
+            <PageHeader
+              title={<Title networkId={values.user.chainId} />}
+              description={content.description}
+            />
+          </div>
+          <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+            <Wallet />
+          </div>
           <Form className={styles.form} ref={scrollToRef}>
             <Navigation />
             <Steps feedback={feedback} />

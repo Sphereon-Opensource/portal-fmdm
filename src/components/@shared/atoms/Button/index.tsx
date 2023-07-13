@@ -6,7 +6,7 @@ import styles from './index.module.css'
 const cx = classNames.bind(styles)
 
 export interface ButtonProps {
-  children: ReactNode
+  children?: ReactNode
   className?: string
   href?: string
   onClick?: (e: FormEvent) => void

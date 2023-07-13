@@ -1,33 +1,33 @@
-import styles from './Auth.module.css'
 import React from 'react'
 import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
+import Button from '@shared/atoms/Button'
 
 export default function Auth({
   setShow,
   payload,
-  setPayload
+  setPayload,
+  className
 }: {
   setShow: () => void
   payload: AuthorizationResponsePayload
   setPayload: React.Dispatch<React.SetStateAction<AuthorizationResponsePayload>>
+  className?: string
 }) {
   if (!payload) {
     return (
-      <button
-        className={`${styles.button} ${styles.initial}`}
-        onClick={setShow}
-      >
+      <Button style="text" className={className} onClick={setShow}>
         Login
-      </button>
+      </Button>
     )
   } else {
     return (
-      <button
-        className={`${styles.button} ${styles.initial}`}
+      <Button
+        style="text"
+        className={className}
         onClick={() => setPayload(undefined)}
       >
         Logout
-      </button>
+      </Button>
     )
   }
 }

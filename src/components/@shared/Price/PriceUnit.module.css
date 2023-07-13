@@ -3,7 +3,7 @@
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-base);
 
-  color: var(--font-color-text);
+  color: var(--sphereon-light-blue);
   line-height: 1.2;
 }
 
@@ -13,7 +13,7 @@
 
 .symbol {
   font-weight: var(--font-weight-base);
-  color: var(--font-color-text);
+  color: var(--sphereon-light-blue);
   font-size: var(--font-size-base);
 }
 
