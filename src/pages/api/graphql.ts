@@ -3,7 +3,7 @@ import { startServerAndCreateNextHandler } from '@as-integrations/next'
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import typeDefs from '@graphql/schemas'
+import typeDefs from '../../../graphql/schema.mjs'
 import resolvers from '@graphql/resolvers'
 import allowCors from '@utils/cors'
 
