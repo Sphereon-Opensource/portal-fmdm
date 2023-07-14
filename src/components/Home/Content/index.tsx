@@ -10,8 +10,10 @@ import Button from '@shared/atoms/Button'
 interface HomeContentData {
   teaser: {
     caption: string
-    title: string
-    text: string
+    body: {
+      title: string
+      text: string
+    }[]
   }
   points?: {
     list: {
@@ -41,10 +43,22 @@ export default function HomeContent(): ReactElement {
   return (
     <Container className={styles.wrapper}>
       <span className={styles.subtitleGrey}>{teaser.caption}</span>
-      <h2>{teaser.title}</h2>
       <div className={styles.container}>
-        <div className={styles.teaser}>
-          <Markdown text={teaser.text} />
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '90%'
+          }}
+        >
+          {teaser.body.map((t, i) => {
+            return (
+              <div key={i} className={styles.teaser}>
+                <h2>{t.title}</h2>
+                <Markdown text={t.text} />
+              </div>
+            )
+          })}
         </div>
         <div className={styles.secondarySection}>
           <div className={styles.points}>
