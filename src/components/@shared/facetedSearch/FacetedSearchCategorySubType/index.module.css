@@ -1,0 +1,20 @@
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.checkboxContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 0.688rem;
+}
+
+.label {
+  color: #939393;
+  font-family: 'Inter', serif;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}

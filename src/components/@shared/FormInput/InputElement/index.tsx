@@ -169,8 +169,11 @@ const InputElement = forwardRef(
             {...props}
           />
         )
-      case 'tags':
+      case 'tags': {
+        console.log(`PROPS: ${JSON.stringify(props)}`)
         return <TagsAutoComplete {...field} {...props} />
+      }
+
       default:
         return prefix || postfix ? (
           <div

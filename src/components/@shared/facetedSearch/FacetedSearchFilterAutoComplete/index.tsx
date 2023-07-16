@@ -1,30 +1,38 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import CreatableSelect from 'react-select/creatable'
-import { OnChangeValue } from 'react-select'
+import { MultiValue, OnChangeValue } from 'react-select'
 import { useField } from 'formik'
-import { InputProps } from '../..'
+// import { InputProps } from '../..'
 import { getTagsList } from '@utils/aquarius'
-import { chainIds } from '../../../../../../app.config'
+// import { chainIds } from '../../../../../../app.config'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
 import { matchSorter } from 'match-sorter'
+import { InputProps } from '../../FormInput'
+import { chainIds } from 'app.config'
 
-interface AutoCompleteOption {
+export interface AutoCompleteOption {
   readonly value: string
   readonly label: string
 }
 
-export default function TagsAutoComplete({
+// TODO supply value and onChange and manage it from outside to be able to clear it
+
+export default function FacetedSearchFilterAutoComplete({
   ...props
-}: InputProps): ReactElement {
-  console.log(`TagsAutoComplete: ${JSON.stringify(props)}`)
-  const { name, placeholder } = props
+}: InputProps & {
+  value: MultiValue<AutoCompleteOption>
+  onValueChange: (value: AutoCompleteOption[]) => void
+}): ReactElement {
+  // console.log(`TagsAutoComplete: ${JSON.stringify(props)}`)
+  const { name, placeholder, value, onValueChange } = props
   const [tagsList, setTagsList] = useState<AutoCompleteOption[]>()
   const [matchedTagsList, setMatchedTagsList] = useState<AutoCompleteOption[]>(
     []
   )
-  const [field, meta, helpers] = useField(name)
+  // const [field, meta, helpers] = useField(name)
   const [input, setInput] = useState<string>()
+  const [selected, setSelected] = useState<MultiValue<AutoCompleteOption>>([])
 
   const newCancelToken = useCancelToken()
 
@@ -37,13 +45,15 @@ export default function TagsAutoComplete({
     }))
   }
 
-  const defaultTags = !field.value
-    ? undefined
-    : generateAutocompleteOptions(field.value)
+  const defaultTags = [{ label: 'sphereon', value: 'also_sphereon' }]
+
+  // const defaultTags = !field.value
+  //   ? undefined
+  //   : generateAutocompleteOptions(field.value)
 
   useEffect(() => {
     const generateTagsList = async () => {
-      const tags = await getTagsList(chainIds, newCancelToken())
+      const tags = ['Sphereon'] // await getTagsList(chainIds, newCancelToken())
       const autocompleteOptions = generateAutocompleteOptions(tags)
       setTagsList(autocompleteOptions)
     }
@@ -51,9 +61,11 @@ export default function TagsAutoComplete({
   }, [newCancelToken])
 
   const handleChange = (userInput: OnChangeValue<AutoCompleteOption, true>) => {
+    setSelected(userInput)
     const normalizedInput = userInput.map((input) => input.value)
-    helpers.setValue(normalizedInput)
-    helpers.setTouched(true)
+    console.log(`normalizedInput ${normalizedInput}`)
+    // helpers.setValue(normalizedInput)
+    // helpers.setTouched(true)
   }
 
   const handleOptionsFilter = (
@@ -72,18 +84,16 @@ export default function TagsAutoComplete({
         IndicatorSeparator: () => null
       }}
       className={styles.select}
-      defaultValue={defaultTags}
+      // defaultValue={defaultTags}
       hideSelectedOptions
       isMulti
-      isClearable={false}
-      noOptionsMessage={() =>
-        'Start typing to get suggestions based on tags from all published assets.'
-      }
-      // onChange={(value: AutoCompleteOption[]) => handleChange(value)}
+      isClearable={true}
+      onChange={onValueChange} // (value: AutoCompleteOption[]) => handleChange(value)}
       onInputChange={(value) => handleOptionsFilter(tagsList, value)}
       openMenuOnClick
       options={!input || input?.length < 1 ? [] : matchedTagsList}
       placeholder={placeholder}
+      value={value} // TODO selected}
       theme={(theme) => ({
         ...theme,
         colors: { ...theme.colors, primary25: 'var(--border-color)' }

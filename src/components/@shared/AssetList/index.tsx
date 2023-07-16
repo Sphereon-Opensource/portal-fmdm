@@ -12,6 +12,7 @@ import Price from '../Price'
 import AssetType from '../AssetType'
 import { getServiceByName } from '@utils/ddo'
 import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
+import FacetedSearch from '@shared/FacetedSearch'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {

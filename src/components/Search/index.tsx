@@ -8,6 +8,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
+import FacetedSearch from '@shared/facetedSearch/FacetedSearch'
 
 export default function SearchPage({
   setTotalResults,
@@ -85,20 +86,41 @@ export default function SearchPage({
     <>
       <div className={styles.search}>
         <div className={styles.row}>
-          <Filters
-            serviceType={serviceType}
-            accessType={accessType}
-            complianceType={complianceType}
-            setServiceType={setServiceType}
-            setAccessType={setAccessType}
-            setComplianceType={setComplianceType}
-            addFiltersToUrl
-          />
+          {/* <Filters */}
+          {/*  serviceType={serviceType} */}
+          {/*  accessType={accessType} */}
+          {/*  complianceType={complianceType} */}
+          {/*  setServiceType={setServiceType} */}
+          {/*  setAccessType={setAccessType} */}
+          {/*  setComplianceType={setComplianceType} */}
+          {/*  addFiltersToUrl */}
+          {/* /> */}
           <Sort
             sortType={sortType}
             sortDirection={sortDirection}
             setSortType={setSortType}
             setSortDirection={setSortDirection}
+          />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <div style={{ marginTop: 37, marginRight: 30 }}>
+          <FacetedSearch />
+        </div>
+
+        <div
+          style={{ display: 'grid', flexGrow: 1 }}
+          className={styles.results}
+        >
+          <AssetList
+            assets={queryResult?.results}
+            showPagination
+            isLoading={loading}
+            page={queryResult?.page}
+            totalPages={queryResult?.totalPages}
+            onPageChange={updatePage}
+            showAssetViewSelector
           />
         </div>
       </div>
