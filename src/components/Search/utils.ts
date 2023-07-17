@@ -27,6 +27,23 @@ export function updateQueryStringParameter(
   }
 }
 
+/**
+ * The function uses the values of an environment variable to create a dynamic query.
+ * Separate the term properties by commas and each term by semi-colon. Eg:
+ * Term with single value: key, value1; key, value1;
+ * Term with array value: key, value1, value2;
+ * @return FilterTerm[]
+ */
+const addFilterToQuery = (): FilterTerm[] => {
+  const filters = process.env.NEXT_PUBLIC_DYNAMIC_FILTERS
+  const props = filters ? filters.split(';') : []
+  const terms = props.map((p) => p.split(','))
+  return terms.map((t) => {
+    const key = t.shift()
+    return getFilterTerm(key, t)
+  })
+}
+
 export function getSearchQuery(
   chainIds: number[],
   text?: string,
@@ -122,6 +139,7 @@ export function getSearchQuery(
         complianceType
       )
     )
+  process.env.NEXT_PUBLIC_DYNAMIC_FILTERS && filters.push(...addFilterToQuery())
   const baseQueryParams = {
     chainIds,
     nestedQuery,
