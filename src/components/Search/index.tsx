@@ -91,7 +91,6 @@ export default function SearchPage({
   useEffect(() => {
     if (!parsed || !chainIds) return
     fetchAssets(parsed, chainIds)
-    console.log(aggregations)
   }, [parsed, chainIds, newCancelToken, fetchAssets])
 
   return (
