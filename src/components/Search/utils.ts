@@ -27,37 +27,69 @@ export function updateQueryStringParameter(
   }
 }
 
-/**
- * The function uses the values of an environment variable to create a dynamic query.
- * Separate the term properties by commas and each term by semi-colon. Eg:
- * Term with single value: key, value1; key, value1;
- * Term with array value: key, value1, value2;
- * @return FilterTerm[]
- */
-const addFilterToQuery = (): FilterTerm[] => {
+interface DynamicFilter {
+  header: string
+  key: string
+  value?: string | string[]
+  size?: number
+}
+
+const retrieveDynamicFiltersSet = (): DynamicFilter[] => {
   const filters = process.env.NEXT_PUBLIC_DYNAMIC_FILTERS
   const props = filters ? filters.split(';') : []
   const terms = props.map((p) => p.split(','))
   return terms.map((t) => {
-    const key = t.shift()
-    return getFilterTerm(key, t)
+    const size = !isNaN(+t[t.length - 1]) ? +t[t.length - 1] : undefined
+    return {
+      header: t.shift(),
+      key: t.shift(),
+      size
+    }
   })
 }
 
+const getValidDynamicFilters = (filters?: {
+  [x: string]: string | string[]
+}): DynamicFilter[] => {
+  const dynamicFilters = retrieveDynamicFiltersSet()
+  if (!filters) {
+    return dynamicFilters
+  }
+  const keys = Object.keys(filters)
+  return dynamicFilters
+    .filter((e) => keys.includes(e.header))
+    .map((df) => {
+      df.value = filters[df.header]
+      return df
+    })
+}
+
 export function getSearchQuery(
-  chainIds: number[],
-  text?: string,
-  owner?: string,
-  tags?: string,
-  page?: string,
-  offset?: string,
-  sort?: string,
-  sortDirection?: string,
-  serviceType?: string,
-  accessType?: string,
-  complianceType?: string
+  params: {
+    text?: string
+    owner?: string
+    tags?: string
+    page?: string
+    offset?: string
+    sort?: string
+    sortDirection?: string
+    serviceType?: string
+    accessType?: string
+    complianceType?: string
+  },
+  chainIds: number[]
 ): SearchQuery {
-  text = escapeEsReservedCharacters(text)
+  const {
+    tags,
+    page,
+    offset,
+    sort,
+    sortDirection,
+    serviceType,
+    accessType,
+    complianceType
+  } = params
+  const text = escapeEsReservedCharacters(params.text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
   let searchTerm = text || ''
@@ -139,7 +171,12 @@ export function getSearchQuery(
         complianceType
       )
     )
-  process.env.NEXT_PUBLIC_DYNAMIC_FILTERS && filters.push(...addFilterToQuery())
+  process.env.NEXT_PUBLIC_DYNAMIC_FILTERS &&
+    filters.push(
+      ...getValidDynamicFilters(params).map((f) =>
+        getFilterTerm(f.key, f.value)
+      )
+    )
   const baseQueryParams = {
     chainIds,
     nestedQuery,
@@ -164,15 +201,13 @@ export interface AggregationResult {
 }
 
 export const facetedQuery = (): AggregationQuery => {
-  const customFacetedSearch = process.env.NEXT_PUBLIC_FACETED_SEARCH_BUCKETS
-  const props = customFacetedSearch ? customFacetedSearch.split(';') : []
-  const terms = props.map((p) => p.split(','))
+  const terms = getValidDynamicFilters()
   let customAgg: AggregationQuery = {}
   terms.forEach((t) => {
     customAgg = Object.assign(
       JSON.parse(
-        `{ "${t[0]}": { "terms": { "field": "${t[1]}", "size": "${
-          t[2] ?? 100
+        `{ "${t.header}": { "terms": { "field": "${t.key}", "size": "${
+          t.size ?? 100
         }" } } }`
       ),
       customAgg
@@ -210,35 +245,11 @@ export async function getResults(
   chainIds: number[],
   cancelToken?: CancelToken
 ): Promise<PagedAssets> {
-  const {
-    text,
-    owner,
-    tags,
-    page,
-    offset,
-    sort,
-    sortOrder,
-    serviceType,
-    accessType,
-    complianceType,
-    faceted
-  } = params
-
-  const searchQuery = getSearchQuery(
-    chainIds,
-    text,
-    owner,
-    tags,
-    page,
-    offset,
-    sort,
-    sortOrder,
-    serviceType,
-    accessType,
-    complianceType
-  )
+  const searchQuery = getSearchQuery(params, chainIds)
   const query =
-    faceted === 'true' ? { ...searchQuery, aggs: facetedQuery() } : searchQuery
+    params.faceted === 'true'
+      ? { ...searchQuery, aggs: facetedQuery() }
+      : searchQuery
   return await queryMetadata(query, cancelToken)
 }
 

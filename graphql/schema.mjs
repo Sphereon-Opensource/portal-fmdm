@@ -1,3 +1,10 @@
+const getBucket = () => {
+  const customFacetedSearch = process.env.NEXT_PUBLIC_DYNAMIC_FILTERS
+  const props = customFacetedSearch ? customFacetedSearch.split(';') : []
+  const terms = props.map((p) => p.split(','))
+  return terms.map((b) => `${b[0]}: Aggregation\n`)
+}
+
 const schema = `
 type Query {
     aggregations: Aggregations
@@ -18,6 +25,7 @@ type Aggregations {
     access: Aggregation
     service: Aggregation
     tags: Aggregation
+    ${getBucket()}
     total_doc_count: Int
 }
   `
