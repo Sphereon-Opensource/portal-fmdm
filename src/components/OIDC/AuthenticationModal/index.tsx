@@ -1,94 +1,25 @@
-import React, { useState } from 'react'
-import { Button, Form } from 'react-bootstrap'
+import React from 'react'
+import { Button } from 'react-bootstrap'
+import { useOidc } from '@axa-fr/react-oidc'
 
-const SURFModal = () => {
-  const [rememberUsername, setRememberUsername] = useState(false)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+const SURFModal: React.FC = () => {
+  const { login } = useOidc()
 
   const handleLogin = () => {
-    // Perform login logic
-  }
-
-  const handleCheckboxChange = () => {
-    setRememberUsername(!rememberUsername)
-  }
-
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value)
-  }
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
+    login()
   }
 
   return (
     <div
-      style={{ display: 'flex', gap: '1rem', padding: '0', height: '600px' }}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '600px',
+        gap: '1rem',
+        padding: '0'
+      }}
     >
-      <div style={{ padding: '51px', width: '540px' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <h5
-            style={{
-              marginBottom: '82px',
-              fontSize: '1.2rem',
-              fontWeight: '600'
-            }}
-          >
-            Log in met je account
-          </h5>
-          <Form.Group>
-            <Form.Control
-              type="text"
-              value={username}
-              onChange={handleUsernameChange}
-              placeholder="Gebruikersnaam"
-              style={{
-                borderRadius: '9px',
-                marginBottom: '1.5rem',
-                width: '100%'
-              }}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Control
-              type="password"
-              value={password}
-              onChange={handlePasswordChange}
-              placeholder="Wachtwoord"
-              style={{
-                borderRadius: '9px',
-                marginBottom: '1.5rem',
-                width: '100%'
-              }}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Check
-              type="checkbox"
-              label="Gebruikersnaam onthouden"
-              checked={rememberUsername}
-              onChange={handleCheckboxChange}
-              style={{ marginBottom: '0.5rem' }}
-            />
-          </Form.Group>
-        </div>
-        <Button
-          variant="primary"
-          onClick={handleLogin}
-          style={{
-            borderRadius: '9px',
-            backgroundColor: '#48A4ED',
-            color: '#FFFFFF',
-            width: '100%'
-          }}
-        >
-          Login
-        </Button>
-        <div className="mt-2 text-center">
-          <a href="#">Ik ben mijn wachtwoord vergeten</a>
-        </div>
-      </div>
       <div
         style={{
           flex: 1,
@@ -110,6 +41,7 @@ const SURFModal = () => {
           </h5>
           <Button
             variant="primary"
+            onClick={handleLogin}
             style={{
               borderRadius: '9px',
               backgroundColor: '#48A4ED',

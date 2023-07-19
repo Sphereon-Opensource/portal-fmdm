@@ -24,10 +24,10 @@ const LoginModal = ({ show, setShow }) => {
       <Modal.Body style={{ height: '100%' }}>
         <Nav variant="tabs" activeKey={activeTab} onSelect={handleTabChange}>
           <Nav.Item>
-            <Nav.Link eventKey="ssi">SSI</Nav.Link>
+            <Nav.Link eventKey="surf">SURF</Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link eventKey="surf">SURF</Nav.Link>
+            <Nav.Link eventKey="ssi">SSI</Nav.Link>
           </Nav.Item>
         </Nav>
         {activeTab === 'ssi' && (

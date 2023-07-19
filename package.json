@@ -23,6 +23,7 @@
     "storybook:build": "cross-env NODE_ENV=test build-storybook"
   },
   "dependencies": {
+    "@axa-fr/react-oidc": "^6.24.1",
     "@coingecko/cryptoformat": "^0.5.4",
     "@loadable/component": "^5.15.2",
     "@oceanprotocol/art": "^3.2.0",
