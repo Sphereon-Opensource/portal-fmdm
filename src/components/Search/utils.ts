@@ -46,7 +46,7 @@ export function getSearchQuery(
   },
   chainIds: number[]
 ): SearchQuery {
-  const { tags, page, offset, sort, sortDirection, dynamicFilters } = params
+  const { page, offset, sort, sortDirection, dynamicFilters } = params
   const text = escapeEsReservedCharacters(params.text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
@@ -217,7 +217,7 @@ export async function getResults(
     serviceType?: string
     accessType?: string
     complianceType?: string
-    filters?: {
+    dynamicFilters?: {
       location: string
       value: string
     }[]
