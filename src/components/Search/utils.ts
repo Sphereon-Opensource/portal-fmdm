@@ -135,11 +135,13 @@ export interface AggregationQuery {
 
 export interface AggregationResult {
   category: string
-  keywords: {
-    label: string
-    location: string
-    count: number
-  }[]
+  keywords: Array<KeywordResult>
+}
+
+export interface KeywordResult {
+  label: string
+  location: string
+  count: number
 }
 
 interface SearchMetadata {

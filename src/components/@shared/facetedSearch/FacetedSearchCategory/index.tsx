@@ -2,6 +2,7 @@ import React, { ReactElement, useState } from 'react'
 import FacetedSearchCollapseButton from '@shared/facetedSearch/FacetedSearchCollapseButton'
 import FacetedSearchCategorySubType from '@shared/facetedSearch/FacetedSearchCategorySubType'
 import styles from './index.module.css'
+import { KeywordResult } from '@components/Search/utils'
 
 export default function FacetedSearchCategory({
   searchCategory,
@@ -9,7 +10,7 @@ export default function FacetedSearchCategory({
   isCollapsable = true
 }: {
   searchCategory: string
-  searchTypes: Array<{ label: string; count: number; isSelected: boolean }> // Map<string, string> { key: string; value: string; isSelected: boolean }
+  searchTypes: Array<KeywordResult>
   isCollapsable?: boolean
 }): ReactElement {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -19,18 +20,14 @@ export default function FacetedSearchCategory({
   }
 
   const getSearchElements = (): Array<ReactElement> => {
-    return searchTypes.map(
-      (
-        searchType: { label: string; count: number; isSelected?: boolean } // TODO interface to top { key: string; value: string; isSelected?: boolean }
-      ) => (
-        <FacetedSearchCategorySubType
-          key={searchType.label}
-          searchType={searchType.label} //searchType.label
-          hits={searchType.count}
-          isSelected={searchType.isSelected}
-        />
-      )
-    )
+    return searchTypes.map((searchType: KeywordResult) => (
+      <FacetedSearchCategorySubType
+        key={searchType.label}
+        searchType={searchType.label}
+        hits={searchType.count}
+        // isSelected={searchType.isSelected} // TODO
+      />
+    ))
   }
 
   return (

@@ -6,11 +6,16 @@ import FacetedSearchCategory from '@shared/facetedSearch/FacetedSearchCategory'
 import FacetedSearchClearFilterButton from '@shared/facetedSearch/FacetedSearchClearFilterButton'
 import { MultiValue } from 'react-select'
 import styles from './index.module.css'
+import {
+  AggregationResult,
+  getResults,
+  KeywordResult
+} from '@components/Search/utils'
 
 export default function FacetedSearch({
   searchCategories
 }: {
-  searchCategories: Array<any>
+  searchCategories: Array<AggregationResult>
 }): ReactElement {
   const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
     []
@@ -41,18 +46,47 @@ export default function FacetedSearch({
     ])
   ) // TODO better name?
 
+  const getTags = (): Array<{ label: string; value: string }> => {
+    const tagsCategory: AggregationResult = searchCategories.find(
+      (item: AggregationResult) => item.category === 'Tags'
+    )
+
+    if (!tagsCategory?.keywords) {
+      return []
+    }
+
+    return tagsCategory.keywords.map((item: KeywordResult) => {
+      return {
+        label: item.label,
+        // FIXME setting value twice as using the location for for the value which is shared by multiple tags breaks the input
+        value: item.label
+      }
+    })
+  }
+
+  const executeSearch = async (): Promise<void> => {
+    await getResults({}, [])
+  }
+
   // TODO any
   const getSearchElements = (): Array<ReactElement> => {
     return searchCategories.map(
       (
-        searchCategory: any // Array.from(searchTags).map(([category, tagMap]) => (
-      ) => (
-        <FacetedSearchCategory
-          key={searchCategory.category}
-          searchCategory={searchCategory.category}
-          searchTypes={searchCategory.keywords} // Array.from(tagMap.values())
-        />
-      )
+        searchCategory: AggregationResult // Array.from(searchTags).map(([category, tagMap]) => (
+      ) => {
+        // Skipping Tags as these are available in the tag filter input
+        if (searchCategory.category === 'Tags') {
+          return null
+        }
+
+        return (
+          <FacetedSearchCategory
+            key={searchCategory.category}
+            searchCategory={searchCategory.category}
+            searchTypes={searchCategory.keywords} // Array.from(tagMap.values())
+          />
+        )
+      }
     )
     // return Array.from(searchTags).map(([category, tagMap]) => (
     //   <FacetedSearchCategory
@@ -82,6 +116,7 @@ export default function FacetedSearch({
           value={filterTags} // TODO
           name={'facetedSearch'}
           placeholder={'Filter on tags'}
+          tags={getTags()}
         />
       </div>
       <div className={styles.searchCategoryContainer}>

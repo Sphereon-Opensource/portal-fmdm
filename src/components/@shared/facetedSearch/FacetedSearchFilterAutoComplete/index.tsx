@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import CreatableSelect from 'react-select/creatable'
-import { MultiValue, OnChangeValue } from 'react-select'
+import { components, MultiValue, OnChangeValue } from 'react-select'
 import { useField } from 'formik'
 // import { InputProps } from '../..'
 import { getTagsList } from '@utils/aquarius'
@@ -23,16 +23,23 @@ export default function FacetedSearchFilterAutoComplete({
 }: InputProps & {
   value: MultiValue<AutoCompleteOption>
   onValueChange: (value: AutoCompleteOption[]) => void
+  tags: Array<{ label: string; value: string }>
 }): ReactElement {
   // console.log(`TagsAutoComplete: ${JSON.stringify(props)}`)
-  const { name, placeholder, value, onValueChange } = props
+  const {
+    // name,
+    placeholder,
+    value,
+    onValueChange,
+    tags
+  } = props
   const [tagsList, setTagsList] = useState<AutoCompleteOption[]>()
-  const [matchedTagsList, setMatchedTagsList] = useState<AutoCompleteOption[]>(
-    []
-  )
+  // const [matchedTagsList, setMatchedTagsList] = useState<AutoCompleteOption[]>(
+  //     []
+  // )
   // const [field, meta, helpers] = useField(name)
-  const [input, setInput] = useState<string>()
-  const [selected, setSelected] = useState<MultiValue<AutoCompleteOption>>([])
+  // const [input, setInput] = useState<string>()
+  // const [selected, setSelected] = useState<MultiValue<AutoCompleteOption>>([])
 
   const newCancelToken = useCancelToken()
 
@@ -44,8 +51,6 @@ export default function FacetedSearchFilterAutoComplete({
       label: tag
     }))
   }
-
-  const defaultTags = [{ label: 'sphereon', value: 'also_sphereon' }]
 
   // const defaultTags = !field.value
   //   ? undefined
@@ -60,21 +65,20 @@ export default function FacetedSearchFilterAutoComplete({
     generateTagsList()
   }, [newCancelToken])
 
-  const handleChange = (userInput: OnChangeValue<AutoCompleteOption, true>) => {
-    setSelected(userInput)
-    const normalizedInput = userInput.map((input) => input.value)
-    console.log(`normalizedInput ${normalizedInput}`)
-    // helpers.setValue(normalizedInput)
-    // helpers.setTouched(true)
-  }
+  // const handleChange = (userInput: OnChangeValue<AutoCompleteOption, true>) => {
+  //   // setSelected(userInput)
+  //   const normalizedInput = userInput.map((input) => input.value)
+  //   // helpers.setValue(normalizedInput)
+  //   // helpers.setTouched(true)
+  // }
 
   const handleOptionsFilter = (
     options: AutoCompleteOption[],
     input: string
   ): void => {
-    setInput(input)
+    // setInput(input)
     const matchedTagsList = matchSorter(options, input, { keys: ['value'] })
-    setMatchedTagsList(matchedTagsList)
+    // setMatchedTagsList(matchedTagsList)
   }
 
   return (
@@ -91,13 +95,15 @@ export default function FacetedSearchFilterAutoComplete({
       onChange={onValueChange} // (value: AutoCompleteOption[]) => handleChange(value)}
       onInputChange={(value) => handleOptionsFilter(tagsList, value)}
       openMenuOnClick
-      options={!input || input?.length < 1 ? [] : matchedTagsList}
+      options={tags}
       placeholder={placeholder}
-      value={value} // TODO selected}
+      value={value}
       theme={(theme) => ({
         ...theme,
         colors: { ...theme.colors, primary25: 'var(--border-color)' }
       })}
+      noOptionsMessage={() => null}
+      isValidNewOption={() => false}
     />
   )
 }

@@ -39,7 +39,13 @@ export default function SearchPage({
 
   useEffect(() => {
     const parsed = queryString.parse(location.search)
-    const { sort, sortOrder, serviceType, accessType, complianceType } = parsed
+    const {
+      sort,
+      sortOrder
+      // serviceType,
+      // accessType,
+      // complianceType
+    } = parsed
     setParsed(parsed)
     // setServiceType(serviceType as string)
     // setAccessType(accessType as string)
@@ -79,8 +85,6 @@ export default function SearchPage({
 
       setAggregations(formatFacetedSearchResults(aggregationResult))
       setQueryResult(queryResult)
-
-      console.log(JSON.stringify(aggregations))
 
       setTotalResults(queryResult?.totalResults || 0)
       setTotalPagesNumber(queryResult?.totalPages || 0)
