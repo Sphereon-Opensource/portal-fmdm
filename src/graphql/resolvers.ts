@@ -11,7 +11,7 @@ const resolvers = {
     aggregations: async (): Promise<AggregationResult> => {
       const results = await getResults(
         {
-          faceted: 'true',
+          faceted: true,
           offset: '0'
         },
         await getChainIds()
