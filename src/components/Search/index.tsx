@@ -3,7 +3,12 @@ import AssetList from '@shared/AssetList'
 import queryString from 'query-string'
 import Filters from './Filters'
 import Sort from './sort'
-import { getResults, updateQueryStringParameter } from './utils'
+import {
+  AggregationResult,
+  formatFacetedSearchResults,
+  getResults,
+  updateQueryStringParameter
+} from './utils'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
@@ -23,7 +28,7 @@ export default function SearchPage({
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const { chainIds } = useUserPreferences()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
-  const [aggregations, setAggregations] = useState<PagedAssets>()
+  const [aggregations, setAggregations] = useState<AggregationResult[]>()
   const [loading, setLoading] = useState<boolean>()
   const [serviceType, setServiceType] = useState<string>()
   const [accessType, setAccessType] = useState<string>()
@@ -72,7 +77,7 @@ export default function SearchPage({
         newCancelToken()
       )
 
-      setAggregations(aggregationResult)
+      setAggregations(formatFacetedSearchResults(aggregationResult))
       setQueryResult(queryResult)
 
       setTotalResults(queryResult?.totalResults || 0)
