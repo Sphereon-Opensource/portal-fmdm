@@ -36,7 +36,7 @@ export function getSearchQuery(
     sortDirection?: string
     dynamicFilters?: {
       location: string
-      value: string
+      value: string | string[]
     }[]
   },
   chainIds: number[]
@@ -134,7 +134,12 @@ export interface AggregationQuery {
 }
 
 export interface AggregationResult {
-  [x: string]: { buckets: { key: string; doc_count: number }[] | number }
+  category: string
+  keywords: {
+    label: string
+    location: string
+    count: number
+  }[]
 }
 
 interface SearchMetadata {
@@ -160,13 +165,13 @@ export const getSearchMetadata = (): SearchMetadata[] => {
       size: 100
     },
     {
-      label: 'Language',
+      label: 'Languages',
       graphQLLabel: 'language',
       location: 'metadata.algorithm.language.keyword',
       size: 100
     },
     {
-      label: 'Author',
+      label: 'Authors',
       graphQLLabel: 'author',
       location: 'metadata.author.keyword',
       size: 100
@@ -196,7 +201,7 @@ export const getSearchMetadata = (): SearchMetadata[] => {
       size: 100
     },
     {
-      label: 'Owner',
+      label: 'Owners',
       graphQLLabel: 'owner',
       location: 'ntf.owner',
       size: 100
@@ -210,9 +215,7 @@ export const facetedQuery = (): AggregationQuery => {
   terms.forEach((t) => {
     aggQuery = Object.assign(
       JSON.parse(
-        `{ "${t.graphQLLabel}": { "terms": { "field": "${
-          t.location
-        }", "size": "${t.size ?? 100}" } } }`
+        `{ "${t.graphQLLabel}": { "terms": { "field": "${t.location}", "size": "${t.size}" } } }`
       ),
       aggQuery
     )
@@ -229,7 +232,7 @@ export async function getResults(
     sortOrder?: string
     dynamicFilters?: {
       location: string
-      value: string
+      value: string | string[]
     }[]
     faceted?: boolean
   },
@@ -268,4 +271,22 @@ export async function addExistingParamsToUrl(
   }
   urlLocation = urlLocation.slice(0, -1)
   return urlLocation
+}
+
+export function formatFacetedSearchResults(
+  results: PagedAssets
+): AggregationResult[] {
+  const agg: [string, { buckets: { key: string; doc_count: number }[] }][] =
+    Object.entries(results.aggregations)
+  return agg.map((a) => {
+    const metadata = getSearchMetadata().find((m) => m.graphQLLabel === a[0])
+    return {
+      category: metadata.label,
+      keywords: a[1].buckets.map((b) => ({
+        label: b.key,
+        count: b.doc_count,
+        location: metadata.location
+      }))
+    }
+  })
 }
