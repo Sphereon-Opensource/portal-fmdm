@@ -1,8 +1,8 @@
+import { getDataLocation } from '@components/Search/utils'
+
 const getBucket = () => {
-  const customFacetedSearch = process.env.NEXT_PUBLIC_DYNAMIC_FILTERS
-  const props = customFacetedSearch ? customFacetedSearch.split(';') : []
-  const terms = props.map((p) => p.split(','))
-  return terms.map((b) => `${b[0]}: Aggregation\n`)
+  const terms = getDataLocation()
+  return terms.map((t) => `${t.label}: Aggregation\n`)
 }
 
 const schema = `
@@ -22,9 +22,6 @@ type Aggregation {
 }
 
 type Aggregations {
-    access: Aggregation
-    service: Aggregation
-    tags: Aggregation
     ${getBucket()}
     total_doc_count: Int
 }

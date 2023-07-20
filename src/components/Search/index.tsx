@@ -1,13 +1,9 @@
-import React, { ReactElement, useState, useEffect, useCallback } from 'react'
+import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import AssetList from '@shared/AssetList'
 import queryString from 'query-string'
 import Filters from './Filters'
 import Sort from './sort'
-import {
-  AggregationResult,
-  getResults,
-  updateQueryStringParameter
-} from './utils'
+import { getResults, updateQueryStringParameter } from './utils'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
@@ -68,7 +64,7 @@ export default function SearchPage({
       setTotalResults(undefined)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
       const aggregationResult = await getResults(
-        { faceted: 'true', offset: '0' },
+        { faceted: true, offset: '0' },
         chainIds,
         newCancelToken()
       )
