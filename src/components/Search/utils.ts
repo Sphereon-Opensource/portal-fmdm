@@ -183,12 +183,6 @@ export const getSearchMetadata = (): SearchMetadata[] => {
       size: 100
     },
     {
-      label: 'Orders',
-      graphQLLabel: 'orders',
-      location: 'stats.orders',
-      size: 100
-    },
-    {
       label: 'Service Type',
       graphQLLabel: 'service',
       location: 'services.type.keyword',
@@ -203,7 +197,7 @@ export const getSearchMetadata = (): SearchMetadata[] => {
     {
       label: 'Owners',
       graphQLLabel: 'owner',
-      location: 'ntf.owner',
+      location: 'nft.owner.keyword',
       size: 100
     }
   ]
