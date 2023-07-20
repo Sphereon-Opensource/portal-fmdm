@@ -9,7 +9,7 @@ export default function FacetedSearchCategory({
   isCollapsable = true
 }: {
   searchCategory: string
-  searchTypes: Array<{ key: string; value: string; isSelected: boolean }> // Map<string, string>
+  searchTypes: Array<{ label: string; count: number; isSelected: boolean }> // Map<string, string> { key: string; value: string; isSelected: boolean }
   isCollapsable?: boolean
 }): ReactElement {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -21,11 +21,12 @@ export default function FacetedSearchCategory({
   const getSearchElements = (): Array<ReactElement> => {
     return searchTypes.map(
       (
-        searchType: { key: string; value: string; isSelected?: boolean } // TODO interface to top
+        searchType: { label: string; count: number; isSelected?: boolean } // TODO interface to top { key: string; value: string; isSelected?: boolean }
       ) => (
         <FacetedSearchCategorySubType
-          key={searchType.key}
-          searchType={searchType.value}
+          key={searchType.label}
+          searchType={searchType.label} //searchType.label
+          hits={searchType.count}
           isSelected={searchType.isSelected}
         />
       )

@@ -7,7 +7,11 @@ import FacetedSearchClearFilterButton from '@shared/facetedSearch/FacetedSearchC
 import { MultiValue } from 'react-select'
 import styles from './index.module.css'
 
-export default function FacetedSearch(): ReactElement {
+export default function FacetedSearch({
+  searchCategories
+}: {
+  searchCategories: Array<any>
+}): ReactElement {
   const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
     []
   )
@@ -37,14 +41,26 @@ export default function FacetedSearch(): ReactElement {
     ])
   ) // TODO better name?
 
+  // TODO any
   const getSearchElements = (): Array<ReactElement> => {
-    return Array.from(searchTags).map(([category, tagMap]) => (
-      <FacetedSearchCategory
-        key={category}
-        searchCategory={category}
-        searchTypes={Array.from(tagMap.values())}
-      />
-    ))
+    return searchCategories.map(
+      (
+        searchCategory: any // Array.from(searchTags).map(([category, tagMap]) => (
+      ) => (
+        <FacetedSearchCategory
+          key={searchCategory.category}
+          searchCategory={searchCategory.category}
+          searchTypes={searchCategory.keywords} // Array.from(tagMap.values())
+        />
+      )
+    )
+    // return Array.from(searchTags).map(([category, tagMap]) => (
+    //   <FacetedSearchCategory
+    //     key={category}
+    //     searchCategory={category}
+    //     searchTypes={[]} //Array.from(tagMap.values())
+    //   />
+    // ))
   }
 
   const clearFilters = async (): Promise<void> => {
