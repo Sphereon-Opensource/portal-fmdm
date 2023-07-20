@@ -185,12 +185,6 @@ export const getSearchMetadata = (): SearchMetadata[] => {
       size: 100
     },
     {
-      label: 'Orders',
-      graphQLLabel: 'orders',
-      location: 'stats.orders',
-      size: 100
-    },
-    {
       label: 'Service Type',
       graphQLLabel: 'service',
       location: 'services.type.keyword',
@@ -205,7 +199,7 @@ export const getSearchMetadata = (): SearchMetadata[] => {
     {
       label: 'Owners',
       graphQLLabel: 'owner',
-      location: 'ntf.owner',
+      location: 'nft.owner.keyword',
       size: 100
     }
   ]
@@ -278,14 +272,16 @@ export async function addExistingParamsToUrl(
 export function formatFacetedSearchResults(
   results: PagedAssets
 ): AggregationResult[] {
-  const agg: [string, { buckets: { key: string; doc_count: number }[] }][] =
-    Object.entries(results.aggregations)
+  const agg: [
+    string,
+    { buckets: { key: string; doc_count: number; key_as_string?: string }[] }
+  ][] = Object.entries(results.aggregations)
   return agg.map((a) => {
     const metadata = getSearchMetadata().find((m) => m.graphQLLabel === a[0])
     return {
       category: metadata.label,
       keywords: a[1].buckets.map((b) => ({
-        label: b.key,
+        label: typeof b.key === 'number' ? b.key_as_string : b.key,
         count: b.doc_count,
         location: metadata.location
       }))
