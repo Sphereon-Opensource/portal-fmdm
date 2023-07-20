@@ -1,8 +1,8 @@
-import { getDataLocation } from '@components/Search/utils'
+import { getSearchMetadata } from '@components/Search/utils'
 
 const getBucket = () => {
-  const terms = getDataLocation()
-  return terms.map((t) => `${t.label}: Aggregation\n`)
+  const terms = getSearchMetadata()
+  return terms.map((t) => `${t.graphQLLabel}: Aggregation\n`)
 }
 
 const schema = `

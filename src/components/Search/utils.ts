@@ -30,15 +30,10 @@ export function updateQueryStringParameter(
 export function getSearchQuery(
   params: {
     text?: string
-    owner?: string
-    tags?: string
     page?: string
     offset?: string
     sort?: string
     sortDirection?: string
-    serviceType?: string
-    accessType?: string
-    complianceType?: string
     dynamicFilters?: {
       location: string
       value: string
@@ -142,61 +137,82 @@ export interface AggregationResult {
   [x: string]: { buckets: { key: string; doc_count: number }[] | number }
 }
 
-export const getDataLocation = () => {
+interface SearchMetadata {
+  label: string
+  graphQLLabel: string
+  location: string
+  size?: number
+}
+
+export const getSearchMetadata = (): SearchMetadata[] => {
   return [
     {
-      label: 'verified',
+      label: 'Is Verified',
+      graphQLLabel: 'verified',
       location:
         'metadata.additionalInformation.gaiaXInformation.serviceSD.isVerified',
       size: 100
     },
     {
-      label: 'termsAndConditions',
+      label: 'Terms And Conditions',
+      graphQLLabel: 'termsAndConditions',
       location: 'metadata.additionalInformation.termsAndConditions',
       size: 100
     },
     {
-      label: 'language',
+      label: 'Language',
+      graphQLLabel: 'language',
       location: 'metadata.algorithm.language.keyword',
       size: 100
     },
     {
-      label: 'author',
+      label: 'Author',
+      graphQLLabel: 'author',
       location: 'metadata.author.keyword',
       size: 100
     },
     {
-      label: 'tags',
+      label: 'Tags',
+      graphQLLabel: 'tags',
       location: 'metadata.tags.keyword',
       size: 100
     },
     {
-      label: 'orders',
+      label: 'Orders',
+      graphQLLabel: 'orders',
       location: 'stats.orders',
       size: 100
     },
     {
-      label: 'serviceType',
+      label: 'Service Type',
+      graphQLLabel: 'service',
       location: 'services.type.keyword',
       size: 100
     },
     {
-      label: 'metadataType',
+      label: 'Access Type',
+      graphQLLabel: 'access',
       location: 'metadata.type.keyword',
+      size: 100
+    },
+    {
+      label: 'Owner',
+      graphQLLabel: 'owner',
+      location: 'ntf.owner',
       size: 100
     }
   ]
 }
 
 export const facetedQuery = (): AggregationQuery => {
-  const terms = getDataLocation()
+  const terms = getSearchMetadata()
   let aggQuery: AggregationQuery = {}
   terms.forEach((t) => {
     aggQuery = Object.assign(
       JSON.parse(
-        `{ "${t.label}": { "terms": { "field": "${t.location}", "size": "${
-          t.size ?? 100
-        }" } } }`
+        `{ "${t.graphQLLabel}": { "terms": { "field": "${
+          t.location
+        }", "size": "${t.size ?? 100}" } } }`
       ),
       aggQuery
     )
@@ -207,16 +223,10 @@ export const facetedQuery = (): AggregationQuery => {
 export async function getResults(
   params: {
     text?: string
-    owner?: string
-    tags?: string
-    categories?: string
     page?: string
     offset?: string
     sort?: string
     sortOrder?: string
-    serviceType?: string
-    accessType?: string
-    complianceType?: string
     dynamicFilters?: {
       location: string
       value: string
