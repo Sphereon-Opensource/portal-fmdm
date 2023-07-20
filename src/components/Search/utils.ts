@@ -28,99 +28,91 @@ export function updateQueryStringParameter(
 }
 
 export function getSearchQuery(
-  chainIds: number[],
-  text?: string,
-  owner?: string,
-  tags?: string,
-  page?: string,
-  offset?: string,
-  sort?: string,
-  sortDirection?: string,
-  serviceType?: string,
-  accessType?: string,
-  complianceType?: string
+  params: {
+    text?: string
+    page?: string
+    offset?: string
+    sort?: string
+    sortDirection?: string
+    dynamicFilters?: {
+      location: string
+      value: string
+    }[]
+  },
+  chainIds: number[]
 ): SearchQuery {
-  text = escapeEsReservedCharacters(text)
+  const { page, offset, sort, sortDirection, dynamicFilters } = params
+  const text = escapeEsReservedCharacters(params.text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
   let searchTerm = text || ''
-  let nestedQuery
-  if (tags) {
-    filters.push(getFilterTerm('metadata.tags.keyword', tags))
-  } else {
-    searchTerm = searchTerm.trim()
-    const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
-    const noSpaceSearchTerm = searchTerm.split(' ').join('').trim()
+  searchTerm = searchTerm.trim()
+  const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
+  const noSpaceSearchTerm = searchTerm.split(' ').join('').trim()
 
-    const prefixedSearchTerm =
-      emptySearchTerm && searchTerm
-        ? searchTerm
-        : !emptySearchTerm && searchTerm
-        ? '*' + searchTerm + '*'
-        : '**'
-    const searchFields = [
-      'id',
-      'nft.owner',
-      'datatokens.address',
-      'datatokens.name',
-      'datatokens.symbol',
-      'metadata.name^10',
-      'metadata.author',
-      'metadata.description',
-      'metadata.tags'
-    ]
+  const prefixedSearchTerm =
+    emptySearchTerm && searchTerm
+      ? searchTerm
+      : !emptySearchTerm && searchTerm
+      ? '*' + searchTerm + '*'
+      : '**'
+  const searchFields = [
+    'id',
+    'nft.owner',
+    'datatokens.address',
+    'datatokens.name',
+    'datatokens.symbol',
+    'metadata.name^10',
+    'metadata.author',
+    'metadata.description',
+    'metadata.tags'
+  ]
 
-    nestedQuery = {
-      must: [
-        {
-          bool: {
-            should: [
-              {
-                query_string: {
-                  query: `${modifiedSearchTerm}`,
-                  fields: searchFields,
-                  minimum_should_match: '2<75%',
-                  phrase_slop: 2,
-                  boost: 5
-                }
-              },
-              {
-                query_string: {
-                  query: `${noSpaceSearchTerm}*`,
-                  fields: searchFields,
-                  boost: 5,
-                  lenient: true
-                }
-              },
-              {
-                match_phrase: {
-                  content: {
-                    query: `${searchTerm}`,
-                    boost: 10
-                  }
-                }
-              },
-              {
-                query_string: {
-                  query: `${prefixedSearchTerm}`,
-                  fields: searchFields,
-                  default_operator: 'AND'
+  const nestedQuery = {
+    must: [
+      {
+        bool: {
+          should: [
+            {
+              query_string: {
+                query: `${modifiedSearchTerm}`,
+                fields: searchFields,
+                minimum_should_match: '2<75%',
+                phrase_slop: 2,
+                boost: 5
+              }
+            },
+            {
+              query_string: {
+                query: `${noSpaceSearchTerm}*`,
+                fields: searchFields,
+                boost: 5,
+                lenient: true
+              }
+            },
+            {
+              match_phrase: {
+                content: {
+                  query: `${searchTerm}`,
+                  boost: 10
                 }
               }
-            ]
-          }
+            },
+            {
+              query_string: {
+                query: `${prefixedSearchTerm}`,
+                fields: searchFields,
+                default_operator: 'AND'
+              }
+            }
+          ]
         }
-      ]
-    }
+      }
+    ]
   }
-  accessType && filters.push(getFilterTerm('services.type', accessType))
-  serviceType && filters.push(getFilterTerm('metadata.type', serviceType))
-  complianceType &&
+  dynamicFilters &&
     filters.push(
-      getFilterTerm(
-        'metadata.additionalInformation.compliance.keyword',
-        complianceType
-      )
+      ...dynamicFilters.map((df) => getFilterTerm(df.location, df.value))
     )
   const baseQueryParams = {
     chainIds,
@@ -145,82 +137,109 @@ export interface AggregationResult {
   [x: string]: { buckets: { key: string; doc_count: number }[] | number }
 }
 
+interface SearchMetadata {
+  label: string
+  graphQLLabel: string
+  location: string
+  size?: number
+}
+
+export const getSearchMetadata = (): SearchMetadata[] => {
+  return [
+    {
+      label: 'Is Verified',
+      graphQLLabel: 'verified',
+      location:
+        'metadata.additionalInformation.gaiaXInformation.serviceSD.isVerified',
+      size: 100
+    },
+    {
+      label: 'Terms And Conditions',
+      graphQLLabel: 'termsAndConditions',
+      location: 'metadata.additionalInformation.termsAndConditions',
+      size: 100
+    },
+    {
+      label: 'Language',
+      graphQLLabel: 'language',
+      location: 'metadata.algorithm.language.keyword',
+      size: 100
+    },
+    {
+      label: 'Author',
+      graphQLLabel: 'author',
+      location: 'metadata.author.keyword',
+      size: 100
+    },
+    {
+      label: 'Tags',
+      graphQLLabel: 'tags',
+      location: 'metadata.tags.keyword',
+      size: 100
+    },
+    {
+      label: 'Orders',
+      graphQLLabel: 'orders',
+      location: 'stats.orders',
+      size: 100
+    },
+    {
+      label: 'Service Type',
+      graphQLLabel: 'service',
+      location: 'services.type.keyword',
+      size: 100
+    },
+    {
+      label: 'Access Type',
+      graphQLLabel: 'access',
+      location: 'metadata.type.keyword',
+      size: 100
+    },
+    {
+      label: 'Owner',
+      graphQLLabel: 'owner',
+      location: 'ntf.owner',
+      size: 100
+    }
+  ]
+}
+
 export const facetedQuery = (): AggregationQuery => {
-  const customFacetedSearch = process.env.NEXT_PUBLIC_FACETED_SEARCH_BUCKETS
-  const props = customFacetedSearch ? customFacetedSearch.split(';') : []
-  const terms = props.map((p) => p.split(','))
-  let customAgg: AggregationQuery = {}
+  const terms = getSearchMetadata()
+  let aggQuery: AggregationQuery = {}
   terms.forEach((t) => {
-    customAgg = Object.assign(
+    aggQuery = Object.assign(
       JSON.parse(
-        `{ "${t[0]}": { "terms": { "field": "${t[1]}", "size": "${
-          t[2] ?? 100
-        }" } } }`
+        `{ "${t.graphQLLabel}": { "terms": { "field": "${
+          t.location
+        }", "size": "${t.size ?? 100}" } } }`
       ),
-      customAgg
+      aggQuery
     )
   })
-  const basicAgg = {
-    tags: {
-      terms: { field: 'metadata.tags.keyword', size: 100 }
-    },
-    access: {
-      terms: { field: 'services.type.keyword', size: 100 }
-    },
-    service: {
-      terms: { field: 'metadata.type.keyword', size: 100 }
-    }
-  }
-  return { ...basicAgg, ...customAgg }
+  return aggQuery
 }
 
 export async function getResults(
   params: {
     text?: string
-    owner?: string
-    tags?: string
-    categories?: string
     page?: string
     offset?: string
     sort?: string
     sortOrder?: string
-    serviceType?: string
-    accessType?: string
-    complianceType?: string
-    faceted?: string
+    dynamicFilters?: {
+      location: string
+      value: string
+    }[]
+    faceted?: boolean
   },
   chainIds: number[],
   cancelToken?: CancelToken
 ): Promise<PagedAssets> {
-  const {
-    text,
-    owner,
-    tags,
-    page,
-    offset,
-    sort,
-    sortOrder,
-    serviceType,
-    accessType,
-    complianceType,
-    faceted
-  } = params
-
-  const searchQuery = getSearchQuery(
-    chainIds,
-    text,
-    owner,
-    tags,
-    page,
-    offset,
-    sort,
-    sortOrder,
-    serviceType,
-    accessType,
-    complianceType
-  )
-  const query =
-    faceted === 'true' ? { ...searchQuery, aggs: facetedQuery() } : searchQuery
+  const searchQuery = getSearchQuery(params, chainIds)
+  const query = params.faceted
+    ? { ...searchQuery, aggs: facetedQuery() }
+    : searchQuery
   return await queryMetadata(query, cancelToken)
 }
 

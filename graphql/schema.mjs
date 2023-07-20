@@ -1,3 +1,10 @@
+import { getSearchMetadata } from '@components/Search/utils'
+
+const getBucket = () => {
+  const terms = getSearchMetadata()
+  return terms.map((t) => `${t.graphQLLabel}: Aggregation\n`)
+}
+
 const schema = `
 type Query {
     aggregations: Aggregations
@@ -15,9 +22,7 @@ type Aggregation {
 }
 
 type Aggregations {
-    access: Aggregation
-    service: Aggregation
-    tags: Aggregation
+    ${getBucket()}
     total_doc_count: Int
 }
   `
