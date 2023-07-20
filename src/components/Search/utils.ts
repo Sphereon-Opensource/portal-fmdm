@@ -276,14 +276,16 @@ export async function addExistingParamsToUrl(
 export function formatFacetedSearchResults(
   results: PagedAssets
 ): AggregationResult[] {
-  const agg: [string, { buckets: { key: string; doc_count: number }[] }][] =
-    Object.entries(results.aggregations)
+  const agg: [
+    string,
+    { buckets: { key: string; doc_count: number; key_as_string?: string }[] }
+  ][] = Object.entries(results.aggregations)
   return agg.map((a) => {
     const metadata = getSearchMetadata().find((m) => m.graphQLLabel === a[0])
     return {
       category: metadata.label,
       keywords: a[1].buckets.map((b) => ({
-        label: b.key,
+        label: typeof b.key === 'number' ? b.key_as_string : b.key,
         count: b.doc_count,
         location: metadata.location
       }))
