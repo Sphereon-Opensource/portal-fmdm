@@ -9,6 +9,8 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
 import FacetedSearch from '@shared/facetedSearch/FacetedSearch'
+import SearchBar from '@components/Header/SearchBar'
+import FacetedTextSearchBar from '@components/@shared/facetedSearch/FacetedTextSearchBar'
 
 export default function SearchPage({
   setTotalResults,
@@ -94,14 +96,31 @@ export default function SearchPage({
     <>
       <div className={styles.search}>
         <div className={styles.row}>
+          <div
+            className={styles.searchBar}
+            // TODO move styling
+            // style={{
+            //   height: 50,
+            //   maxWidth: 400,
+            //   display: 'flex',
+            //   flexDirection: 'column',
+            //   marginLeft: 270
+            // }}
+          >
+            <FacetedTextSearchBar
+              placeholder="Search for service offerings"
+              isSearchPage={true}
+            />
+          </div>
+
           {/* <Filters */}
-          {/*  serviceType={serviceType} */}
-          {/*  accessType={accessType} */}
-          {/*  complianceType={complianceType} */}
-          {/*  setServiceType={setServiceType} */}
-          {/*  setAccessType={setAccessType} */}
-          {/*  setComplianceType={setComplianceType} */}
-          {/*  addFiltersToUrl */}
+          {/* serviceType={serviceType} */}
+          {/* accessType={accessType} */}
+          {/* complianceType={complianceType} */}
+          {/* setServiceType={setServiceType} */}
+          {/* setAccessType={setAccessType} */}
+          {/* setComplianceType={setComplianceType} */}
+          {/* addFiltersToUrl */}
           {/* /> */}
           <Sort
             sortType={sortType}
@@ -132,17 +151,17 @@ export default function SearchPage({
           />
         </div>
       </div>
-      <div className={styles.results}>
-        <AssetList
-          assets={queryResult?.results}
-          showPagination
-          isLoading={loading}
-          page={queryResult?.page}
-          totalPages={queryResult?.totalPages}
-          onPageChange={updatePage}
-          showAssetViewSelector
-        />
-      </div>
+      {/*<div className={styles.results}>*/}
+      {/*  <AssetList*/}
+      {/*    assets={queryResult?.results}*/}
+      {/*    showPagination*/}
+      {/*    isLoading={loading}*/}
+      {/*    page={queryResult?.page}*/}
+      {/*    totalPages={queryResult?.totalPages}*/}
+      {/*    onPageChange={updatePage}*/}
+      {/*    showAssetViewSelector*/}
+      {/*  />*/}
+      {/*</div>*/}
     </>
   )
 }

@@ -33,10 +33,10 @@ export default function Page({
     <>
       <Seo title={title} description={description} uri={uri} />
       <Container>
-        <SearchBar
-          placeholder="Search for service offerings"
-          isSearchPage={isSearchPage}
-        />
+        {/*<SearchBar*/}
+        {/*  placeholder="Search for service offerings"*/}
+        {/*  isSearchPage={isSearchPage}*/}
+        {/*/>*/}
         {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
         {title && !noPageHeader && (
           <PageHeader
