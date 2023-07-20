@@ -127,14 +127,51 @@ export function getSearchQuery(
     nestedQuery,
     esPaginationOptions: {
       from: (Number(page) - 1 || 0) * (Number(offset) || 21),
-      size: Number(offset) || 21
+      size: Number(offset) >= 0 ? Number(offset) : 21
     },
-    sortOptions: { sortBy: sort, sortDirection },
+    sortOptions: sort ? { sortBy: sort, sortDirection } : undefined,
     filters
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
   return query
+}
+
+export interface AggregationQuery {
+  [x: string]: { terms: { field: string; size?: number } }
+}
+
+export interface AggregationResult {
+  [x: string]: { buckets: { key: string; doc_count: number }[] | number }
+}
+
+export const facetedQuery = (): AggregationQuery => {
+  const customFacetedSearch = process.env.NEXT_PUBLIC_FACETED_SEARCH_BUCKETS
+  const props = customFacetedSearch ? customFacetedSearch.split(';') : []
+  const terms = props.map((p) => p.split(','))
+  let customAgg: AggregationQuery = {}
+  terms.forEach((t) => {
+    customAgg = Object.assign(
+      JSON.parse(
+        `{ "${t[0]}": { "terms": { "field": "${t[1]}", "size": "${
+          t[2] ?? 100
+        }" } } }`
+      ),
+      customAgg
+    )
+  })
+  const basicAgg = {
+    tags: {
+      terms: { field: 'metadata.tags.keyword', size: 100 }
+    },
+    access: {
+      terms: { field: 'services.type.keyword', size: 100 }
+    },
+    service: {
+      terms: { field: 'metadata.type.keyword', size: 100 }
+    }
+  }
+  return { ...basicAgg, ...customAgg }
 }
 
 export async function getResults(
@@ -150,6 +187,7 @@ export async function getResults(
     serviceType?: string
     accessType?: string
     complianceType?: string
+    faceted?: string
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -164,7 +202,8 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    complianceType
+    complianceType,
+    faceted
   } = params
 
   const searchQuery = getSearchQuery(
@@ -180,8 +219,9 @@ export async function getResults(
     accessType,
     complianceType
   )
-  const queryResult = await queryMetadata(searchQuery, cancelToken)
-  return queryResult
+  const query =
+    faceted === 'true' ? { ...searchQuery, aggs: facetedQuery() } : searchQuery
+  return await queryMetadata(query, cancelToken)
 }
 
 export async function addExistingParamsToUrl(

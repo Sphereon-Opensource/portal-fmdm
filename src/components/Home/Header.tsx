@@ -86,11 +86,7 @@ export default function PageHeader(): ReactElement {
           {body && <Markdown text={body} className={styles.body} />}
           <div className={styles.actions}>
             {cta.map((e, i) => (
-              <Button
-                key={e.label}
-                style={i % 2 === 0 ? 'primary' : 'ghost'}
-                to={e.link}
-              >
+              <Button key={e.label} style="text" arrow to={e.link}>
                 {e.label}
               </Button>
             ))}

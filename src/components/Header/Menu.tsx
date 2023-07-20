@@ -8,9 +8,11 @@ import { useRouter } from 'next/router'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import classNames from 'classnames/bind'
 import MenuDropdown from '@components/@shared/MenuDropdown'
-import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import Container from '@components/@shared/atoms/Container'
+import Auth from '@components/ssi/Auth/Auth'
+import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
+
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -44,14 +46,27 @@ export function MenuLink({ name, link, className }: MenuItem) {
   )
 }
 
-export default function Menu(): ReactElement {
+export default function Menu({
+  setShow,
+  payload,
+  setPayload
+}: {
+  setShow: React.Dispatch<React.SetStateAction<boolean>>
+  payload: AuthorizationResponsePayload
+  setPayload: React.Dispatch<React.SetStateAction<AuthorizationResponsePayload>>
+}): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
 
   return (
     <Container>
       <nav className={styles.menu}>
         <Link href="/" className={styles.logo}>
-          <Logo />
+          <Logo
+            style={{
+              width: '20rem',
+              height: '5rem'
+            }}
+          />
         </Link>
 
         <ul className={styles.navigation}>
@@ -64,12 +79,18 @@ export default function Menu(): ReactElement {
               )}
             </li>
           ))}
+          <li>
+            <Auth
+              className={styles.link}
+              setShow={() => setShow(true)}
+              payload={payload}
+              setPayload={setPayload}
+            />
+          </li>
         </ul>
 
         <div className={styles.actions}>
-          <SearchButton />
           {appConfig.chainIdsSupported.length > 1 && <Networks />}
-          <Wallet />
         </div>
       </nav>
     </Container>
