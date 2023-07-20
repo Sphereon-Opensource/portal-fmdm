@@ -88,14 +88,13 @@ export default function FacetedSearchFilterAutoComplete({
         IndicatorSeparator: () => null
       }}
       className={styles.select}
-      // defaultValue={defaultTags}
       hideSelectedOptions
       isMulti
       isClearable={true}
       onChange={onValueChange} // (value: AutoCompleteOption[]) => handleChange(value)}
       onInputChange={(value) => handleOptionsFilter(tagsList, value)}
       openMenuOnClick
-      options={tags}
+      options={tags.slice().sort((a, b) => a.label.localeCompare(b.label))}
       placeholder={placeholder}
       value={value}
       theme={(theme) => ({

@@ -7,10 +7,12 @@ import { KeywordResult } from '@components/Search/utils'
 export default function FacetedSearchCategory({
   searchCategory,
   searchTypes,
-  isCollapsable = true
+  isCollapsable = true,
+  onValueChange
 }: {
   searchCategory: string
-  searchTypes: Array<KeywordResult>
+  searchTypes: Array<KeywordResult & { isSelected: boolean }>
+  onValueChange: (label: string, isSelected: boolean) => Promise<void>
   isCollapsable?: boolean
 }): ReactElement {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -20,14 +22,19 @@ export default function FacetedSearchCategory({
   }
 
   const getSearchElements = (): Array<ReactElement> => {
-    return searchTypes.map((searchType: KeywordResult) => (
-      <FacetedSearchCategorySubType
-        key={searchType.label}
-        searchType={searchType.label}
-        hits={searchType.count}
-        // isSelected={searchType.isSelected} // TODO
-      />
-    ))
+    return searchTypes.map(
+      (searchType: KeywordResult & { isSelected: boolean }) => (
+        <FacetedSearchCategorySubType
+          key={searchType.label}
+          searchType={searchType.label}
+          hits={searchType.count}
+          onValueChange={(isChecked: boolean) =>
+            onValueChange(searchType.label, isChecked)
+          }
+          isSelected={searchType.isSelected}
+        />
+      )
+    )
   }
 
   return (

@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 
 export default function FacetedSearchCheckBox({
@@ -10,6 +10,10 @@ export default function FacetedSearchCheckBox({
 }): ReactElement {
   const [isChecked, setIsChecked] = useState(value)
 
+  useEffect((): void => {
+    setIsChecked(value)
+  }, [value])
+
   return (
     <div
       className={styles.container}
@@ -20,7 +24,7 @@ export default function FacetedSearchCheckBox({
       onClick={async (): Promise<void> => {
         setIsChecked(!isChecked)
         if (onValueChange) {
-          await onValueChange(isChecked)
+          await onValueChange(!isChecked)
         }
       }}
     >

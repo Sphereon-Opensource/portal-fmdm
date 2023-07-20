@@ -20,31 +20,17 @@ export default function FacetedSearch({
   const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
     []
   )
-  const [searchTags, setSearchTags] = useState<
-    Map<
-      string,
-      Map<string, { key: string; value: string; isSelected: boolean }>
-    >
-  >(
-    new Map([
-      [
-        'Data type',
-        new Map<string, { key: string; value: string; isSelected: boolean }>([
-          ['11', { key: '11', value: 'Data sets', isSelected: false }],
-          ['22', { key: '22', value: 'Algorithms', isSelected: false }],
-          ['33', { key: '33', value: 'Download', isSelected: false }]
-        ])
-      ],
-      [
-        'Data access',
-        new Map<string, { key: string; value: string; isSelected: boolean }>([
-          ['44', { key: '44', value: 'Data sets', isSelected: false }],
-          ['55', { key: '55', value: 'Algorithms', isSelected: false }],
-          ['66', { key: '66', value: 'Download', isSelected: false }]
-        ])
-      ]
-    ])
-  ) // TODO better name?
+  const [selectedOptions, setSelectedOptions] = useState<
+    Array<{
+      category: string
+      label: string
+      isSelected: boolean
+    }>
+  >([])
+
+  // useEffect(() => {
+  //
+  // }, [searchCategories])
 
   const getTags = (): Array<{ label: string; value: string }> => {
     const tagsCategory: AggregationResult = searchCategories.find(
@@ -68,38 +54,57 @@ export default function FacetedSearch({
     await getResults({}, [])
   }
 
+  // TODO remove
+  // useEffect(() => {
+  //   console.log(JSON.stringify(selectedOptions))
+  // }, [selectedOptions])
+
   // TODO any
   const getSearchElements = (): Array<ReactElement> => {
-    return searchCategories.map(
-      (
-        searchCategory: AggregationResult // Array.from(searchTags).map(([category, tagMap]) => (
-      ) => {
-        // Skipping Tags as these are available in the tag filter input
-        if (searchCategory.category === 'Tags') {
-          return null
-        }
-
-        return (
-          <FacetedSearchCategory
-            key={searchCategory.category}
-            searchCategory={searchCategory.category}
-            searchTypes={searchCategory.keywords} // Array.from(tagMap.values())
-          />
-        )
+    return searchCategories.map((searchCategory: AggregationResult) => {
+      // Skipping Tags as these are available in the tag filter input
+      if (searchCategory.category === 'Tags') {
+        return null
       }
-    )
-    // return Array.from(searchTags).map(([category, tagMap]) => (
-    //   <FacetedSearchCategory
-    //     key={category}
-    //     searchCategory={category}
-    //     searchTypes={[]} //Array.from(tagMap.values())
-    //   />
-    // ))
+
+      return (
+        <FacetedSearchCategory
+          key={searchCategory.category}
+          searchCategory={searchCategory.category}
+          searchTypes={searchCategory.keywords.map((item: KeywordResult) => {
+            return {
+              ...item,
+              isSelected: selectedOptions.some(
+                (obj) =>
+                  obj.category === searchCategory.category &&
+                  obj.label === item.label
+              )
+            }
+          })}
+          onValueChange={async (label: string, isSelected: boolean) => {
+            if (isSelected) {
+              setSelectedOptions([
+                ...selectedOptions,
+                { category: searchCategory.category, label, isSelected }
+              ])
+            } else {
+              setSelectedOptions(
+                selectedOptions.filter(
+                  (item) =>
+                    item.category !== searchCategory.category &&
+                    item.label !== label
+                )
+              )
+            }
+          }}
+        />
+      )
+    })
   }
 
   const clearFilters = async (): Promise<void> => {
     setFilterTags([])
-    // TODO reset checkboxes
+    setSelectedOptions([])
   }
 
   const autoCompleteOnValueChange = (value: AutoCompleteOption[]): void => {
