@@ -144,6 +144,11 @@ export interface KeywordResult {
   count: number
 }
 
+export interface AggregationResultUI {
+  static: AggregationResult[]
+  tags: AggregationResult
+}
+
 interface SearchMetadata {
   label: string
   graphQLLabel: string
@@ -161,7 +166,7 @@ export const getSearchMetadata = (): SearchMetadata[] => {
       size: 100
     },
     {
-      label: 'Terms And Conditions',
+      label: 'Terms and Conditions',
       graphQLLabel: 'termsAndConditions',
       location: 'metadata.additionalInformation.termsAndConditions',
       size: 100
@@ -170,12 +175,6 @@ export const getSearchMetadata = (): SearchMetadata[] => {
       label: 'Languages',
       graphQLLabel: 'language',
       location: 'metadata.algorithm.language.keyword',
-      size: 100
-    },
-    {
-      label: 'Authors',
-      graphQLLabel: 'author',
-      location: 'metadata.author.keyword',
       size: 100
     },
     {
@@ -194,12 +193,6 @@ export const getSearchMetadata = (): SearchMetadata[] => {
       label: 'Access Type',
       graphQLLabel: 'access',
       location: 'metadata.type.keyword',
-      size: 100
-    },
-    {
-      label: 'Owners',
-      graphQLLabel: 'owner',
-      location: 'nft.owner.keyword',
       size: 100
     }
   ]
@@ -269,7 +262,7 @@ export async function addExistingParamsToUrl(
   return urlLocation
 }
 
-export function formatFacetedSearchResults(
+export function formatGraphQLResults(
   results: PagedAssets
 ): AggregationResult[] {
   const agg: [
@@ -287,4 +280,28 @@ export function formatFacetedSearchResults(
       }))
     }
   })
+}
+
+export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
+  const aggregationResults = formatGraphQLResults(results)
+  const termsConditionsVerified = aggregationResults.filter(
+    (ar) =>
+      ar.category === 'Is Verified' || ar.category === 'Terms and Conditions'
+  )
+  const unifiedTermsConditionsVerified: AggregationResult = {
+    category: 'Terms, Conditions and Asset Compliance',
+    keywords: termsConditionsVerified.flatMap((tcv) => tcv.keywords)
+  }
+
+  const everythigElse = aggregationResults.filter(
+    (ar) =>
+      ar.category !== 'Is Verified' &&
+      ar.category !== 'Terms and Conditions' &&
+      ar.category !== 'Tags'
+  )
+
+  return {
+    static: [...everythigElse, unifiedTermsConditionsVerified],
+    tags: aggregationResults.find((ar) => ar.category === 'Tags')
+  }
 }

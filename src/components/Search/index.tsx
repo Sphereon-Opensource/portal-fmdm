@@ -3,8 +3,8 @@ import AssetList from '@shared/AssetList'
 import queryString, { ParsedQuery } from 'query-string'
 import Sort from './sort'
 import {
-  AggregationResult,
-  formatFacetedSearchResults,
+  AggregationResultUI,
+  formatUIResults,
   getResults,
   updateQueryStringParameter
 } from './utils'
@@ -26,7 +26,7 @@ export default function SearchPage({
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const { chainIds } = useUserPreferences()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
-  const [aggregations, setAggregations] = useState<AggregationResult[]>()
+  const [aggregations, setAggregations] = useState<AggregationResultUI>()
   const [loading, setLoading] = useState<boolean>()
   const [sortType, setSortType] = useState<string>()
   const [sortDirection, setSortDirection] = useState<string>()
@@ -69,7 +69,7 @@ export default function SearchPage({
         newCancelToken()
       )
 
-      setAggregations(formatFacetedSearchResults(aggregationResult))
+      setAggregations(formatUIResults(aggregationResult))
       setQueryResult(queryResult)
 
       setTotalResults(queryResult?.totalResults || 0)
