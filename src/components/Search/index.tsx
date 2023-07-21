@@ -90,8 +90,12 @@ export default function SearchPage({
     fetchAssets(parsed, chainIds)
   }, [parsed, chainIds, newCancelToken, fetchAssets])
 
-  const setPageAssets = (queryResult: any) => {
+  const setPageAssets = (queryResult: PagedAssets): void => {
     setQueryResult(queryResult)
+    setTotalResults(queryResult?.totalResults || 0)
+    setTotalPagesNumber(queryResult?.totalPages || 0)
+
+    // setSortDirection('asc')
   }
 
   return (
@@ -115,15 +119,16 @@ export default function SearchPage({
 
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ marginTop: 37, marginRight: 30 }}>
-          <FacetedSearch
-            searchCategories={aggregations || []}
-            chainIds={chainIds}
-            setPageAssets={async (assets: PagedAssets): Promise<void> =>
-              setPageAssets(assets)
-            }
-          />
+          {aggregations && (
+            <FacetedSearch
+              searchCategories={aggregations}
+              chainIds={chainIds}
+              setPageAssets={async (assets: PagedAssets): Promise<void> =>
+                setPageAssets(assets)
+              }
+            />
+          )}
         </div>
-
         <div
           style={{ display: 'grid', flexGrow: 1 }}
           className={styles.results}

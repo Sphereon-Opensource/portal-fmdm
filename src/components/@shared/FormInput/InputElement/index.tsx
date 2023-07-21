@@ -170,7 +170,6 @@ const InputElement = forwardRef(
           />
         )
       case 'tags': {
-        console.log(`PROPS: ${JSON.stringify(props)}`)
         return <TagsAutoComplete {...field} {...props} />
       }
 

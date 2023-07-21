@@ -17,7 +17,6 @@ interface AutoCompleteOption {
 export default function TagsAutoComplete({
   ...props
 }: InputProps): ReactElement {
-  console.log(`TagsAutoComplete: ${JSON.stringify(props)}`)
   const { name, placeholder } = props
   const [tagsList, setTagsList] = useState<AutoCompleteOption[]>()
   const [matchedTagsList, setMatchedTagsList] = useState<AutoCompleteOption[]>(

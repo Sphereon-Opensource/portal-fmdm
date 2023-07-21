@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import FacetedSearchFilterAutoComplete, {
   AutoCompleteOption
 } from '@shared/facetedSearch/FacetedSearchFilterAutoComplete'
@@ -8,6 +8,7 @@ import { MultiValue } from 'react-select'
 import styles from './index.module.css'
 import {
   AggregationResult,
+  AggregationResultUI,
   getResults,
   KeywordResult
 } from '@components/Search/utils'
@@ -17,9 +18,9 @@ export default function FacetedSearch({
   chainIds,
   setPageAssets
 }: {
-  searchCategories: Array<AggregationResult>
+  searchCategories: AggregationResultUI
   chainIds: Array<number>
-  setPageAssets: (queryString: any) => Promise<void>
+  setPageAssets: (assets: PagedAssets) => Promise<void>
 }): ReactElement {
   const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
     []
@@ -37,16 +38,11 @@ export default function FacetedSearch({
   // }, [searchCategories])
 
   const getTags = (): Array<{ label: string; value: string }> => {
-    // TODO tags should be seperate
-    const tagsCategory: AggregationResult = searchCategories.find(
-      (item: AggregationResult) => item.category === 'Tags'
-    )
-
-    if (!tagsCategory?.keywords) {
+    if (!searchCategories?.tags?.keywords) {
       return []
     }
 
-    return tagsCategory.keywords.map((item: KeywordResult) => {
+    return searchCategories?.tags?.keywords.map((item: KeywordResult) => {
       return {
         label: item.label,
         // FIXME setting value twice as using the location for for the value which is shared by multiple tags breaks the input
@@ -56,22 +52,43 @@ export default function FacetedSearch({
   }
 
   const executeSearch = async (): Promise<void> => {
+    const labelList: string[] = filterTags.map((option) => option.label)
+    const filteredResults = searchCategories?.tags?.keywords.filter(
+      (result: KeywordResult) => labelList.includes(result.label)
+    )
+    console.log(`TAGS ${JSON.stringify(filteredResults)}`)
+
+    const tagKeys = filteredResults.map((item: KeywordResult) => {
+      return {
+        location: item.location,
+        value: item.label
+      }
+    })
+
     const assets: PagedAssets = await getResults(
       {
-        dynamicFilters: [
-          {
-            location: 'metadata.tags.keyword',
-            value: 'netherlands'
-          }
-        ]
+        dynamicFilters: tagKeys
+        //     [
+        //   {
+        //     location: 'metadata.tags.keyword',
+        //     value: 'netherlands'
+        //   }
+        // ]
       },
       chainIds
     )
 
-    console.log(JSON.stringify(assets))
+    // console.log(JSON.stringify(assets))
 
     await setPageAssets(assets)
   }
+
+  useEffect(() => {
+    async function executeAsyncSearch() {
+      await executeSearch()
+    }
+    executeAsyncSearch()
+  }, [filterTags])
 
   // TODO remove
   // useEffect(() => {
@@ -80,7 +97,7 @@ export default function FacetedSearch({
 
   // TODO any
   const getSearchElements = (): Array<ReactElement> => {
-    return searchCategories.map((searchCategory: AggregationResult) => {
+    return searchCategories.static.map((searchCategory: AggregationResult) => {
       // Skipping Tags as these are available in the tag filter input
       if (searchCategory.category === 'Tags') {
         return null
