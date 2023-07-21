@@ -184,13 +184,19 @@ export const getSearchMetadata = (): SearchMetadata[] => {
     {
       label: 'Service Type',
       graphQLLabel: 'service',
-      location: 'services.type.keyword',
+      location: 'metadata.type.keyword ',
       size: 100
     },
     {
       label: 'Access Type',
       graphQLLabel: 'access',
-      location: 'metadata.type.keyword',
+      location: 'services.type.keyword',
+      size: 100
+    },
+    {
+      label: 'Price',
+      graphQLLabel: 'price',
+      location: 'stats.price.value',
       size: 100
     }
   ]
@@ -272,7 +278,10 @@ export function formatGraphQLResults(
     return {
       category: metadata.label,
       keywords: a[1].buckets.map((b) => ({
-        label: typeof b.key === 'number' ? b.key_as_string : b.key,
+        label:
+          typeof b.key === 'number' && metadata.label !== 'Price'
+            ? b.key_as_string
+            : b.key,
         count: b.doc_count,
         location: metadata.location
       }))
@@ -287,15 +296,29 @@ export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
       ar.category === 'Is Verified' || ar.category === 'Terms and Conditions'
   )
   const unifiedTermsConditionsVerified: AggregationResult = {
-    category: 'Terms, Conditions and Asset Compliance',
-    keywords: termsConditionsVerified.flatMap((tcv) => tcv.keywords)
+    category: 'Verified and Terms & Conditions',
+    keywords: termsConditionsVerified.flatMap((tcv) => {
+      if (
+        tcv.keywords.find((a) => a.label === 'true') &&
+        tcv.category === 'Is Verified'
+      ) {
+        tcv.keywords = [{ ...tcv.keywords[0], label: 'verified' }]
+      } else if (
+        tcv.keywords.find((a) => a.label === 'true') &&
+        tcv.category === 'Terms and Conditions'
+      ) {
+        tcv.keywords = [{ ...tcv.keywords[0], label: 'terms & conditions' }]
+      }
+      return tcv.keywords
+    })
   }
 
   const everythigElse = aggregationResults.filter(
     (ar) =>
       ar.category !== 'Is Verified' &&
       ar.category !== 'Terms and Conditions' &&
-      ar.category !== 'Tags'
+      ar.category !== 'Tags' &&
+      ar.category !== 'Price'
   )
 
   return {
