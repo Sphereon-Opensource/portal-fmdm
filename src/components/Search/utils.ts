@@ -136,7 +136,7 @@ export interface AggregationQuery {
 export interface AggregationResult {
   category: string
   keywords: {
-    label: string
+    label: string | number
     location: string
     count: number
   }[]
@@ -184,7 +184,7 @@ export const getSearchMetadata = (): SearchMetadata[] => {
     {
       label: 'Service Type',
       graphQLLabel: 'service',
-      location: 'metadata.type.keyword ',
+      location: 'metadata.type.keyword',
       size: 100
     },
     {
@@ -312,8 +312,32 @@ export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
       return tcv.keywords
     })
   }
+  const price: AggregationResult = aggregationResults.find(
+    (ar) => ar.category === 'Price'
+  )
+  let nonFree = 0
+  let free = 0
+  price.keywords.forEach((a) => {
+    if ((a.label as number) > 0) {
+      nonFree += a.count
+    } else if ((a.label as number) === 0) {
+      free += a.count
+    }
+  })
+  price.keywords = [
+    {
+      label: 'free',
+      location: price.keywords[0].location,
+      count: free
+    },
+    {
+      label: 'paid',
+      location: price.keywords[0].location,
+      count: nonFree
+    }
+  ]
 
-  const everythigElse = aggregationResults.filter(
+  const everythingElse = aggregationResults.filter(
     (ar) =>
       ar.category !== 'Is Verified' &&
       ar.category !== 'Terms and Conditions' &&
@@ -322,7 +346,7 @@ export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
   )
 
   return {
-    static: [...everythigElse, unifiedTermsConditionsVerified],
+    static: [...everythingElse, unifiedTermsConditionsVerified, price],
     tags: aggregationResults.find((ar) => ar.category === 'Tags')
   }
 }
