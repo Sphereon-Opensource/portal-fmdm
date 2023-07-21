@@ -2,6 +2,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import {
   escapeEsReservedCharacters,
   generateBaseQuery,
+  getFilterRange,
   getFilterTerm,
   queryMetadata
 } from '@utils/aquarius'
@@ -38,13 +39,22 @@ export function getSearchQuery(
       location: string
       value: string | string[]
     }[]
+    rangeFilters?: {
+      location: string
+      operations: {
+        operation: 'gt' | 'lt' | 'gte' | 'lte'
+        value: string | number
+      }[]
+    }[]
   },
   chainIds: number[]
 ): SearchQuery {
-  const { page, offset, sort, sortDirection, dynamicFilters } = params
+  const { page, offset, sort, sortDirection, dynamicFilters, rangeFilters } =
+    params
   const text = escapeEsReservedCharacters(params.text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
+  const range: { bool: { should: FilterRange[] } }[] = []
   let searchTerm = text || ''
   searchTerm = searchTerm.trim()
   const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
@@ -114,6 +124,16 @@ export function getSearchQuery(
     filters.push(
       ...dynamicFilters.map((df) => getFilterTerm(df.location, df.value))
     )
+  rangeFilters &&
+    range.push({
+      bool: {
+        should: [
+          ...rangeFilters.map((rf) =>
+            getFilterRange(rf.location, rf.operations)
+          )
+        ]
+      }
+    })
   const baseQueryParams = {
     chainIds,
     nestedQuery,
@@ -122,7 +142,8 @@ export function getSearchQuery(
       size: Number(offset) >= 0 ? Number(offset) : 21
     },
     sortOptions: sort ? { sortBy: sort, sortDirection } : undefined,
-    filters
+    filters,
+    range
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
@@ -228,6 +249,13 @@ export async function getResults(
     dynamicFilters?: {
       location: string
       value: string | string[]
+    }[]
+    rangeFilters?: {
+      location: string
+      operations: {
+        operation: 'gt' | 'lt' | 'gte' | 'lte'
+        value: string | number
+      }[]
     }[]
     faceted?: boolean
   },
@@ -339,16 +367,31 @@ export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
     }
   ]
 
+  // FIXME no way to search if the label changes
+  const languages = aggregationResults.find((ar) => ar.category === 'Languages')
+  languages.keywords.map((l) => {
+    if (typeof l.label === 'string' && l.label.includes('Dockerfile')) {
+      l.label = 'Custom Docker Image'
+    }
+    return l
+  })
+
   const everythingElse = aggregationResults.filter(
     (ar) =>
       ar.category !== 'Is Verified' &&
       ar.category !== 'Terms and Conditions' &&
       ar.category !== 'Tags' &&
-      ar.category !== 'Price'
+      ar.category !== 'Price' &&
+      ar.category !== 'Languages'
   )
 
   return {
-    static: [...everythingElse, unifiedTermsConditionsVerified, price],
+    static: [
+      ...everythingElse,
+      unifiedTermsConditionsVerified,
+      price,
+      languages
+    ],
     tags: aggregationResults.find((ar) => ar.category === 'Tags')
   }
 }

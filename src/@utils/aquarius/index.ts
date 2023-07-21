@@ -46,6 +46,28 @@ export function getFilterTerm(
   }
 }
 
+export function getFilterRange(
+  filterField: string,
+  operations: {
+    operation: 'gt' | 'lt' | 'gte' | 'lte'
+    value: string | number
+  }[]
+): FilterRange {
+  if (operations.length < 1 || operations.length > 2) {
+    throw Error('Range: Minimum: 1, Maximum 2 operations allowed')
+  }
+  return {
+    range: {
+      [filterField]: {
+        ...operations.reduce(
+          (obj, prop) => ({ [prop.operation]: prop.value }),
+          {}
+        )
+      }
+    }
+  } as FilterRange
+}
+
 export function getWhitelistShould(): // eslint-disable-next-line camelcase
 { should: FilterTerm[]; minimum_should_match: 1 } | undefined {
   const { whitelists } = addressConfig
@@ -94,6 +116,7 @@ export function generateBaseQuery(
             ? []
             : [getFilterTerm('purgatory.state', false)]),
           [
+            ...(baseQueryParams.range || []),
             {
               bool: {
                 must_not: [
