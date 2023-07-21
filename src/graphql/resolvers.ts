@@ -1,9 +1,8 @@
 import appConfig from '../../app.config'
 import {
   AggregationResult,
-  formatFacetedSearchResults,
-  getResults,
-  getSearchMetadata
+  formatGraphQLResults,
+  getResults
 } from '@components/Search/utils'
 
 export const getChainIds = async (): Promise<number[]> => {
@@ -21,7 +20,7 @@ const resolvers = {
         },
         await getChainIds()
       )
-      return formatFacetedSearchResults(results)
+      return formatGraphQLResults(results)
     }
   }
 }
