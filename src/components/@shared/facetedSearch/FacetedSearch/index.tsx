@@ -30,6 +30,7 @@ export default function FacetedSearch({
       category: string
       label: string
       isSelected: boolean
+      location: string
     }>
   >([])
 
@@ -67,11 +68,14 @@ export default function FacetedSearch({
 
     // TODO any
     const staticFilter = selectedOptions.map((item: any) => {
+      console.log(`STATIC: ${JSON.stringify(item)}`)
       return {
         location: item.location,
-        value: item.category
+        value: item.label
       }
     })
+
+    console.log(`FILTER: ${JSON.stringify([...tagFilter, ...staticFilter])}`)
 
     const assets: PagedAssets = await getResults(
       {
@@ -85,6 +89,8 @@ export default function FacetedSearch({
       },
       chainIds
     )
+
+    console.log(`ASSETS: ${JSON.stringify(assets)}`)
 
     // console.log(JSON.stringify(assets))
 
@@ -107,9 +113,9 @@ export default function FacetedSearch({
   const getSearchElements = (): Array<ReactElement> => {
     return searchCategories.static.map((searchCategory: AggregationResult) => {
       // Skipping Tags as these are available in the tag filter input
-      if (searchCategory.category === 'Tags') {
-        return null
-      }
+      // if (searchCategory.category === 'Tags') {
+      //   return null
+      // }
 
       return (
         <FacetedSearchCategory
@@ -132,7 +138,15 @@ export default function FacetedSearch({
             if (isSelected) {
               setSelectedOptions([
                 ...selectedOptions,
-                { category: searchCategory.category, label, isSelected }
+                // TODO look up location
+                {
+                  category: searchCategory.category,
+                  label,
+                  isSelected,
+                  location: searchCategory.keywords.find(
+                    (item: KeywordResult) => item.label === label
+                  ).location
+                }
               ])
             } else {
               setSelectedOptions(
@@ -146,7 +160,7 @@ export default function FacetedSearch({
               )
             }
 
-            await executeSearch()
+            // await executeSearch()
           }}
         />
       )
