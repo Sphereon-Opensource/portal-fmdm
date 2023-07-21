@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import AssetList from '@shared/AssetList'
-import queryString from 'query-string'
+import queryString, { ParsedQuery } from 'query-string'
 import Sort from './sort'
 import {
   AggregationResult,
@@ -90,6 +90,10 @@ export default function SearchPage({
     fetchAssets(parsed, chainIds)
   }, [parsed, chainIds, newCancelToken, fetchAssets])
 
+  const setPageAssets = (queryResult: any) => {
+    setQueryResult(queryResult)
+  }
+
   return (
     <>
       <div className={styles.search}>
@@ -111,7 +115,13 @@ export default function SearchPage({
 
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ marginTop: 37, marginRight: 30 }}>
-          <FacetedSearch searchCategories={aggregations || []} />
+          <FacetedSearch
+            searchCategories={aggregations || []}
+            chainIds={chainIds}
+            setPageAssets={async (assets: PagedAssets): Promise<void> =>
+              setPageAssets(assets)
+            }
+          />
         </div>
 
         <div

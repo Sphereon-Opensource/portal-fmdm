@@ -13,13 +13,17 @@ import {
 } from '@components/Search/utils'
 
 export default function FacetedSearch({
-  searchCategories
+  searchCategories,
+  chainIds,
+  setPageAssets
 }: {
   searchCategories: Array<AggregationResult>
+  chainIds: Array<number>
+  setPageAssets: (queryString: any) => Promise<void>
 }): ReactElement {
   const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
     []
-  )
+  ) // TODO this needs to contain the other values as well
   const [selectedOptions, setSelectedOptions] = useState<
     Array<{
       category: string
@@ -33,6 +37,7 @@ export default function FacetedSearch({
   // }, [searchCategories])
 
   const getTags = (): Array<{ label: string; value: string }> => {
+    // TODO tags should be seperate
     const tagsCategory: AggregationResult = searchCategories.find(
       (item: AggregationResult) => item.category === 'Tags'
     )
@@ -51,7 +56,21 @@ export default function FacetedSearch({
   }
 
   const executeSearch = async (): Promise<void> => {
-    await getResults({}, [])
+    const assets: PagedAssets = await getResults(
+      {
+        dynamicFilters: [
+          {
+            location: 'metadata.tags.keyword',
+            value: 'netherlands'
+          }
+        ]
+      },
+      chainIds
+    )
+
+    console.log(JSON.stringify(assets))
+
+    await setPageAssets(assets)
   }
 
   // TODO remove
@@ -81,7 +100,10 @@ export default function FacetedSearch({
               )
             }
           })}
-          onValueChange={async (label: string, isSelected: boolean) => {
+          onValueChange={async (
+            label: string,
+            isSelected: boolean
+          ): Promise<void> => {
             if (isSelected) {
               setSelectedOptions([
                 ...selectedOptions,
@@ -91,11 +113,15 @@ export default function FacetedSearch({
               setSelectedOptions(
                 selectedOptions.filter(
                   (item) =>
-                    item.category !== searchCategory.category &&
-                    item.label !== label
+                    !(
+                      item.category === searchCategory.category &&
+                      item.label === label
+                    )
                 )
               )
             }
+
+            await executeSearch()
           }}
         />
       )
