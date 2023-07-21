@@ -58,16 +58,24 @@ export default function FacetedSearch({
     )
     console.log(`TAGS ${JSON.stringify(filteredResults)}`)
 
-    const tagKeys = filteredResults.map((item: KeywordResult) => {
+    const tagFilter = filteredResults.map((item: KeywordResult) => {
       return {
         location: item.location,
         value: item.label
       }
     })
 
+    // TODO any
+    const staticFilter = selectedOptions.map((item: any) => {
+      return {
+        location: item.location,
+        value: item.category
+      }
+    })
+
     const assets: PagedAssets = await getResults(
       {
-        dynamicFilters: tagKeys
+        dynamicFilters: [...tagFilter, ...staticFilter]
         //     [
         //   {
         //     location: 'metadata.tags.keyword',
@@ -88,7 +96,7 @@ export default function FacetedSearch({
       await executeSearch()
     }
     executeAsyncSearch()
-  }, [filterTags])
+  }, [filterTags, selectedOptions])
 
   // TODO remove
   // useEffect(() => {
