@@ -9,18 +9,39 @@ import styles from './index.module.css'
 import {
   AggregationResult,
   AggregationResultUI,
-  getResults,
+  // getResults,
   KeywordResult
 } from '@components/Search/utils'
 
 export default function FacetedSearch({
   searchCategories,
-  chainIds,
-  setPageAssets
+  // chainIds,
+  // setPageAssets,
+  onClearFilter,
+  onSetTagsFilter,
+  onSetSelectedOptions,
+  onSearch
 }: {
   searchCategories: AggregationResultUI
-  chainIds: Array<number>
-  setPageAssets: (assets: PagedAssets) => Promise<void>
+  // chainIds: Array<number>
+  // setPageAssets: (assets: PagedAssets) => Promise<void>
+  onClearFilter: () => Promise<void>
+  onSetTagsFilter: (tags: MultiValue<AutoCompleteOption>) => void
+  onSetSelectedOptions: (
+    options: Array<{
+      category: string
+      label: string
+      isSelected: boolean
+      location: string
+    }>
+  ) => void
+  onSearch: (
+    // text: string,
+    dynamicFilter: {
+      location: string
+      value: string | string[]
+    }[]
+  ) => Promise<void>
 }): ReactElement {
   const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
     []
@@ -33,10 +54,6 @@ export default function FacetedSearch({
       location: string
     }>
   >([])
-
-  // useEffect(() => {
-  //
-  // }, [searchCategories])
 
   const getTags = (): Array<{ label: string; value: string }> => {
     if (!searchCategories?.tags?.keywords) {
@@ -57,7 +74,7 @@ export default function FacetedSearch({
     const filteredResults = searchCategories?.tags?.keywords.filter(
       (result: KeywordResult) => labelList.includes(result.label)
     )
-    console.log(`TAGS ${JSON.stringify(filteredResults)}`)
+    // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
 
     const tagFilter = filteredResults.map((item: KeywordResult) => {
       return {
@@ -68,33 +85,28 @@ export default function FacetedSearch({
 
     // TODO any
     const staticFilter = selectedOptions.map((item: any) => {
-      console.log(`STATIC: ${JSON.stringify(item)}`)
+      // console.log(`STATIC: ${JSON.stringify(item)}`)
       return {
         location: item.location,
         value: item.label
       }
     })
 
-    console.log(`FILTER: ${JSON.stringify([...tagFilter, ...staticFilter])}`)
+    // console.log(`FILTER: ${JSON.stringify([...tagFilter, ...staticFilter])}`)
 
-    const assets: PagedAssets = await getResults(
-      {
-        dynamicFilters: [...tagFilter, ...staticFilter]
-        //     [
-        //   {
-        //     location: 'metadata.tags.keyword',
-        //     value: 'netherlands'
-        //   }
-        // ]
-      },
-      chainIds
-    )
+    await onSearch([...tagFilter, ...staticFilter])
 
-    console.log(`ASSETS: ${JSON.stringify(assets)}`)
+    // TODO old
+    // const assets: PagedAssets = await getResults(
+    //   {
+    //     dynamicFilters: [...tagFilter, ...staticFilter]
+    //   },
+    //   chainIds
+    // )
 
-    // console.log(JSON.stringify(assets))
+    // console.log(`ASSETS: ${JSON.stringify(assets)}`)
 
-    await setPageAssets(assets)
+    // await setPageAssets(assets)
   }
 
   useEffect(() => {
@@ -104,19 +116,8 @@ export default function FacetedSearch({
     executeAsyncSearch()
   }, [filterTags, selectedOptions])
 
-  // TODO remove
-  // useEffect(() => {
-  //   console.log(JSON.stringify(selectedOptions))
-  // }, [selectedOptions])
-
-  // TODO any
   const getSearchElements = (): Array<ReactElement> => {
     return searchCategories.static.map((searchCategory: AggregationResult) => {
-      // Skipping Tags as these are available in the tag filter input
-      // if (searchCategory.category === 'Tags') {
-      //   return null
-      // }
-
       return (
         <FacetedSearchCategory
           key={searchCategory.category}
@@ -148,6 +149,18 @@ export default function FacetedSearch({
                   ).location
                 }
               ])
+              onSetSelectedOptions([
+                ...selectedOptions,
+                // TODO look up location
+                {
+                  category: searchCategory.category,
+                  label,
+                  isSelected,
+                  location: searchCategory.keywords.find(
+                    (item: KeywordResult) => item.label === label
+                  ).location
+                }
+              ])
             } else {
               setSelectedOptions(
                 selectedOptions.filter(
@@ -158,9 +171,16 @@ export default function FacetedSearch({
                     )
                 )
               )
+              onSetSelectedOptions(
+                selectedOptions.filter(
+                  (item) =>
+                    !(
+                      item.category === searchCategory.category &&
+                      item.label === label
+                    )
+                )
+              )
             }
-
-            // await executeSearch()
           }}
         />
       )
@@ -170,10 +190,12 @@ export default function FacetedSearch({
   const clearFilters = async (): Promise<void> => {
     setFilterTags([])
     setSelectedOptions([])
+    await onClearFilter()
   }
 
   const autoCompleteOnValueChange = (value: AutoCompleteOption[]): void => {
     setFilterTags(value)
+    onSetTagsFilter(value)
   }
 
   return (

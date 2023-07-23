@@ -6,6 +6,7 @@ import {
   AggregationResultUI,
   formatUIResults,
   getResults,
+  KeywordResult,
   updateQueryStringParameter
 } from './utils'
 import { useUserPreferences } from '@context/UserPreferences'
@@ -14,6 +15,8 @@ import styles from './index.module.css'
 import { useRouter } from 'next/router'
 import FacetedSearch from '@shared/facetedSearch/FacetedSearch'
 import FacetedTextSearchBar from '@components/@shared/facetedSearch/FacetedTextSearchBar'
+import { MultiValue } from 'react-select'
+import { AutoCompleteOption } from '@shared/facetedSearch/FacetedSearchFilterAutoComplete'
 
 export default function SearchPage({
   setTotalResults,
@@ -31,6 +34,19 @@ export default function SearchPage({
   const [sortType, setSortType] = useState<string>()
   const [sortDirection, setSortDirection] = useState<string>()
   const newCancelToken = useCancelToken()
+  const [searchText, setSearchText] = useState<string>()
+  const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
+    []
+  )
+  // TODO static search name
+  const [selectedOptions, setSelectedOptions] = useState<
+    Array<{
+      category: string
+      label: string
+      isSelected: boolean
+      location: string
+    }>
+  >([])
 
   useEffect(() => {
     const parsed = queryString.parse(location.search)
@@ -94,8 +110,6 @@ export default function SearchPage({
     setQueryResult(queryResult)
     setTotalResults(queryResult?.totalResults || 0)
     setTotalPagesNumber(queryResult?.totalPages || 0)
-
-    // setSortDirection('asc')
   }
 
   return (
@@ -106,6 +120,53 @@ export default function SearchPage({
             <FacetedTextSearchBar
               placeholder="Search for service offerings"
               isSearchPage={true}
+              initialValue={searchText}
+              onValueChange={(value: string) => {
+                console.log('text changed')
+                setSearchText(value)
+              }}
+              onSearch={async (
+                text: string
+                // dynamicFilters: {
+                // location: string
+                // value: string
+
+                // }[]
+              ): Promise<void> => {
+                const labelList: string[] = filterTags.map(
+                  (option) => option.label
+                )
+                const filteredResults = aggregations?.tags?.keywords.filter(
+                  (result: KeywordResult) => labelList.includes(result.label)
+                )
+                // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
+
+                const tagFilter = filteredResults.map((item: KeywordResult) => {
+                  return {
+                    location: item.location,
+                    value: item.label
+                  }
+                })
+
+                // TODO any
+                const staticFilter = selectedOptions.map((item: any) => {
+                  // console.log(`STATIC: ${JSON.stringify(item)}`)
+                  return {
+                    location: item.location,
+                    value: item.label
+                  }
+                })
+
+                console.log('TEXT SEARCH CALLBACK EXECUTED')
+                const assets: PagedAssets = await getResults(
+                  {
+                    text, // TODO do we need this
+                    dynamicFilters: [...tagFilter, ...staticFilter]
+                  },
+                  chainIds
+                )
+                setPageAssets(assets)
+              }}
             />
           </div>
           <Sort
@@ -117,22 +178,58 @@ export default function SearchPage({
         </div>
       </div>
 
+      {/* // TODO styling */}
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ marginTop: 37, marginRight: 30 }}>
           {aggregations && (
             <FacetedSearch
               searchCategories={aggregations}
-              chainIds={chainIds}
-              setPageAssets={async (assets: PagedAssets): Promise<void> =>
-                setPageAssets(assets)
+              // chainIds={chainIds}
+              // setPageAssets={async (assets: PagedAssets): Promise<void> =>
+              //   setPageAssets(assets)
+              // }
+              onClearFilter={async () => {
+                const url: URL = new URL(window.location.href)
+                const { searchParams } = url
+                searchParams.delete('text')
+                await router.push(
+                  `${url.origin}${url.pathname}?${searchParams.toString()}`
+                )
+                setSearchText('')
+              }}
+              onSetTagsFilter={(tags: MultiValue<AutoCompleteOption>) =>
+                setFilterTags(tags)
               }
+              // TODO name static
+              onSetSelectedOptions={(
+                options: Array<{
+                  category: string
+                  label: string
+                  isSelected: boolean
+                  location: string
+                }>
+              ) => setSelectedOptions(options)}
+              onSearch={async (
+                // text: string,
+                dynamicFilters: {
+                  location: string
+                  value: string
+                }[]
+              ): Promise<void> => {
+                console.log('SEARCH CALLBACK EXECUTED')
+                const assets: PagedAssets = await getResults(
+                  {
+                    text: searchText,
+                    dynamicFilters
+                  },
+                  chainIds
+                )
+                setPageAssets(assets)
+              }}
             />
           )}
         </div>
-        <div
-          style={{ display: 'grid', flexGrow: 1 }}
-          className={styles.results}
-        >
+        <div style={{ flexGrow: 1 }} className={styles.results}>
           <AssetList
             assets={queryResult?.results}
             showPagination

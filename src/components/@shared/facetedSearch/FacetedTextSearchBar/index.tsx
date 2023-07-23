@@ -30,11 +30,21 @@ async function emptySearch() {
 export default function Index({
   placeholder,
   initialValue,
-  isSearchPage
+  isSearchPage,
+  onValueChange,
+  onSearch
 }: {
   placeholder?: string
   initialValue?: string
   isSearchPage?: boolean
+  onValueChange?: (value: string) => void
+  onSearch: (
+    text: string
+    // dynamicFilter: {
+    //   location: string
+    //   value: string | string[]
+    // }[]
+  ) => Promise<void>
 }): ReactElement {
   const router = useRouter()
   const [value, setValue] = useState(initialValue || '')
@@ -47,11 +57,14 @@ export default function Index({
     homeSearchBarFocus,
     setHomeSearchBarFocus
   } = useSearchBarStatus()
-
   useEffect(() => {
     if (parsed?.text || parsed?.owner)
       setValue((parsed?.text || parsed?.owner) as string)
   }, [parsed?.text, parsed?.owner])
+
+  useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
 
   useEffect(() => {
     setSearchBarVisible(false)
@@ -70,17 +83,22 @@ export default function Index({
 
     if (value === '') setValue(' ')
 
-    const urlEncodedValue = encodeURIComponent(value)
-    const url = await addExistingParamsToUrl(location, [
-      'text',
-      'owner',
-      'tags'
-    ])
-    router.push(`${url}&text=${urlEncodedValue}`)
+    await onSearch(value)
+
+    // const urlEncodedValue = encodeURIComponent(value)
+    // const url = await addExistingParamsToUrl(location, [
+    //   'text',
+    //   'owner',
+    //   'tags'
+    // ])
+    // router.push(`${url}&text=${urlEncodedValue}`)
   }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setValue(e.target.value)
+    if (onValueChange) {
+      onValueChange(e.target.value)
+    }
     e.target.value === '' && emptySearch()
   }
 
