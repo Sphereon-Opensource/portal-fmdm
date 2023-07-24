@@ -34,7 +34,7 @@ export interface Filter {
     operation: 'gt' | 'lt' | 'gte' | 'lte'
     value: string
   }[]
-  term?: { value: string | number }
+  term?: { value: string | string[] }
 }
 
 export function getSearchQuery(
