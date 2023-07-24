@@ -29,7 +29,7 @@ async function emptySearch() {
 
 export default function Index({
   placeholder,
-  initialValue,
+  initialValue = '',
   isSearchPage,
   onValueChange,
   onSearch
@@ -47,7 +47,7 @@ export default function Index({
   ) => Promise<void>
 }): ReactElement {
   const router = useRouter()
-  const [value, setValue] = useState(initialValue || '')
+  const [value, setValue] = useState(initialValue)
   const parsed = router.query
   const isHome = window.location.pathname === '/'
   const searchBarRef = useRef<HTMLInputElement>(null)

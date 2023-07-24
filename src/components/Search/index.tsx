@@ -47,13 +47,14 @@ export default function SearchPage({
       location: string
     }>
   >([])
+  const [page, setPage] = useState<number>(1)
 
   useEffect(() => {
     const parsed = queryString.parse(location.search)
-    const { sort, sortOrder } = parsed
+    // const { sort, sortOrder } = parsed
     setParsed(parsed)
-    setSortDirection(sortOrder as string)
-    setSortType(sort as string)
+    // setSortDirection(sortOrder as string)
+    // setSortType(sort as string)
   }, [router])
 
   const updatePage = useCallback(
@@ -98,8 +99,10 @@ export default function SearchPage({
   useEffect(() => {
     if (!parsed || !queryResult) return
     const { page } = parsed
-    if (queryResult.totalPages < Number(page)) updatePage(1)
-  }, [parsed, queryResult, updatePage])
+    if (queryResult.totalPages < Number(page)) {
+      updatePage(1)
+    }
+  }, [parsed, queryResult]) //, updatePage
 
   useEffect(() => {
     if (!parsed || !chainIds) return
@@ -112,6 +115,11 @@ export default function SearchPage({
     setTotalPagesNumber(queryResult?.totalPages || 0)
   }
 
+  // console.log(`sortType: ${sortType}`)
+  // console.log(`sortDirection: ${sortDirection}`)
+
+  console.log(`page: ${page}`)
+
   return (
     <>
       <div className={styles.search}>
@@ -122,7 +130,7 @@ export default function SearchPage({
               isSearchPage={true}
               initialValue={searchText}
               onValueChange={(value: string) => {
-                console.log('text changed')
+                // console.log('text changed')
                 setSearchText(value)
               }}
               onSearch={async (
@@ -157,11 +165,15 @@ export default function SearchPage({
                   }
                 })
 
-                console.log('TEXT SEARCH CALLBACK EXECUTED')
+                // console.log('TEXT SEARCH CALLBACK EXECUTED')
                 const assets: PagedAssets = await getResults(
                   {
                     text, // TODO do we need this
-                    dynamicFilters: [...tagFilter, ...staticFilter]
+                    dynamicFilters: [...tagFilter, ...staticFilter],
+                    sort: sortType,
+                    sortOrder: sortDirection,
+                    // TODO no clue why they made it a string
+                    page: page.toString()
                   },
                   chainIds
                 )
@@ -172,8 +184,92 @@ export default function SearchPage({
           <Sort
             sortType={sortType}
             sortDirection={sortDirection}
-            setSortType={setSortType}
-            setSortDirection={setSortDirection}
+            setSortType={async (value: string): Promise<void> => {
+              console.log(`SETTING SORT TYPE: ${value}`)
+              setSortType(value)
+
+              const labelList: string[] = filterTags.map(
+                (option) => option.label
+              )
+              const filteredResults = aggregations?.tags?.keywords.filter(
+                (result: KeywordResult) => labelList.includes(result.label)
+              )
+              // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
+
+              const tagFilter = filteredResults.map((item: KeywordResult) => {
+                return {
+                  location: item.location,
+                  value: item.label
+                }
+              })
+
+              // TODO any
+              const staticFilter = selectedOptions.map((item: any) => {
+                // console.log(`STATIC: ${JSON.stringify(item)}`)
+                return {
+                  location: item.location,
+                  value: item.label
+                }
+              })
+
+              // console.log('TEXT SEARCH CALLBACK EXECUTED')
+              const assets: PagedAssets = await getResults(
+                {
+                  text: searchText, // TODO do we need this
+                  dynamicFilters: [...tagFilter, ...staticFilter],
+                  sort: value,
+                  sortOrder: sortDirection,
+                  // TODO no clue why they made it a string
+                  page: page.toString()
+                },
+                chainIds
+              )
+              setPageAssets(assets)
+            }}
+            setSortDirection={async (value: string): Promise<void> => {
+              console.log(`SETTING SORT DIRECTION: ${value}`)
+              setSortDirection(value)
+
+              const labelList: string[] = filterTags.map(
+                (option) => option.label
+              )
+              const filteredResults = aggregations?.tags?.keywords.filter(
+                (result: KeywordResult) => labelList.includes(result.label)
+              )
+              // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
+
+              const tagFilter = filteredResults.map((item: KeywordResult) => {
+                return {
+                  location: item.location,
+                  value: item.label
+                }
+              })
+
+              // TODO any
+              const staticFilter = selectedOptions.map((item: any) => {
+                // console.log(`STATIC: ${JSON.stringify(item)}`)
+                return {
+                  location: item.location,
+                  value: item.label
+                }
+              })
+
+              // console.log('TEXT SEARCH CALLBACK EXECUTED')
+              const assets: PagedAssets = await getResults(
+                {
+                  text: searchText, // TODO do we need this
+                  dynamicFilters: [...tagFilter, ...staticFilter],
+                  sort: sortType,
+                  sortOrder: value,
+                  // TODO no clue why they made it a string
+                  page: page.toString()
+                },
+                chainIds
+              )
+              console.log(JSON.stringify(assets))
+              setPageAssets(assets)
+            }}
+            // setSortDirection={setSortDirection}
           />
         </div>
       </div>
@@ -189,6 +285,7 @@ export default function SearchPage({
               //   setPageAssets(assets)
               // }
               onClearFilter={async () => {
+                // TODO no url needed anymore
                 const url: URL = new URL(window.location.href)
                 const { searchParams } = url
                 searchParams.delete('text')
@@ -216,11 +313,15 @@ export default function SearchPage({
                   value: string
                 }[]
               ): Promise<void> => {
-                console.log('SEARCH CALLBACK EXECUTED')
+                // console.log('SEARCH CALLBACK EXECUTED')
                 const assets: PagedAssets = await getResults(
                   {
                     text: searchText,
-                    dynamicFilters
+                    dynamicFilters,
+                    sort: sortType,
+                    sortOrder: sortDirection,
+                    // TODO no clue why they made it a string
+                    page: page.toString()
                   },
                   chainIds
                 )
@@ -236,7 +337,47 @@ export default function SearchPage({
             isLoading={loading}
             page={queryResult?.page}
             totalPages={queryResult?.totalPages}
-            onPageChange={updatePage}
+            onPageChange={async (value): Promise<void> => {
+              setPage(value)
+
+              const labelList: string[] = filterTags.map(
+                (option) => option.label
+              )
+              const filteredResults = aggregations?.tags?.keywords.filter(
+                (result: KeywordResult) => labelList.includes(result.label)
+              )
+              // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
+
+              const tagFilter = filteredResults.map((item: KeywordResult) => {
+                return {
+                  location: item.location,
+                  value: item.label
+                }
+              })
+
+              // TODO any
+              const staticFilter = selectedOptions.map((item: any) => {
+                // console.log(`STATIC: ${JSON.stringify(item)}`)
+                return {
+                  location: item.location,
+                  value: item.label
+                }
+              })
+
+              // console.log('TEXT SEARCH CALLBACK EXECUTED')
+              const assets: PagedAssets = await getResults(
+                {
+                  text: searchText, // TODO do we need this
+                  dynamicFilters: [...tagFilter, ...staticFilter],
+                  sort: sortType,
+                  sortOrder: sortDirection,
+                  // TODO no clue why they made it a string
+                  page: value.toString()
+                },
+                chainIds
+              )
+              setPageAssets(assets)
+            }} // updatePage}
             showAssetViewSelector
           />
         </div>

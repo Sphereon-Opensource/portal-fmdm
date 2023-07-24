@@ -290,7 +290,7 @@ export async function addExistingParamsToUrl(
     // sort should be relevance when fixed in aqua
     urlLocation = `${urlLocation}sort=${encodeURIComponent(
       SortTermOptions.Created
-    )}&sortOrder=${SortDirectionOptions.Descending}&`
+    )}&` //sortOrder=${SortDirectionOptions.Descending}&
   }
   urlLocation = urlLocation.slice(0, -1)
   return urlLocation

@@ -20,7 +20,7 @@
     },
     {
       "name": "Catalogue",
-      "link": "/search?sort=nft.created&sortOrder=desc"
+      "link": "/search"
     },
     {
       "name": "Publish",
@@ -43,7 +43,7 @@
       { "label": "About Gaia-X", "link": "/gaia-x" },
       {
         "label": "Catalogue",
-        "link": "/search?sort=nft.created&sortOrder=desc"
+        "link": "/search"
       },
       { "label": "First time visiting", "link": "/onboarding" }
     ]
