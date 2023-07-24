@@ -28,6 +28,15 @@ export function updateQueryStringParameter(
   }
 }
 
+export interface Filter {
+  location: string
+  range?: {
+    operation: 'gt' | 'lt' | 'gte' | 'lte'
+    value: string | number
+  }[]
+  term?: { value: string | number }
+}
+
 export function getSearchQuery(
   params: {
     text?: string
@@ -35,14 +44,7 @@ export function getSearchQuery(
     offset?: string
     sort?: string
     sortDirection?: string
-    filters?: {
-      location: string
-      range?: {
-        operation: 'gt' | 'lt' | 'gte' | 'lte'
-        value: string | number
-      }[]
-      term?: { value: string | number }
-    }[]
+    filters?: Filter[]
   },
   chainIds: number[]
 ): SearchQuery {
@@ -173,7 +175,7 @@ export interface AggregationResult {
 
 export interface AggregationResultUI {
   static: AggregationResult[]
-  tags: AggregationResult
+  tags: Keyword[]
 }
 
 interface SearchMetadata {
@@ -252,14 +254,7 @@ export async function getResults(
     offset?: string
     sort?: string
     sortOrder?: string
-    filters?: {
-      location: string
-      range?: {
-        operation: 'gt' | 'lt' | 'gte' | 'lte'
-        value: string | number
-      }[]
-      term: { value: string | number }
-    }[]
+    filters?: Filter[]
     faceted?: boolean
   },
   chainIds: number[],
@@ -428,6 +423,6 @@ export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
       formatPriceResults(aggregationResults),
       formatLanguagesResults(aggregationResults)
     ],
-    tags: aggregationResults.find((ar) => ar.category === 'Tags')
+    tags: aggregationResults.find((ar) => ar.category === 'Tags').keywords
   }
 }
