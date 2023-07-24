@@ -141,7 +141,7 @@ export function getSearchQuery(
       from: (Number(page) - 1 || 0) * (Number(offset) || 21),
       size: Number(offset) >= 0 ? Number(offset) : 21
     },
-    sortOptions: sort ? { sortBy: sort, sortDirection } : undefined,
+    sortOptions: sort && { sortBy: sort, sortDirection },
     filters: filterTerms,
     range: filterRanges
   } as BaseQueryParams
@@ -253,7 +253,7 @@ export async function getResults(
     page?: string
     offset?: string
     sort?: string
-    sortOrder?: string
+    sortDirection?: string
     filters?: Filter[]
     faceted?: boolean
   },
