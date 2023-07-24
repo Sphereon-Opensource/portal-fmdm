@@ -28,6 +28,15 @@ export function updateQueryStringParameter(
   }
 }
 
+export interface Filter {
+  location: string
+  range?: {
+    operation: 'gt' | 'lt' | 'gte' | 'lte'
+    value: string | number
+  }[]
+  term?: { value: string | number }
+}
+
 export function getSearchQuery(
   params: {
     text?: string
@@ -35,26 +44,15 @@ export function getSearchQuery(
     offset?: string
     sort?: string
     sortDirection?: string
-    dynamicFilters?: {
-      location: string
-      value: string | string[]
-    }[]
-    rangeFilters?: {
-      location: string
-      operations: {
-        operation: 'gt' | 'lt' | 'gte' | 'lte'
-        value: string | number
-      }[]
-    }[]
+    filters?: Filter[]
   },
   chainIds: number[]
 ): SearchQuery {
-  const { page, offset, sort, sortDirection, dynamicFilters, rangeFilters } =
-    params
+  const { page, offset, sort, sortDirection, filters } = params
   const text = escapeEsReservedCharacters(params.text)
   const emptySearchTerm = text === undefined || text === ''
-  const filters: FilterTerm[] = []
-  const range: { bool: { should: FilterRange[] } }[] = []
+  const filterTerms: FilterTerm[] = []
+  const filterRanges: { bool: { should: FilterRange[] } }[] = []
   let searchTerm = text || ''
   searchTerm = searchTerm.trim()
   const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
@@ -120,16 +118,18 @@ export function getSearchQuery(
       }
     ]
   }
-  dynamicFilters &&
-    filters.push(
-      ...dynamicFilters.map((df) => getFilterTerm(df.location, df.value))
+  filters &&
+    filterTerms.push(
+      ...filters.map((filter) =>
+        getFilterTerm(filter.location, filter.term?.value)
+      )
     )
-  rangeFilters &&
-    range.push({
+  filters &&
+    filterRanges.push({
       bool: {
         should: [
-          ...rangeFilters.map((rf) =>
-            getFilterRange(rf.location, rf.operations)
+          ...filters.map((filter) =>
+            getFilterRange(filter.location, filter.range)
           )
         ]
       }
@@ -141,9 +141,9 @@ export function getSearchQuery(
       from: (Number(page) - 1 || 0) * (Number(offset) || 21),
       size: Number(offset) >= 0 ? Number(offset) : 21
     },
-    sortOptions: sort ? { sortBy: sort, sortDirection } : undefined,
-    filters,
-    range
+    sortOptions: sort && { sortBy: sort, sortDirection },
+    filters: filterTerms,
+    range: filterRanges
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
@@ -152,6 +152,20 @@ export function getSearchQuery(
 
 export interface AggregationQuery {
   [x: string]: { terms: { field: string; size?: number } }
+}
+
+export interface Keyword {
+  label: string | number
+  location?: string
+  filters: {
+    location: string
+    range?: {
+      op: 'gt' | 'lt' | 'gte' | 'lte'
+      value: string | number
+    }[]
+    term?: { value: string | number }
+  }
+  count: number
 }
 
 export interface AggregationResult {
@@ -167,7 +181,7 @@ export interface KeywordResult {
 
 export interface AggregationResultUI {
   static: AggregationResult[]
-  tags: AggregationResult
+  tags: Keyword[]
 }
 
 interface SearchMetadata {
@@ -245,18 +259,8 @@ export async function getResults(
     page?: string
     offset?: string
     sort?: string
-    sortOrder?: string
-    dynamicFilters?: {
-      location: string
-      value: string | string[]
-    }[]
-    rangeFilters?: {
-      location: string
-      operations: {
-        operation: 'gt' | 'lt' | 'gte' | 'lte'
-        value: string | number
-      }[]
-    }[]
+    sortDirection?: string
+    filters?: Filter[]
     faceted?: boolean
   },
   chainIds: number[],
@@ -308,73 +312,106 @@ export function formatGraphQLResults(
     return {
       category: metadata.label,
       keywords: a[1].buckets.map((b) => ({
-        label:
-          typeof b.key === 'number' && metadata.label !== 'Price'
-            ? b.key_as_string
-            : b.key,
-        count: b.doc_count,
-        location: metadata.location
+        label: b.key_as_string ?? b.key,
+        location: metadata.location,
+        filters: {
+          location: metadata.location,
+          term: { value: b.key }
+        },
+        count: b.doc_count
       }))
     }
   })
 }
 
-export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
-  const aggregationResults = formatGraphQLResults(results)
+export const formatTermsConditionsVerifiedResults = (
+  aggregationResults: AggregationResult[]
+) => {
   const termsConditionsVerified = aggregationResults.filter(
     (ar) =>
       ar.category === 'Is Verified' || ar.category === 'Terms and Conditions'
   )
-  const unifiedTermsConditionsVerified: AggregationResult = {
+  return {
     category: 'Verified and Terms & Conditions',
     keywords: termsConditionsVerified.flatMap((tcv) => {
+      const filters = { ...tcv.keywords[0].filters, term: { value: 'true' } }
       if (
         tcv.keywords.find((a) => a.label === 'true') &&
         tcv.category === 'Is Verified'
       ) {
-        tcv.keywords = [{ ...tcv.keywords[0], label: 'verified' }]
+        tcv.keywords = [{ ...tcv.keywords[0], label: 'verified', filters }]
       } else if (
         tcv.keywords.find((a) => a.label === 'true') &&
         tcv.category === 'Terms and Conditions'
       ) {
-        tcv.keywords = [{ ...tcv.keywords[0], label: 'terms & conditions' }]
+        tcv.keywords = [
+          { ...tcv.keywords[0], label: 'terms & conditions', filters }
+        ]
       }
       return tcv.keywords
     })
   }
+}
+
+export const formatPriceResults = (
+  aggregationResults: AggregationResult[]
+): AggregationResult => {
   const price: AggregationResult = aggregationResults.find(
     (ar) => ar.category === 'Price'
   )
-  let nonFree = 0
-  let free = 0
-  price.keywords.forEach((a) => {
-    if ((a.label as number) > 0) {
-      nonFree += a.count
-    } else if ((a.label as number) === 0) {
-      free += a.count
-    }
-  })
-  price.keywords = [
-    {
-      label: 'free',
-      location: price.keywords[0].location,
-      count: free
-    },
-    {
-      label: 'paid',
-      location: price.keywords[0].location,
-      count: nonFree
-    }
-  ]
 
-  // FIXME no way to search if the label changes
+  const free = price.keywords
+    .filter((k) => +k.label === 0)
+    .reduce(
+      (a, b) => {
+        return {
+          label: a.label,
+          filters: {
+            ...b.filters,
+            location: b.filters.location,
+            term: { value: 0 }
+          },
+          count: a.count + b.count
+        }
+      },
+      { label: 'free', filters: {}, count: 0 }
+    ) as Keyword
+  const paid = price.keywords
+    .filter((k) => +k.label > 0)
+    .reduce(
+      (a, b) => {
+        return {
+          label: a.label,
+          filters: {
+            location: b.filters.location,
+            range: [{ op: 'gt', value: 0 }]
+          },
+          count: a.count + b.count
+        }
+      },
+      { label: 'paid', filters: {}, count: 0 }
+    ) as Keyword
+
+  price.keywords = [free, paid]
+  return price
+}
+
+export const formatLanguagesResults = (
+  aggregationResults: AggregationResult[]
+): AggregationResult => {
   const languages = aggregationResults.find((ar) => ar.category === 'Languages')
-  languages.keywords.map((l) => {
-    if (typeof l.label === 'string' && l.label.includes('Dockerfile')) {
-      l.label = 'Custom Docker Image'
+  // eslint-disable-next-line array-callback-return
+  languages.keywords = languages?.keywords.map((lang) => {
+    if (typeof lang.label === 'string' && lang.label.includes('Dockerfile')) {
+      return { ...lang, label: (lang.label = 'Custom Docker Image') }
     }
-    return l
+    return lang
   })
+  return languages
+}
+
+export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
+  const aggregationResults = formatGraphQLResults(results)
 
   const everythingElse = aggregationResults.filter(
     (ar) =>
@@ -388,10 +425,10 @@ export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
   return {
     static: [
       ...everythingElse,
-      unifiedTermsConditionsVerified,
-      price,
-      languages
+      formatTermsConditionsVerifiedResults(aggregationResults),
+      formatPriceResults(aggregationResults),
+      formatLanguagesResults(aggregationResults)
     ],
-    tags: aggregationResults.find((ar) => ar.category === 'Tags')
+    tags: aggregationResults.find((ar) => ar.category === 'Tags').keywords
   }
 }
