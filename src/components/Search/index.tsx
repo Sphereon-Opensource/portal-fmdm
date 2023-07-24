@@ -286,12 +286,15 @@ export default function SearchPage({
               // }
               onClearFilter={async () => {
                 // TODO no url needed anymore
-                const url: URL = new URL(window.location.href)
-                const { searchParams } = url
-                searchParams.delete('text')
-                await router.push(
-                  `${url.origin}${url.pathname}?${searchParams.toString()}`
-                )
+                // const url: URL = new URL(window.location.href)
+                // const { searchParams } = url
+                // searchParams.delete('text')
+                // await router.push(
+                //   `${url.origin}${url.pathname}?${searchParams.toString()}`
+                // )
+                // TODO we still have duplicate places we track things
+                setFilterTags([])
+                setSelectedOptions([])
                 setSearchText('')
               }}
               onSetTagsFilter={(tags: MultiValue<AutoCompleteOption>) =>

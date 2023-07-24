@@ -12,7 +12,6 @@ import Price from '../Price'
 import AssetType from '../AssetType'
 import { getServiceByName } from '@utils/ddo'
 import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
-import FacetedSearch from '@shared/FacetedSearch'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
@@ -118,6 +117,7 @@ export default function AssetList({
 
   // // This changes the page field inside the query
   function handlePageChange(selected: number) {
+    // console.log(`PAGE CHANGED: ${selected + 1}`)
     onPageChange(selected + 1)
   }
 
