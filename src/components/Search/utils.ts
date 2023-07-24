@@ -8,10 +8,7 @@ import {
 } from '@utils/aquarius'
 import queryString from 'query-string'
 import { CancelToken } from 'axios'
-import {
-  SortDirectionOptions,
-  SortTermOptions
-} from '../../@types/aquarius/SearchQuery'
+import { SortTermOptions } from '../../@types/aquarius/SearchQuery'
 
 export function updateQueryStringParameter(
   uri: string,
@@ -40,7 +37,7 @@ export interface Filter {
 export function getSearchQuery(
   params: {
     text?: string
-    page?: string
+    page?: number
     offset?: string
     sort?: string
     sortDirection?: string
@@ -254,7 +251,7 @@ export const facetedQuery = (): AggregationQuery => {
 export async function getResults(
   params: {
     text?: string
-    page?: string
+    page?: number
     offset?: string
     sort?: string
     sortDirection?: string
@@ -292,7 +289,7 @@ export async function addExistingParamsToUrl(
     // sort should be relevance when fixed in aqua
     urlLocation = `${urlLocation}sort=${encodeURIComponent(
       SortTermOptions.Created
-    )}&` //sortOrder=${SortDirectionOptions.Descending}&
+    )}&`
   }
   urlLocation = urlLocation.slice(0, -1)
   return urlLocation

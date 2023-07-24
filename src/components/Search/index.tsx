@@ -24,6 +24,16 @@ export type StaticOption = KeywordResult & {
   isSelected: boolean
 }
 
+// TODO move
+interface SearchParams {
+  tags?: Array<Keyword>
+  text?: string
+  staticOptions?: Array<StaticOption>
+  currentPage?: number
+  sort?: string
+  sortOrder?: string
+}
+
 export default function SearchPage({
   setTotalResults,
   setTotalPagesNumber
@@ -32,20 +42,17 @@ export default function SearchPage({
   setTotalPagesNumber: (totalPagesNumber: number) => void
 }): ReactElement {
   const router = useRouter()
-  const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
+  const newCancelToken = useCancelToken()
   const { chainIds } = useUserPreferences()
+  const [parsed, setParsed] = useState<queryString.ParsedQuery>()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [aggregations, setAggregations] = useState<AggregationResultUI>()
   const [loading, setLoading] = useState<boolean>()
   const [sortType, setSortType] = useState<string>()
   const [sortDirection, setSortDirection] = useState<string>()
-  const newCancelToken = useCancelToken()
   const [searchText, setSearchText] = useState<string>()
-  const [filterTags, setFilterTags] = useState<Array<Keyword>>([]) // TODO rename to tags //MultiValue<AutoCompleteOption>
-  // TODO static search name
-  const [selectedOptions, setSelectedOptions] = useState<Array<StaticOption>>(
-    []
-  )
+  const [tagsFilter, setTagsFilter] = useState<Array<Keyword>>([])
+  const [staticFilter, setStaticFilter] = useState<Array<StaticOption>>([])
   const [page, setPage] = useState<number>(1)
 
   useEffect(() => {
@@ -75,7 +82,10 @@ export default function SearchPage({
   )
 
   const fetchAssets = useCallback(
-    async (parsed: queryString.ParsedQuery<string>, chainIds: number[]) => {
+    async (
+      parsed: queryString.ParsedQuery,
+      chainIds: number[]
+    ): Promise<void> => {
       setLoading(true)
       setTotalResults(undefined)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
@@ -95,16 +105,16 @@ export default function SearchPage({
     [newCancelToken, setTotalPagesNumber, setTotalResults]
   )
 
-  useEffect(() => {
+  useEffect((): void => {
     if (!parsed || !queryResult) return
     // console.log(aggregations)
     const { page } = parsed
     if (queryResult.totalPages < Number(page)) {
       updatePage(1)
     }
-  }, [parsed, queryResult]) //, updatePage
+  }, [parsed, queryResult])
 
-  useEffect(() => {
+  useEffect((): void => {
     if (!parsed || !chainIds) return
     fetchAssets(parsed, chainIds)
   }, [parsed, chainIds, newCancelToken, fetchAssets])
@@ -119,46 +129,42 @@ export default function SearchPage({
     setTotalPagesNumber(queryResult?.totalPages || 0)
   }
 
-  interface SearchParams {
-    tags?: Array<Keyword> // MultiValue<AutoCompleteOption> // TODO make this Keywords interface
-    text?: string
-    staticOptions?: Array<StaticOption>
-    currentPage?: number
-  }
-
-  // TODO no args
-  const onSearch = async (args: SearchParams): Promise<void> => {
+  const onSearch = async (args?: SearchParams): Promise<void> => {
     const {
-      tags = filterTags,
       text = searchText,
-      staticOptions = selectedOptions,
-      currentPage = page
-    } = args
+      tags = tagsFilter,
+      staticOptions = staticFilter,
+      currentPage = page,
+      sort = sortType,
+      sortOrder = sortDirection
+    } = args || {}
 
-    const tagFilter: Array<Filter> = tags.map((item: Keyword) => item.filter)
+    const tagsFilters: Array<Filter> = tags.map((item: Keyword) => item.filter)
 
-    const staticFilter: Array<Filter> = staticOptions.map(
+    const staticFilters: Array<Filter> = staticOptions.map(
       (item: StaticOption) => item.filter
     )
 
     const assets: PagedAssets = await getResults(
       {
         text,
-        filters: [...tagFilter, ...staticFilter],
-        sort: sortType,
-        sortDirection,
-        // TODO no clue why they made it a string
-        page: currentPage.toString()
+        filters: [...tagsFilters, ...staticFilters],
+        sort,
+        sortDirection: sortOrder,
+        page: currentPage
       },
       chainIds
     )
+
+    console.log(`sort: ${JSON.stringify(sort)}`)
+    console.log(`sortOrder: ${JSON.stringify(sortOrder)}`)
 
     setPageAssets(assets)
   }
 
   useEffect(() => {
-    onSearch({})
-  }, [page, filterTags, selectedOptions])
+    onSearch()
+  }, [page, tagsFilter, staticFilter, sortDirection, sortType])
 
   useEffect(() => {
     if ((queryResult?.totalPages || 1) < page) {
@@ -167,13 +173,12 @@ export default function SearchPage({
   }, [queryResult])
 
   const onSetTags = async (tags: Array<Keyword>): Promise<void> => {
-    setFilterTags(tags)
-    // await onSearch({ tags })
+    setTagsFilter(tags)
   }
 
   const onClearFilter = async (): Promise<void> => {
-    setFilterTags([])
-    setSelectedOptions([])
+    setTagsFilter([])
+    setStaticFilter([])
     setSearchText('')
   }
 
@@ -188,13 +193,19 @@ export default function SearchPage({
   const onSetStaticFilter = async (
     options: Array<StaticOption>
   ): Promise<void> => {
-    setSelectedOptions(options) // TODO name
-    // await onSearch({ staticOptions: options })
+    setStaticFilter(options)
   }
 
   const onPageChange = async (value: number): Promise<void> => {
     setPage(value)
-    // await onSearch({ currentPage: value })
+  }
+
+  const onSetSortDirection = async (value: string): Promise<void> => {
+    setSortDirection(value)
+  }
+
+  const onSetSortType = async (value: string): Promise<void> => {
+    setSortType(value)
   }
 
   return (
@@ -213,91 +224,8 @@ export default function SearchPage({
           <Sort
             sortType={sortType}
             sortDirection={sortDirection}
-            setSortType={async (value: string): Promise<void> => {
-              // console.log(`SETTING SORT TYPE: ${value}`)
-              setSortType(value)
-
-              const labelList: string[] = filterTags.map(
-                (option) => option.label
-              )
-              const filteredResults = aggregations?.tags?.filter(
-                (result: Keyword) => labelList.includes(result.label as string)
-              )
-              // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
-
-              const tagFilter = filteredResults.map((item: Keyword) => {
-                return {
-                  location: item.location,
-                  term: item.label
-                }
-              })
-
-              // TODO any
-              const staticFilter = selectedOptions.map((item: any) => {
-                // console.log(`STATIC: ${JSON.stringify(item)}`)
-                return {
-                  location: item.location,
-                  term: item.label
-                }
-              })
-
-              // console.log('TEXT SEARCH CALLBACK EXECUTED')
-              const assets: PagedAssets = await getResults(
-                {
-                  text: searchText, // TODO do we need this
-                  filters: [...tagFilter, ...staticFilter],
-                  sort: value,
-                  sortDirection,
-                  // TODO no clue why they made it a string
-                  page: page.toString()
-                },
-                chainIds
-              )
-              setPageAssets(assets)
-            }}
-            setSortDirection={async (value: string): Promise<void> => {
-              // console.log(`SETTING SORT DIRECTION: ${value}`)
-              setSortDirection(value)
-
-              const labelList: string[] = filterTags.map(
-                (option) => option.label
-              )
-              const filteredResults = aggregations?.tags?.filter(
-                (result: Keyword) => labelList.includes(result.label as string)
-              )
-              // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
-
-              const tagFilter = filteredResults.map((item: Keyword) => {
-                return {
-                  location: item.location,
-                  term: item.label
-                }
-              })
-
-              // TODO any
-              const staticFilter = selectedOptions.map((item: any) => {
-                // console.log(`STATIC: ${JSON.stringify(item)}`)
-                return {
-                  location: item.location,
-                  term: item.label
-                }
-              })
-
-              // console.log('TEXT SEARCH CALLBACK EXECUTED')
-              const assets: PagedAssets = await getResults(
-                {
-                  text: searchText, // TODO do we need this
-                  filters: [...tagFilter, ...staticFilter],
-                  sort: sortType,
-                  sortDirection: value,
-                  // TODO no clue why they made it a string
-                  page: page.toString()
-                },
-                chainIds
-              )
-              // console.log(JSON.stringify(assets))
-              setPageAssets(assets)
-            }}
+            setSortType={onSetSortType}
+            setSortDirection={onSetSortDirection}
           />
         </div>
       </div>
