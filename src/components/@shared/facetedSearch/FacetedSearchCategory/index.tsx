@@ -2,7 +2,7 @@ import React, { ReactElement, useState } from 'react'
 import FacetedSearchCollapseButton from '@shared/facetedSearch/FacetedSearchCollapseButton'
 import FacetedSearchCategorySubType from '@shared/facetedSearch/FacetedSearchCategorySubType'
 import styles from './index.module.css'
-import { KeywordResult } from '@components/Search/utils'
+import { StaticOption } from '@components/Search'
 
 export default function FacetedSearchCategory({
   searchCategory,
@@ -11,8 +11,8 @@ export default function FacetedSearchCategory({
   onValueChange
 }: {
   searchCategory: string
-  searchTypes: Array<KeywordResult & { isSelected: boolean }>
-  onValueChange: (label: string, isSelected: boolean) => Promise<void>
+  searchTypes: Array<StaticOption>
+  onValueChange: (option: StaticOption) => Promise<void>
   isCollapsable?: boolean
 }): ReactElement {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -22,19 +22,17 @@ export default function FacetedSearchCategory({
   }
 
   const getSearchElements = (): Array<ReactElement> => {
-    return searchTypes.map(
-      (searchType: KeywordResult & { isSelected: boolean }) => (
-        <FacetedSearchCategorySubType
-          key={searchType.label}
-          searchType={searchType.label}
-          hits={searchType.count}
-          onValueChange={(isChecked: boolean) =>
-            onValueChange(searchType.label, isChecked)
-          }
-          isSelected={searchType.isSelected}
-        />
-      )
-    )
+    return searchTypes.map((searchType: StaticOption) => (
+      <FacetedSearchCategorySubType
+        key={searchType.label}
+        searchType={searchType.label}
+        hits={searchType.count}
+        onValueChange={(isSelected: boolean) =>
+          onValueChange({ ...searchType, isSelected })
+        }
+        isSelected={searchType.isSelected}
+      />
+    ))
   }
 
   return (

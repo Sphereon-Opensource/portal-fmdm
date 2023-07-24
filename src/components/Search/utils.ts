@@ -32,7 +32,7 @@ export interface Filter {
   location: string
   range?: {
     operation: 'gt' | 'lt' | 'gte' | 'lte'
-    value: string | number
+    value: string
   }[]
   term?: { value: string | number }
 }
@@ -119,19 +119,23 @@ export function getSearchQuery(
     ]
   }
   filters &&
-    filterTerms.push(
-      ...filters.map((filter) =>
-        getFilterTerm(filter.location, filter.term?.value)
-      )
-    )
-  filters &&
-    filterRanges.push({
-      bool: {
-        should: [
+    filters.forEach((filter) => {
+      if (filter?.term) {
+        filterTerms.push(
           ...filters.map((filter) =>
-            getFilterRange(filter.location, filter.range)
+            getFilterTerm(filter.location, filter.term?.value)
           )
-        ]
+        )
+      } else if (filter?.range.length > 0) {
+        filterRanges.push({
+          bool: {
+            should: [
+              ...filters.map((filter) =>
+                getFilterRange(filter.location, filter.range)
+              )
+            ]
+          }
+        })
       }
     })
   const baseQueryParams = {
@@ -157,27 +161,7 @@ export interface AggregationQuery {
 export interface Keyword {
   label: string
   location?: string
-  // TODO why is this plural, its a singular object
   filter: Filter
-
-  //   {
-  // location: string
-  // range?: {
-  //   operation: 'gt' | 'lt' | 'gte' | 'lte'
-  //   value: string | number
-  // }[]
-  // term?: { value: string | number }
-
-  // TODO why not make proper interfaces first? why make nested objects? no wonder we have mismatches
-
-  // location: string
-  // range?: {
-  //   operation: 'gt' | 'lt' | 'gte' | 'lte'
-  //   value: string | number
-  // }[]
-  // term?: { value: string | number }
-  //
-  // }
   count: number
 }
 
@@ -189,6 +173,7 @@ export interface AggregationResult {
 export interface KeywordResult {
   label: string
   location: string
+  filter: Filter
   count: number
 }
 
@@ -327,7 +312,7 @@ export function formatGraphQLResults(
       keywords: a[1].buckets.map((b) => ({
         label: b.key_as_string ?? b.key,
         location: metadata.location,
-        filters: {
+        filter: {
           location: metadata.location,
           term: { value: b.key }
         },
@@ -347,18 +332,20 @@ export const formatTermsConditionsVerifiedResults = (
   return {
     category: 'Verified and Terms & Conditions',
     keywords: termsConditionsVerified.flatMap((tcv) => {
-      const filters = { ...tcv.keywords[0].filters, term: { value: 'true' } }
+      const filters = { ...tcv.keywords[0].filter, term: { value: 'true' } }
       if (
         tcv.keywords.find((a) => a.label === 'true') &&
         tcv.category === 'Is Verified'
       ) {
-        tcv.keywords = [{ ...tcv.keywords[0], label: 'verified', filters }]
+        tcv.keywords = [
+          { ...tcv.keywords[0], label: 'verified', filter: filters }
+        ]
       } else if (
         tcv.keywords.find((a) => a.label === 'true') &&
         tcv.category === 'Terms and Conditions'
       ) {
         tcv.keywords = [
-          { ...tcv.keywords[0], label: 'terms & conditions', filters }
+          { ...tcv.keywords[0], label: 'terms & conditions', filter: filters }
         ]
       }
       return tcv.keywords
@@ -379,15 +366,15 @@ export const formatPriceResults = (
       (a, b) => {
         return {
           label: a.label,
-          filters: {
-            ...b.filters,
-            location: b.filters.location,
+          filter: {
+            ...b.filter,
+            location: b.filter.location,
             term: { value: 0 }
           },
           count: a.count + b.count
         }
       },
-      { label: 'free', filters: {}, count: 0 }
+      { label: 'free', filter: {}, count: 0 }
     ) as Keyword
   const paid = price.keywords
     .filter((k) => +k.label > 0)
@@ -395,14 +382,14 @@ export const formatPriceResults = (
       (a, b) => {
         return {
           label: a.label,
-          filters: {
-            location: b.filters.location,
+          filter: {
+            location: b.filter.location,
             range: [{ op: 'gt', value: 0 }]
           },
           count: a.count + b.count
         }
       },
-      { label: 'paid', filters: {}, count: 0 }
+      { label: 'paid', filter: {}, count: 0 }
     ) as Keyword
 
   price.keywords = [free, paid]

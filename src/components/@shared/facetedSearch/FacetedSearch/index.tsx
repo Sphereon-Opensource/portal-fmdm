@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import FacetedSearchFilterAutoComplete, {
   AutoCompleteOption
 } from '@shared/facetedSearch/FacetedSearchFilterAutoComplete'
@@ -10,186 +10,66 @@ import {
   AggregationResult,
   AggregationResultUI,
   Keyword,
-  // getResults,
   KeywordResult
 } from '@components/Search/utils'
+import { StaticOption } from '@components/Search'
 
 export default function FacetedSearch({
   searchCategories,
-  // chainIds,
-  // setPageAssets,
   onClearFilter,
   onSetTagsFilter,
-  onSetSelectedOptions,
-  onSearch
+  onSetStaticFilter
 }: {
   searchCategories: AggregationResultUI
-  // chainIds: Array<number>
-  // setPageAssets: (assets: PagedAssets) => Promise<void>
   onClearFilter: () => Promise<void>
-  onSetTagsFilter: (tags: MultiValue<AutoCompleteOption>) => void
-  onSetSelectedOptions: (
-    options: Array<{
-      category: string
-      label: string
-      isSelected: boolean
-      location: string
-    }>
-  ) => void
-  onSearch: (
-    // text: string,
-    dynamicFilter: {
-      location: string
-      term: string
-    }[]
-  ) => Promise<void>
+  onSetTagsFilter: (tags: Array<Keyword>) => void // TODO Promise
+  onSetStaticFilter: (options: Array<StaticOption>) => void // TODO Promise
 }): ReactElement {
-  const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
+  const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>( // TODO name tags
     []
   ) // TODO this needs to contain the other values as well
-  const [selectedOptions, setSelectedOptions] = useState<
-    Array<{
-      category: string
-      label: string
-      isSelected: boolean
-      location: string
-    }>
-  >([])
-
-  const getTags = (): Array<{ label: string; value: string }> => {
-    return (
-      searchCategories?.tags.map((item: Keyword) => {
-        return { label: item.label, value: item.label }
-      }) || []
-    )
-    // if (!searchCategories?.tags) {
-    //   return []
-    // }
-    //
-    //
-    // return searchCategories?.tags?.map((item: Keyword) => {
-    //   return {
-    //     // TODO should always be a string
-    //     label: item.label as string,
-    //     // FIXME setting value twice as using the location for for the value which is shared by multiple tags breaks the input
-    //     value: item.label as string
-    //   }
-    // })
-  }
-
-  const executeSearch = async (): Promise<void> => {
-    const labelList: string[] = filterTags.map((option) => option.label)
-    const filteredResults = searchCategories?.tags?.filter((result: Keyword) =>
-      labelList.includes(result.label as string)
-    )
-    // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
-
-    const tagFilter = filteredResults.map((item: Keyword) => {
-      return {
-        location: item.location,
-        term: item.label
-      }
-    })
-
-    // TODO any
-    const staticFilter = selectedOptions.map((item: any) => {
-      // console.log(`STATIC: ${JSON.stringify(item)}`)
-      return {
-        location: item.location,
-        term: item.label
-      }
-    })
-
-    // console.log(`FILTER: ${JSON.stringify([...tagFilter, ...staticFilter])}`)
-
-    await onSearch([...tagFilter, ...staticFilter])
-
-    // TODO old
-    // const assets: PagedAssets = await getResults(
-    //   {
-    //     dynamicFilters: [...tagFilter, ...staticFilter]
-    //   },
-    //   chainIds
-    // )
-
-    // console.log(`ASSETS: ${JSON.stringify(assets)}`)
-
-    // await setPageAssets(assets)
-  }
-
-  useEffect(() => {
-    async function executeAsyncSearch() {
-      await executeSearch()
-    }
-    executeAsyncSearch()
-  }, [filterTags, selectedOptions])
+  const [selectedOptions, setSelectedOptions] = useState<Array<StaticOption>>(
+    []
+  )
 
   const getSearchElements = (): Array<ReactElement> => {
     return searchCategories.static.map((searchCategory: AggregationResult) => {
+      const searchTypes = searchCategory.keywords.map(
+        (item: KeywordResult) => ({
+          ...item,
+          category: searchCategory.category,
+          isSelected: selectedOptions.some(
+            (obj: StaticOption) =>
+              obj.category === searchCategory.category &&
+              obj.label === item.label
+          )
+        })
+      )
+
+      const onValueChange = async (option: StaticOption): Promise<void> => {
+        if (option.isSelected) {
+          const options: Array<StaticOption> = [...selectedOptions, option]
+          setSelectedOptions(options)
+          onSetStaticFilter(options)
+        } else {
+          const options: Array<StaticOption> = selectedOptions.filter(
+            (item: StaticOption) =>
+              !(
+                item.category === searchCategory.category &&
+                item.label === option.label
+              )
+          )
+          setSelectedOptions(options)
+          onSetStaticFilter(options)
+        }
+      }
+
       return (
         <FacetedSearchCategory
           key={searchCategory.category}
           searchCategory={searchCategory.category}
-          searchTypes={searchCategory.keywords.map((item: KeywordResult) => {
-            return {
-              ...item,
-              isSelected: selectedOptions.some(
-                (obj) =>
-                  obj.category === searchCategory.category &&
-                  obj.label === item.label
-              )
-            }
-          })}
-          onValueChange={async (
-            label: string,
-            isSelected: boolean
-          ): Promise<void> => {
-            if (isSelected) {
-              setSelectedOptions([
-                ...selectedOptions,
-                // TODO look up location
-                {
-                  category: searchCategory.category,
-                  label,
-                  isSelected,
-                  location: searchCategory.keywords.find(
-                    (item: KeywordResult) => item.label === label
-                  ).location
-                }
-              ])
-              onSetSelectedOptions([
-                ...selectedOptions,
-                // TODO look up location
-                {
-                  category: searchCategory.category,
-                  label,
-                  isSelected,
-                  location: searchCategory.keywords.find(
-                    (item: KeywordResult) => item.label === label
-                  ).location
-                }
-              ])
-            } else {
-              setSelectedOptions(
-                selectedOptions.filter(
-                  (item) =>
-                    !(
-                      item.category === searchCategory.category &&
-                      item.label === label
-                    )
-                )
-              )
-              onSetSelectedOptions(
-                selectedOptions.filter(
-                  (item) =>
-                    !(
-                      item.category === searchCategory.category &&
-                      item.label === label
-                    )
-                )
-              )
-            }
-          }}
+          searchTypes={searchTypes}
+          onValueChange={onValueChange}
         />
       )
     })
@@ -203,7 +83,15 @@ export default function FacetedSearch({
 
   const autoCompleteOnValueChange = (value: AutoCompleteOption[]): void => {
     setFilterTags(value)
-    onSetTagsFilter(value)
+
+    const tagList: Array<string> = value.map(
+      (option: AutoCompleteOption) => option.label
+    )
+    const tags: Array<Keyword> = searchCategories?.tags?.filter(
+      (result: Keyword) => tagList.includes(result.label)
+    )
+
+    onSetTagsFilter(tags)
   }
 
   return (
@@ -216,7 +104,7 @@ export default function FacetedSearch({
           value={filterTags} // TODO
           name={'facetedSearch'}
           placeholder={'Filter on tags'}
-          tags={getTags()}
+          tags={searchCategories?.tags || []}
         />
       </div>
       <div className={styles.searchCategoryContainer}>
