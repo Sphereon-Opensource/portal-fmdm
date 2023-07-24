@@ -9,6 +9,7 @@ import styles from './index.module.css'
 import {
   AggregationResult,
   AggregationResultUI,
+  Keyword,
   // getResults,
   KeywordResult
 } from '@components/Search/utils'
@@ -39,7 +40,7 @@ export default function FacetedSearch({
     // text: string,
     dynamicFilter: {
       location: string
-      value: string | string[]
+      term: string
     }[]
   ) => Promise<void>
 }): ReactElement {
@@ -55,31 +56,34 @@ export default function FacetedSearch({
     }>
   >([])
 
-  const getTags = (): Array<{ label: string; value: string }> => {
-    if (!searchCategories?.tags?.keywords) {
-      return []
-    }
-
-    return searchCategories?.tags?.keywords.map((item: KeywordResult) => {
-      return {
-        label: item.label,
-        // FIXME setting value twice as using the location for for the value which is shared by multiple tags breaks the input
-        value: item.label
-      }
-    })
+  const getTags = (): Array<Keyword> => {
+    return searchCategories?.tags || []
+    // if (!searchCategories?.tags) {
+    //   return []
+    // }
+    //
+    //
+    // return searchCategories?.tags?.map((item: Keyword) => {
+    //   return {
+    //     // TODO should always be a string
+    //     label: item.label as string,
+    //     // FIXME setting value twice as using the location for for the value which is shared by multiple tags breaks the input
+    //     value: item.label as string
+    //   }
+    // })
   }
 
   const executeSearch = async (): Promise<void> => {
     const labelList: string[] = filterTags.map((option) => option.label)
-    const filteredResults = searchCategories?.tags?.keywords.filter(
-      (result: KeywordResult) => labelList.includes(result.label)
+    const filteredResults = searchCategories?.tags?.filter((result: Keyword) =>
+      labelList.includes(result.label as string)
     )
     // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
 
-    const tagFilter = filteredResults.map((item: KeywordResult) => {
+    const tagFilter = filteredResults.map((item: Keyword) => {
       return {
         location: item.location,
-        value: item.label
+        term: item.label
       }
     })
 
@@ -88,7 +92,7 @@ export default function FacetedSearch({
       // console.log(`STATIC: ${JSON.stringify(item)}`)
       return {
         location: item.location,
-        value: item.label
+        term: item.label
       }
     })
 

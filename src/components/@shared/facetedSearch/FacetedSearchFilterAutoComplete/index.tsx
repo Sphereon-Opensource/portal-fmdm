@@ -10,6 +10,7 @@ import styles from './index.module.css'
 import { matchSorter } from 'match-sorter'
 import { InputProps } from '../../FormInput'
 import { chainIds } from 'app.config'
+import { Keyword } from '@components/Search/utils'
 
 export interface AutoCompleteOption {
   readonly value: string
@@ -23,7 +24,7 @@ export default function FacetedSearchFilterAutoComplete({
 }: InputProps & {
   value: MultiValue<AutoCompleteOption>
   onValueChange: (value: AutoCompleteOption[]) => void
-  tags: Array<{ label: string; value: string }>
+  tags: Array<Keyword>
 }): ReactElement {
   // console.log(`TagsAutoComplete: ${JSON.stringify(props)}`)
   const {
@@ -46,7 +47,7 @@ export default function FacetedSearchFilterAutoComplete({
   const generateAutocompleteOptions = (
     options: string[]
   ): AutoCompleteOption[] => {
-    return options?.map((tag) => ({
+    return options?.map((tag: string) => ({
       value: tag,
       label: tag
     }))

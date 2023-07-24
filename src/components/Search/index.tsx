@@ -1,11 +1,12 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import AssetList from '@shared/AssetList'
-import queryString, { ParsedQuery } from 'query-string'
+import queryString from 'query-string'
 import Sort from './sort'
 import {
   AggregationResultUI,
   formatUIResults,
   getResults,
+  Keyword,
   KeywordResult,
   updateQueryStringParameter
 } from './utils'
@@ -98,7 +99,7 @@ export default function SearchPage({
 
   useEffect(() => {
     if (!parsed || !queryResult) return
-    console.log(aggregations)
+    // console.log(aggregations)
     const { page } = parsed
     if (queryResult.totalPages < Number(page)) {
       updatePage(1)
@@ -119,7 +120,7 @@ export default function SearchPage({
   // console.log(`sortType: ${sortType}`)
   // console.log(`sortDirection: ${sortDirection}`)
 
-  console.log(`page: ${page}`)
+  // console.log(`page: ${page}`)
 
   return (
     <>
@@ -145,15 +146,16 @@ export default function SearchPage({
                 const labelList: string[] = filterTags.map(
                   (option) => option.label
                 )
-                const filteredResults = aggregations?.tags?.keywords.filter(
-                  (result: KeywordResult) => labelList.includes(result.label)
+                const filteredResults = aggregations?.tags?.filter(
+                  (result: Keyword) =>
+                    labelList.includes(result.label as string)
                 )
                 // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
 
-                const tagFilter = filteredResults.map((item: KeywordResult) => {
+                const tagFilter = filteredResults.map((item: Keyword) => {
                   return {
                     location: item.location,
-                    value: item.label
+                    term: item.label
                   }
                 })
 
@@ -162,7 +164,7 @@ export default function SearchPage({
                   // console.log(`STATIC: ${JSON.stringify(item)}`)
                   return {
                     location: item.location,
-                    value: item.label
+                    term: item.label
                   }
                 })
 
@@ -170,9 +172,9 @@ export default function SearchPage({
                 const assets: PagedAssets = await getResults(
                   {
                     text, // TODO do we need this
-                    dynamicFilters: [...tagFilter, ...staticFilter],
+                    filters: [...tagFilter, ...staticFilter],
                     sort: sortType,
-                    sortOrder: sortDirection,
+                    sortDirection,
                     // TODO no clue why they made it a string
                     page: page.toString()
                   },
@@ -186,21 +188,21 @@ export default function SearchPage({
             sortType={sortType}
             sortDirection={sortDirection}
             setSortType={async (value: string): Promise<void> => {
-              console.log(`SETTING SORT TYPE: ${value}`)
+              // console.log(`SETTING SORT TYPE: ${value}`)
               setSortType(value)
 
               const labelList: string[] = filterTags.map(
                 (option) => option.label
               )
-              const filteredResults = aggregations?.tags?.keywords.filter(
-                (result: KeywordResult) => labelList.includes(result.label)
+              const filteredResults = aggregations?.tags?.filter(
+                (result: Keyword) => labelList.includes(result.label as string)
               )
               // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
 
-              const tagFilter = filteredResults.map((item: KeywordResult) => {
+              const tagFilter = filteredResults.map((item: Keyword) => {
                 return {
                   location: item.location,
-                  value: item.label
+                  term: item.label
                 }
               })
 
@@ -209,7 +211,7 @@ export default function SearchPage({
                 // console.log(`STATIC: ${JSON.stringify(item)}`)
                 return {
                   location: item.location,
-                  value: item.label
+                  term: item.label
                 }
               })
 
@@ -217,9 +219,9 @@ export default function SearchPage({
               const assets: PagedAssets = await getResults(
                 {
                   text: searchText, // TODO do we need this
-                  dynamicFilters: [...tagFilter, ...staticFilter],
+                  filters: [...tagFilter, ...staticFilter],
                   sort: value,
-                  sortOrder: sortDirection,
+                  sortDirection,
                   // TODO no clue why they made it a string
                   page: page.toString()
                 },
@@ -228,21 +230,21 @@ export default function SearchPage({
               setPageAssets(assets)
             }}
             setSortDirection={async (value: string): Promise<void> => {
-              console.log(`SETTING SORT DIRECTION: ${value}`)
+              // console.log(`SETTING SORT DIRECTION: ${value}`)
               setSortDirection(value)
 
               const labelList: string[] = filterTags.map(
                 (option) => option.label
               )
-              const filteredResults = aggregations?.tags?.keywords.filter(
-                (result: KeywordResult) => labelList.includes(result.label)
+              const filteredResults = aggregations?.tags?.filter(
+                (result: Keyword) => labelList.includes(result.label as string)
               )
               // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
 
-              const tagFilter = filteredResults.map((item: KeywordResult) => {
+              const tagFilter = filteredResults.map((item: Keyword) => {
                 return {
                   location: item.location,
-                  value: item.label
+                  term: item.label
                 }
               })
 
@@ -251,7 +253,7 @@ export default function SearchPage({
                 // console.log(`STATIC: ${JSON.stringify(item)}`)
                 return {
                   location: item.location,
-                  value: item.label
+                  term: item.label
                 }
               })
 
@@ -259,15 +261,15 @@ export default function SearchPage({
               const assets: PagedAssets = await getResults(
                 {
                   text: searchText, // TODO do we need this
-                  dynamicFilters: [...tagFilter, ...staticFilter],
+                  filters: [...tagFilter, ...staticFilter],
                   sort: sortType,
-                  sortOrder: value,
+                  sortDirection: value,
                   // TODO no clue why they made it a string
                   page: page.toString()
                 },
                 chainIds
               )
-              console.log(JSON.stringify(assets))
+              // console.log(JSON.stringify(assets))
               setPageAssets(assets)
             }}
             // setSortDirection={setSortDirection}
@@ -314,16 +316,16 @@ export default function SearchPage({
                 // text: string,
                 dynamicFilters: {
                   location: string
-                  value: string
+                  term: string | number // TODO number?
                 }[]
               ): Promise<void> => {
                 // console.log('SEARCH CALLBACK EXECUTED')
                 const assets: PagedAssets = await getResults(
                   {
                     text: searchText,
-                    dynamicFilters,
+                    filters: dynamicFilters, // TODO var name
                     sort: sortType,
-                    sortOrder: sortDirection,
+                    sortDirection,
                     // TODO no clue why they made it a string
                     page: page.toString()
                   },
@@ -347,15 +349,15 @@ export default function SearchPage({
               const labelList: string[] = filterTags.map(
                 (option) => option.label
               )
-              const filteredResults = aggregations?.tags?.keywords.filter(
-                (result: KeywordResult) => labelList.includes(result.label)
+              const filteredResults = aggregations?.tags?.filter(
+                (result: Keyword) => labelList.includes(result.label as string)
               )
               // console.log(`TAGS ${JSON.stringify(filteredResults)}`)
 
-              const tagFilter = filteredResults.map((item: KeywordResult) => {
+              const tagFilter = filteredResults.map((item: Keyword) => {
                 return {
                   location: item.location,
-                  value: item.label
+                  term: item.label
                 }
               })
 
@@ -364,7 +366,7 @@ export default function SearchPage({
                 // console.log(`STATIC: ${JSON.stringify(item)}`)
                 return {
                   location: item.location,
-                  value: item.label
+                  term: item.label
                 }
               })
 
@@ -372,9 +374,9 @@ export default function SearchPage({
               const assets: PagedAssets = await getResults(
                 {
                   text: searchText, // TODO do we need this
-                  dynamicFilters: [...tagFilter, ...staticFilter],
+                  filters: [...tagFilter, ...staticFilter],
                   sort: sortType,
-                  sortOrder: sortDirection,
+                  sortDirection,
                   // TODO no clue why they made it a string
                   page: value.toString()
                 },
