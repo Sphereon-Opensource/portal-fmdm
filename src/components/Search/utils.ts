@@ -35,26 +35,22 @@ export function getSearchQuery(
     offset?: string
     sort?: string
     sortDirection?: string
-    dynamicFilters?: {
+    filters?: {
       location: string
-      value: string | string[]
-    }[]
-    rangeFilters?: {
-      location: string
-      operations: {
+      range?: {
         operation: 'gt' | 'lt' | 'gte' | 'lte'
         value: string | number
       }[]
+      term?: { value: string | number }
     }[]
   },
   chainIds: number[]
 ): SearchQuery {
-  const { page, offset, sort, sortDirection, dynamicFilters, rangeFilters } =
-    params
+  const { page, offset, sort, sortDirection, filters } = params
   const text = escapeEsReservedCharacters(params.text)
   const emptySearchTerm = text === undefined || text === ''
-  const filters: FilterTerm[] = []
-  const range: { bool: { should: FilterRange[] } }[] = []
+  const filterTerms: FilterTerm[] = []
+  const filterRanges: { bool: { should: FilterRange[] } }[] = []
   let searchTerm = text || ''
   searchTerm = searchTerm.trim()
   const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
@@ -120,16 +116,18 @@ export function getSearchQuery(
       }
     ]
   }
-  dynamicFilters &&
-    filters.push(
-      ...dynamicFilters.map((df) => getFilterTerm(df.location, df.value))
+  filters &&
+    filterTerms.push(
+      ...filters.map((filter) =>
+        getFilterTerm(filter.location, filter.term?.value)
+      )
     )
-  rangeFilters &&
-    range.push({
+  filters &&
+    filterRanges.push({
       bool: {
         should: [
-          ...rangeFilters.map((rf) =>
-            getFilterRange(rf.location, rf.operations)
+          ...filters.map((filter) =>
+            getFilterRange(filter.location, filter.range)
           )
         ]
       }
@@ -142,8 +140,8 @@ export function getSearchQuery(
       size: Number(offset) >= 0 ? Number(offset) : 21
     },
     sortOptions: sort ? { sortBy: sort, sortDirection } : undefined,
-    filters,
-    range
+    filters: filterTerms,
+    range: filterRanges
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
@@ -254,16 +252,13 @@ export async function getResults(
     offset?: string
     sort?: string
     sortOrder?: string
-    dynamicFilters?: {
+    filters?: {
       location: string
-      value: string | string[]
-    }[]
-    rangeFilters?: {
-      location: string
-      operations: {
+      range?: {
         operation: 'gt' | 'lt' | 'gte' | 'lte'
         value: string | number
       }[]
+      term: { value: string | number }
     }[]
     faceted?: boolean
   },
