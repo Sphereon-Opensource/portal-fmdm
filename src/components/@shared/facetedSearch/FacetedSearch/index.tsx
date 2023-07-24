@@ -56,8 +56,12 @@ export default function FacetedSearch({
     }>
   >([])
 
-  const getTags = (): Array<Keyword> => {
-    return searchCategories?.tags || []
+  const getTags = (): Array<{ label: string; value: string }> => {
+    return (
+      searchCategories?.tags.map((item: Keyword) => {
+        return { label: item.label, value: item.label }
+      }) || []
+    )
     // if (!searchCategories?.tags) {
     //   return []
     // }

@@ -300,9 +300,49 @@ export default function SearchPage({
                 setSelectedOptions([])
                 setSearchText('')
               }}
-              onSetTagsFilter={(tags: MultiValue<AutoCompleteOption>) =>
+              onSetTagsFilter={async (tags: MultiValue<AutoCompleteOption>) => {
+                console.log(`TAGS ADDED: ${JSON.stringify(tags)}`)
                 setFilterTags(tags)
-              }
+
+                const labelList: string[] = tags.map((option) => option.label)
+                const filteredResults = aggregations?.tags?.filter(
+                  (result: Keyword) =>
+                    labelList.includes(result.label as string)
+                )
+                console.log(`TAGS ${JSON.stringify(filteredResults)}`)
+
+                const tagFilter = filteredResults.map((item: Keyword) => {
+                  return item.filters
+                  //   {
+                  //   location: item.location,
+                  //   term: item.label
+                  // }
+                })
+
+                // // TODO any
+                // const staticFilter = selectedOptions.map((item: any) => {
+                //   // console.log(`STATIC: ${JSON.stringify(item)}`)
+                //   return {
+                //     location: item.location,
+                //     term: item.label
+                //   }
+                // })
+                //
+                // // console.log('TEXT SEARCH CALLBACK EXECUTED')
+                const assets: PagedAssets = await getResults(
+                  {
+                    text: searchText, // TODO do we need this
+                    filters: [...tagFilter], //, ...staticFilter
+                    sort: sortType,
+                    sortDirection,
+                    // TODO no clue why they made it a string
+                    page: page.toString()
+                  },
+                  chainIds
+                )
+                // console.log(JSON.stringify(assets))
+                setPageAssets(assets)
+              }}
               // TODO name static
               onSetSelectedOptions={(
                 options: Array<{

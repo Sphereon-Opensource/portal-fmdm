@@ -24,7 +24,7 @@ export default function FacetedSearchFilterAutoComplete({
 }: InputProps & {
   value: MultiValue<AutoCompleteOption>
   onValueChange: (value: AutoCompleteOption[]) => void
-  tags: Array<Keyword>
+  tags: Array<{ label: string; value: string }>
 }): ReactElement {
   // console.log(`TagsAutoComplete: ${JSON.stringify(props)}`)
   const {
@@ -73,14 +73,14 @@ export default function FacetedSearchFilterAutoComplete({
   //   // helpers.setTouched(true)
   // }
 
-  const handleOptionsFilter = (
-    options: AutoCompleteOption[],
-    input: string
-  ): void => {
-    // setInput(input)
-    const matchedTagsList = matchSorter(options, input, { keys: ['value'] })
-    // setMatchedTagsList(matchedTagsList)
-  }
+  // const handleOptionsFilter = (
+  //   options: AutoCompleteOption[],
+  //   input: string
+  // ): void => {
+  //   // setInput(input)
+  //   const matchedTagsList = matchSorter(options, input, { keys: ['value'] })
+  //   // setMatchedTagsList(matchedTagsList)
+  // }
 
   return (
     <CreatableSelect
@@ -93,9 +93,11 @@ export default function FacetedSearchFilterAutoComplete({
       isMulti
       isClearable={true}
       onChange={onValueChange} // (value: AutoCompleteOption[]) => handleChange(value)}
-      onInputChange={(value) => handleOptionsFilter(tagsList, value)}
+      // onInputChange={(value) => handleOptionsFilter(tagsList, value)}
       openMenuOnClick
-      options={tags.slice().sort((a, b) => a.label.localeCompare(b.label))}
+      options={tags
+        .slice()
+        .sort((a: Keyword, b: Keyword) => a.label.localeCompare(b.label))}
       placeholder={placeholder}
       value={value}
       theme={(theme) => ({

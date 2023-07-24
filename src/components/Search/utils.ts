@@ -155,16 +155,29 @@ export interface AggregationQuery {
 }
 
 export interface Keyword {
-  label: string | number
+  label: string
   location?: string
-  filters: {
-    location: string
-    range?: {
-      op: 'gt' | 'lt' | 'gte' | 'lte'
-      value: string | number
-    }[]
-    term?: { value: string | number }
-  }
+  // TODO why is this plural, its a singular object
+  filter: Filter
+
+  //   {
+  // location: string
+  // range?: {
+  //   operation: 'gt' | 'lt' | 'gte' | 'lte'
+  //   value: string | number
+  // }[]
+  // term?: { value: string | number }
+
+  // TODO why not make proper interfaces first? why make nested objects? no wonder we have mismatches
+
+  // location: string
+  // range?: {
+  //   operation: 'gt' | 'lt' | 'gte' | 'lte'
+  //   value: string | number
+  // }[]
+  // term?: { value: string | number }
+  //
+  // }
   count: number
 }
 
