@@ -71,6 +71,13 @@ export default function SearchPage({
     [router]
   )
 
+  const setPageAssets = (queryResult: PagedAssets): void => {
+    setQueryResult(queryResult)
+    setTotalResults(queryResult?.totalResults || 0)
+    setTotalPagesNumber(queryResult?.totalPages || 0)
+    setLoading(false)
+  }
+
   const fetchAssets = useCallback(
     async (
       parsed: queryString.ParsedQuery,
@@ -86,11 +93,7 @@ export default function SearchPage({
       )
 
       setAggregations(formatUIResults(aggregationResult))
-      setQueryResult(queryResult)
-
-      setTotalResults(queryResult?.totalResults || 0)
-      setTotalPagesNumber(queryResult?.totalPages || 0)
-      setLoading(false)
+      setPageAssets(queryResult)
     },
     [newCancelToken, setTotalPagesNumber, setTotalResults]
   )
@@ -108,12 +111,6 @@ export default function SearchPage({
     fetchAssets(parsed, chainIds)
   }, [parsed, chainIds, newCancelToken, fetchAssets])
 
-  const setPageAssets = (queryResult: PagedAssets): void => {
-    setQueryResult(queryResult)
-    setTotalResults(queryResult?.totalResults || 0)
-    setTotalPagesNumber(queryResult?.totalPages || 0)
-  }
-
   const onSearch = async (args?: SearchParams): Promise<void> => {
     const {
       text = searchText,
@@ -123,7 +120,7 @@ export default function SearchPage({
       sort = sortType,
       sortOrder = sortDirection
     } = args || {}
-
+    setLoading(true)
     const tagsFilters: Array<Filter> = tags.map((item: Keyword) => item.filter)
 
     const staticFilters: Array<Filter> = staticOptions.map(
