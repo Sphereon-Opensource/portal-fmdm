@@ -10,7 +10,7 @@ export default function FacetedSearchCategorySubType({
 }: {
   searchType: string
   onValueChange: (isChecked: boolean) => Promise<void>
-  hits?: number // TODO figure out how this works and if it is always present
+  hits?: number
   isSelected?: boolean
 }): ReactElement {
   return (

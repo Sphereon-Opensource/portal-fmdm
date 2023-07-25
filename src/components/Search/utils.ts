@@ -25,6 +25,11 @@ export function updateQueryStringParameter(
   }
 }
 
+export type StaticOption = KeywordResult & {
+  category: string
+  isSelected: boolean
+}
+
 export interface Filter {
   location: string
   range?: {

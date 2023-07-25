@@ -14,7 +14,7 @@ export default function FacetedSearchFilterAutoComplete({
   ...props
 }: InputProps & {
   value: MultiValue<AutoCompleteOption>
-  onValueChange: (value: AutoCompleteOption[]) => void // TODO async?
+  onValueChange: (value: AutoCompleteOption[]) => Promise<void>
   tags: Array<Keyword>
 }): ReactElement {
   const { placeholder, value, onValueChange, tags } = props
@@ -31,9 +31,12 @@ export default function FacetedSearchFilterAutoComplete({
       isClearable={true}
       onChange={onValueChange}
       openMenuOnClick
-      options={tags // TODO
+      options={tags
+        .map((tag: Keyword) => ({ label: tag.label, value: tag.label }))
         .slice()
-        .sort((a: Keyword, b: Keyword) => a.label.localeCompare(b.label))}
+        .sort((a: AutoCompleteOption, b: AutoCompleteOption) =>
+          a.label.localeCompare(b.label)
+        )}
       placeholder={placeholder}
       value={value}
       theme={(theme) => ({

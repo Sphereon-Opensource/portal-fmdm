@@ -8,7 +8,7 @@ import {
   formatUIResults,
   getResults,
   Keyword,
-  KeywordResult,
+  StaticOption,
   updateQueryStringParameter
 } from './utils'
 import { useUserPreferences } from '@context/UserPreferences'
@@ -18,13 +18,6 @@ import { useRouter } from 'next/router'
 import FacetedSearch from '@shared/facetedSearch/FacetedSearch'
 import FacetedTextSearchBar from '@components/@shared/facetedSearch/FacetedTextSearchBar'
 
-// TODO move
-export type StaticOption = KeywordResult & {
-  category: string
-  isSelected: boolean
-}
-
-// TODO move
 interface SearchParams {
   tags?: Array<Keyword>
   text?: string
@@ -121,7 +114,7 @@ export default function SearchPage({
 
   const setPageAssets = (queryResult: PagedAssets): void => {
     setQueryResult(queryResult)
-    // console.log(`queryResult: ${JSON.stringify(queryResult)}`)
+    console.log(`queryResult: ${JSON.stringify(queryResult)}`)
     // console.log(`Total results: ${queryResult?.totalResults || 0}`)
     // console.log(`Total page numbers: ${queryResult?.totalPages || 0}`)
     // console.log(`current page: ${page}`)
@@ -145,6 +138,9 @@ export default function SearchPage({
       (item: StaticOption) => item.filter
     )
 
+    console.log(`sort: ${JSON.stringify(sort)}`)
+    console.log(`sortOrder: ${JSON.stringify(sortOrder)}`)
+
     const assets: PagedAssets = await getResults(
       {
         text,
@@ -153,20 +149,18 @@ export default function SearchPage({
         sortDirection: sortOrder,
         page: currentPage
       },
-      chainIds
+      chainIds,
+      newCancelToken()
     )
-
-    console.log(`sort: ${JSON.stringify(sort)}`)
-    console.log(`sortOrder: ${JSON.stringify(sortOrder)}`)
 
     setPageAssets(assets)
   }
 
-  useEffect(() => {
+  useEffect((): void => {
     onSearch()
   }, [page, tagsFilter, staticFilter, sortDirection, sortType])
 
-  useEffect(() => {
+  useEffect((): void => {
     if ((queryResult?.totalPages || 1) < page) {
       setPage(1)
     }
@@ -230,9 +224,8 @@ export default function SearchPage({
         </div>
       </div>
 
-      {/* // TODO styling */}
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ marginTop: 37, marginRight: 30 }}>
+      <div className={styles.container}>
+        <div className={styles.facetedSearch}>
           {aggregations && (
             <FacetedSearch
               searchCategories={aggregations}
@@ -242,7 +235,7 @@ export default function SearchPage({
             />
           )}
         </div>
-        <div style={{ flexGrow: 1 }} className={styles.results}>
+        <div className={styles.results}>
           <AssetList
             assets={queryResult?.results}
             showPagination

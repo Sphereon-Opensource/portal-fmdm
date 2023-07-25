@@ -10,9 +10,9 @@ import {
   AggregationResult,
   AggregationResultUI,
   Keyword,
-  KeywordResult
+  KeywordResult,
+  StaticOption
 } from '@components/Search/utils'
-import { StaticOption } from '@components/Search'
 
 export default function FacetedSearch({
   searchCategories,
@@ -22,12 +22,12 @@ export default function FacetedSearch({
 }: {
   searchCategories: AggregationResultUI
   onClearFilter: () => Promise<void>
-  onSetTagsFilter: (tags: Array<Keyword>) => void // TODO Promise
-  onSetStaticFilter: (options: Array<StaticOption>) => void // TODO Promise
+  onSetTagsFilter: (tags: Array<Keyword>) => Promise<void>
+  onSetStaticFilter: (options: Array<StaticOption>) => Promise<void>
 }): ReactElement {
-  const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>( // TODO name tags
+  const [filterTags, setFilterTags] = useState<MultiValue<AutoCompleteOption>>(
     []
-  ) // TODO this needs to contain the other values as well
+  )
   const [selectedOptions, setSelectedOptions] = useState<Array<StaticOption>>(
     []
   )
@@ -50,7 +50,7 @@ export default function FacetedSearch({
         if (option.isSelected) {
           const options: Array<StaticOption> = [...selectedOptions, option]
           setSelectedOptions(options)
-          onSetStaticFilter(options)
+          await onSetStaticFilter(options)
         } else {
           const options: Array<StaticOption> = selectedOptions.filter(
             (item: StaticOption) =>
@@ -60,7 +60,7 @@ export default function FacetedSearch({
               )
           )
           setSelectedOptions(options)
-          onSetStaticFilter(options)
+          await onSetStaticFilter(options)
         }
       }
 
@@ -81,7 +81,9 @@ export default function FacetedSearch({
     await onClearFilter()
   }
 
-  const autoCompleteOnValueChange = (value: AutoCompleteOption[]): void => {
+  const autoCompleteOnValueChange = async (
+    value: AutoCompleteOption[]
+  ): Promise<void> => {
     setFilterTags(value)
 
     const tagList: Array<string> = value.map(
@@ -91,7 +93,7 @@ export default function FacetedSearch({
       (result: Keyword) => tagList.includes(result.label)
     )
 
-    onSetTagsFilter(tags)
+    await onSetTagsFilter(tags)
   }
 
   return (
@@ -101,7 +103,7 @@ export default function FacetedSearch({
         <FacetedSearchClearFilterButton onClick={clearFilters} />
         <FacetedSearchFilterAutoComplete
           onValueChange={autoCompleteOnValueChange}
-          value={filterTags} // TODO
+          value={filterTags} // FIXME
           name={'facetedSearch'}
           placeholder={'Filter on tags'}
           tags={searchCategories?.tags || []}

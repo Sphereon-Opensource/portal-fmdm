@@ -38,13 +38,7 @@ export default function Index({
   initialValue?: string
   isSearchPage?: boolean
   onValueChange?: (value: string) => void
-  onSearch: (
-    text: string
-    // dynamicFilter: {
-    //   location: string
-    //   value: string | string[]
-    // }[]
-  ) => Promise<void>
+  onSearch: (text: string) => Promise<void>
 }): ReactElement {
   const router = useRouter()
   const [value, setValue] = useState(initialValue)
@@ -78,23 +72,15 @@ export default function Index({
     }
   }, [isSearchBarVisible, homeSearchBarFocus])
 
-  async function startSearch(e: FormEvent<HTMLButtonElement>) {
+  async function startSearch(e: FormEvent<HTMLButtonElement>): Promise<void> {
     e.preventDefault()
-
-    if (value === '') setValue(' ')
-
+    if (value === '') {
+      setValue(' ')
+    }
     await onSearch(value)
-
-    // const urlEncodedValue = encodeURIComponent(value)
-    // const url = await addExistingParamsToUrl(location, [
-    //   'text',
-    //   'owner',
-    //   'tags'
-    // ])
-    // router.push(`${url}&text=${urlEncodedValue}`)
   }
 
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+  async function handleChange(e: ChangeEvent<HTMLInputElement>): Promise<void> {
     setValue(e.target.value)
     if (onValueChange) {
       onValueChange(e.target.value)
@@ -102,13 +88,17 @@ export default function Index({
     e.target.value === '' && emptySearch()
   }
 
-  async function handleKeyPress(e: KeyboardEvent<HTMLInputElement>) {
+  async function handleKeyPress(
+    e: KeyboardEvent<HTMLInputElement>
+  ): Promise<void> {
     if (e.key === 'Enter') {
       await startSearch(e)
     }
   }
 
-  async function handleButtonClick(e: FormEvent<HTMLButtonElement>) {
+  async function handleButtonClick(
+    e: FormEvent<HTMLButtonElement>
+  ): Promise<void> {
     e.preventDefault()
     await startSearch(e)
   }

@@ -2,7 +2,7 @@ import React, { ReactElement, useState } from 'react'
 import FacetedSearchCollapseButton from '@shared/facetedSearch/FacetedSearchCollapseButton'
 import FacetedSearchCategorySubType from '@shared/facetedSearch/FacetedSearchCategorySubType'
 import styles from './index.module.css'
-import { StaticOption } from '@components/Search'
+import { StaticOption } from '@components/Search/utils'
 
 export default function FacetedSearchCategory({
   searchCategory,
