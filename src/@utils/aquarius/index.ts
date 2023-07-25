@@ -136,12 +136,12 @@ export function generateBaseQuery(
     generatedQuery.aggs = baseQueryParams.aggs
   }
 
-  // if (baseQueryParams.sortOptions !== undefined)
-  //   generatedQuery.sort = {
-  //     [baseQueryParams.sortOptions.sortBy]:
-  //       baseQueryParams.sortOptions.sortDirection ||
-  //       SortDirectionOptions.Descending
-  //   }
+  if (baseQueryParams.sortOptions !== undefined)
+    generatedQuery.sort = {
+      [baseQueryParams.sortOptions.sortBy]:
+        baseQueryParams.sortOptions.sortDirection ||
+        SortDirectionOptions.Descending
+    }
   return generatedQuery
 }
 
