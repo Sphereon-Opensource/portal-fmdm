@@ -10,7 +10,6 @@ import {
   AggregationResult,
   AggregationResultUI,
   Keyword,
-  KeywordResult,
   StaticOption
 } from '@components/Search/utils'
 
@@ -34,8 +33,8 @@ export default function FacetedSearch({
 
   const getSearchElements = (): Array<ReactElement> => {
     return searchCategories.static.map((searchCategory: AggregationResult) => {
-      const searchTypes = searchCategory.keywords.map(
-        (item: KeywordResult) => ({
+      const searchTypes: StaticOption[] = searchCategory.keywords.map(
+        (item: Keyword) => ({
           ...item,
           category: searchCategory.category,
           isSelected: selectedOptions.some(

@@ -138,8 +138,8 @@ export default function SearchPage({
       (item: StaticOption) => item.filter
     )
 
-    console.log(`sort: ${JSON.stringify(sort)}`)
-    console.log(`sortOrder: ${JSON.stringify(sortOrder)}`)
+    console.log(`sort: ${sort}`)
+    console.log(`sortOrder: ${sortOrder}`)
 
     const assets: PagedAssets = await getResults(
       {

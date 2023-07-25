@@ -10,6 +10,7 @@ import {
 import { transformAssetToAssetSelection } from '../assetConvertor'
 import addressConfig from '../../../address.config'
 import { isValidDid } from '../ddo'
+import { Range } from '@components/Search/utils'
 
 export interface UserSales {
   id: string
@@ -48,21 +49,15 @@ export function getFilterTerm(
 
 export function getFilterRange(
   filterField: string,
-  operations: {
-    operation: 'gt' | 'lt' | 'gte' | 'lte'
-    value: string | number
-  }[]
+  range: Range[]
 ): FilterRange {
-  if (operations.length < 1 || operations.length > 2) {
+  if (range.length < 1 || range.length > 2) {
     throw Error('Range: Minimum: 1, Maximum 2 operations allowed')
   }
   return {
     range: {
       [filterField]: {
-        ...operations.reduce(
-          (obj, prop) => ({ [prop.operation]: prop.value }),
-          {}
-        )
+        ...range.reduce((obj, prop) => ({ [prop.operation]: prop.value }), {})
       }
     }
   } as FilterRange
@@ -136,12 +131,12 @@ export function generateBaseQuery(
     generatedQuery.aggs = baseQueryParams.aggs
   }
 
-  // if (baseQueryParams.sortOptions !== undefined)
-  //   generatedQuery.sort = {
-  //     [baseQueryParams.sortOptions.sortBy]:
-  //       baseQueryParams.sortOptions.sortDirection ||
-  //       SortDirectionOptions.Descending
-  //   }
+  if (baseQueryParams.sortOptions !== undefined)
+    generatedQuery.sort = {
+      [baseQueryParams.sortOptions.sortBy]:
+        baseQueryParams.sortOptions.sortDirection ||
+        SortDirectionOptions.Descending
+    }
   return generatedQuery
 }
 

@@ -25,17 +25,19 @@ export function updateQueryStringParameter(
   }
 }
 
-export type StaticOption = KeywordResult & {
+export type StaticOption = Keyword & {
   category: string
   isSelected: boolean
 }
 
+export interface Range {
+  operation: 'gt' | 'lt' | 'gte' | 'lte'
+  value: string
+}
+
 export interface Filter {
   location: string
-  range?: {
-    operation: 'gt' | 'lt' | 'gte' | 'lte'
-    value: string
-  }[]
+  range?: Range[]
   term?: { value: string | string[] }
 }
 
@@ -123,19 +125,12 @@ export function getSearchQuery(
   filters &&
     filters.forEach((filter) => {
       if (filter?.term) {
-        filterTerms.push(
-          ...filters.map((filter) =>
-            getFilterTerm(filter.location, filter.term?.value)
-          )
-        )
-      } else if (filter?.range.length > 0) {
+        filterTerms.push(getFilterTerm(filter.location, filter.term?.value))
+      }
+      if (filter?.range?.length > 0) {
         filterRanges.push({
           bool: {
-            should: [
-              ...filters.map((filter) =>
-                getFilterRange(filter.location, filter.range)
-              )
-            ]
+            should: [getFilterRange(filter.location, filter.range)]
           }
         })
       }
@@ -160,21 +155,14 @@ export interface AggregationQuery {
   [x: string]: { terms: { field: string; size?: number } }
 }
 
+export interface AggregationResult {
+  category: string
+  keywords: Array<Keyword>
+}
+
 export interface Keyword {
   label: string
   location?: string
-  filter: Filter
-  count: number
-}
-
-export interface AggregationResult {
-  category: string
-  keywords: Array<KeywordResult>
-}
-
-export interface KeywordResult {
-  label: string
-  location: string
   filter: Filter
   count: number
 }
@@ -386,7 +374,7 @@ export const formatPriceResults = (
           label: a.label,
           filter: {
             location: b.filter.location,
-            range: [{ op: 'gt', value: 0 }]
+            range: [{ operation: 'gt', value: 0 }]
           },
           count: a.count + b.count
         }
@@ -405,7 +393,7 @@ export const formatLanguagesResults = (
   // eslint-disable-next-line array-callback-return
   languages.keywords = languages?.keywords.map((lang) => {
     if (typeof lang.label === 'string' && lang.label.includes('Dockerfile')) {
-      return { ...lang, label: (lang.label = 'Custom Docker Image') }
+      return { ...lang, label: (lang.label = 'custom docker image') }
     }
     return lang
   })
