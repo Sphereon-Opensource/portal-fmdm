@@ -114,7 +114,7 @@ export default function SearchPage({
 
   const setPageAssets = (queryResult: PagedAssets): void => {
     setQueryResult(queryResult)
-    console.log(`queryResult: ${JSON.stringify(queryResult)}`)
+    // console.log(`queryResult: ${JSON.stringify(queryResult)}`)
     // console.log(`Total results: ${queryResult?.totalResults || 0}`)
     // console.log(`Total page numbers: ${queryResult?.totalPages || 0}`)
     // console.log(`current page: ${page}`)
