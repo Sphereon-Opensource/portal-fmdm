@@ -36,6 +36,7 @@ export interface Range {
 }
 
 export interface Filter {
+  category: string
   location: string
   range?: Range[]
   term?: { value: string | string[] }
@@ -55,8 +56,7 @@ export function getSearchQuery(
   const { page, offset, sort, sortDirection, filters } = params
   const text = escapeEsReservedCharacters(params.text)
   const emptySearchTerm = text === undefined || text === ''
-  const filterTerms: FilterTerm[] = []
-  const filterRanges: { bool: { should: FilterRange[] } }[] = []
+  const filterTerms = new Map<string, Array<FilterTerm | FilterRange>>()
   let searchTerm = text || ''
   searchTerm = searchTerm.trim()
   const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
@@ -124,15 +124,26 @@ export function getSearchQuery(
   }
   filters &&
     filters.forEach((filter) => {
-      if (filter?.term) {
-        filterTerms.push(getFilterTerm(filter.location, filter.term?.value))
-      }
-      if (filter?.range?.length > 0) {
-        filterRanges.push({
-          bool: {
-            should: [getFilterRange(filter.location, filter.range)]
-          }
-        })
+      if (filterTerms.has(filter.category)) {
+        if (filter?.term) {
+          const terms = filterTerms.get(filter.category)
+          terms.push(getFilterTerm(filter.location, filter.term?.value))
+          filterTerms.set(filter.category, terms)
+        } else if (filter?.range) {
+          const terms = filterTerms.get(filter.category)
+          terms.push(getFilterRange(filter.location, filter.range))
+          filterTerms.set(filter.category, terms)
+        }
+      } else {
+        if (filter?.term) {
+          filterTerms.set(filter.category, [
+            getFilterTerm(filter.location, filter.term?.value)
+          ])
+        } else if (filter?.range) {
+          filterTerms.set(filter.category, [
+            getFilterRange(filter.location, filter.range)
+          ])
+        }
       }
     })
   const baseQueryParams = {
@@ -143,12 +154,10 @@ export function getSearchQuery(
       size: Number(offset) >= 0 ? Number(offset) : 21
     },
     sortOptions: sort && { sortBy: sort, sortDirection },
-    filters: filterTerms,
-    range: filterRanges
+    andOrFilters: Array.from(filterTerms.values())
   } as BaseQueryParams
 
-  const query = generateBaseQuery(baseQueryParams)
-  return query
+  return generateBaseQuery(baseQueryParams)
 }
 
 export interface AggregationQuery {
@@ -303,6 +312,7 @@ export function formatGraphQLResults(
         label: b.key_as_string ?? b.key,
         location: metadata.location,
         filter: {
+          category: metadata.label,
           location: metadata.location,
           term: { value: b.key }
         },
@@ -322,7 +332,11 @@ export const formatTermsConditionsVerifiedResults = (
   return {
     category: 'Verified and Terms & Conditions',
     keywords: termsConditionsVerified.flatMap((tcv) => {
-      const filters = { ...tcv.keywords[0].filter, term: { value: 'true' } }
+      const filters = {
+        ...tcv.keywords[0].filter,
+        category: 'Verified and Terms & Conditions',
+        term: { value: 'true' }
+      }
       if (
         tcv.keywords.find((a) => a.label === 'true') &&
         tcv.category === 'Is Verified'
@@ -357,6 +371,7 @@ export const formatPriceResults = (
         return {
           label: a.label,
           filter: {
+            category: a.filter.category,
             ...b.filter,
             location: b.filter.location,
             term: { value: 0 }
@@ -364,7 +379,7 @@ export const formatPriceResults = (
           count: a.count + b.count
         }
       },
-      { label: 'free', filter: {}, count: 0 }
+      { label: 'free', filter: { category: 'Price' }, count: 0 }
     ) as Keyword
   const paid = price.keywords
     .filter((k) => +k.label > 0)
@@ -373,13 +388,14 @@ export const formatPriceResults = (
         return {
           label: a.label,
           filter: {
+            category: a.filter.category,
             location: b.filter.location,
             range: [{ operation: 'gt', value: 0 }]
           },
           count: a.count + b.count
         }
       },
-      { label: 'paid', filter: {}, count: 0 }
+      { label: 'paid', filter: { category: 'Price' }, count: 0 }
     ) as Keyword
 
   price.keywords = [free, paid]

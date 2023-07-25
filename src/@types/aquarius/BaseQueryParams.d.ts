@@ -11,7 +11,7 @@ interface BaseQueryParams {
   sortOptions?: SortOptions
   aggs?: any
   filters?: FilterTerm[]
-  range?: { bool: { should: FilterRange[] } }[]
+  andOrFilters?: FilterTerm[][]
   ignorePurgatory?: boolean
   ignoreState?: boolean
 }
