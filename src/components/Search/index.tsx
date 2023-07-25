@@ -1,18 +1,31 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import AssetList from '@shared/AssetList'
 import queryString from 'query-string'
-import Filters from './Filters'
 import Sort from './sort'
 import {
   AggregationResultUI,
+  Filter,
   formatUIResults,
   getResults,
+  Keyword,
+  StaticOption,
   updateQueryStringParameter
 } from './utils'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
+import FacetedSearch from '@shared/facetedSearch/FacetedSearch'
+import FacetedTextSearchBar from '@components/@shared/facetedSearch/FacetedTextSearchBar'
+
+interface SearchParams {
+  tags?: Array<Keyword>
+  text?: string
+  staticOptions?: Array<StaticOption>
+  currentPage?: number
+  sort?: string
+  sortOrder?: string
+}
 
 export default function SearchPage({
   setTotalResults,
@@ -22,27 +35,25 @@ export default function SearchPage({
   setTotalPagesNumber: (totalPagesNumber: number) => void
 }): ReactElement {
   const router = useRouter()
-  const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
+  const newCancelToken = useCancelToken()
   const { chainIds } = useUserPreferences()
+  const [parsed, setParsed] = useState<queryString.ParsedQuery>()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [aggregations, setAggregations] = useState<AggregationResultUI>()
   const [loading, setLoading] = useState<boolean>()
-  const [serviceType, setServiceType] = useState<string>()
-  const [accessType, setAccessType] = useState<string>()
-  const [complianceType, setComplianceType] = useState<string>()
   const [sortType, setSortType] = useState<string>()
   const [sortDirection, setSortDirection] = useState<string>()
-  const newCancelToken = useCancelToken()
+  const [searchText, setSearchText] = useState<string>()
+  const [tagsFilter, setTagsFilter] = useState<Array<Keyword>>([])
+  const [staticFilter, setStaticFilter] = useState<Array<StaticOption>>([])
+  const [page, setPage] = useState<number>(1)
 
   useEffect(() => {
     const parsed = queryString.parse(location.search)
-    const { sort, sortOrder, serviceType, accessType, complianceType } = parsed
+    // const { sort, sortOrder } = parsed
     setParsed(parsed)
-    setServiceType(serviceType as string)
-    setAccessType(accessType as string)
-    setComplianceType(complianceType as string)
-    setSortDirection(sortOrder as string)
-    setSortType(sort as string)
+    // setSortDirection(sortOrder as string)
+    // setSortType(sort as string)
   }, [router])
 
   const updatePage = useCallback(
@@ -64,7 +75,10 @@ export default function SearchPage({
   )
 
   const fetchAssets = useCallback(
-    async (parsed: queryString.ParsedQuery<string>, chainIds: number[]) => {
+    async (
+      parsed: queryString.ParsedQuery,
+      chainIds: number[]
+    ): Promise<void> => {
       setLoading(true)
       setTotalResults(undefined)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
@@ -83,49 +97,155 @@ export default function SearchPage({
     },
     [newCancelToken, setTotalPagesNumber, setTotalResults]
   )
-  useEffect(() => {
-    if (!parsed || !queryResult) return
-    console.log(aggregations)
-    const { page } = parsed
-    if (queryResult.totalPages < Number(page)) updatePage(1)
-  }, [parsed, queryResult, updatePage])
 
-  useEffect(() => {
+  useEffect((): void => {
+    if (!parsed || !queryResult) return
+    // console.log(aggregations)
+    const { page } = parsed
+    if (queryResult.totalPages < Number(page)) {
+      updatePage(1)
+    }
+  }, [parsed, queryResult])
+
+  useEffect((): void => {
     if (!parsed || !chainIds) return
     fetchAssets(parsed, chainIds)
   }, [parsed, chainIds, newCancelToken, fetchAssets])
+
+  const setPageAssets = (queryResult: PagedAssets): void => {
+    setQueryResult(queryResult)
+    console.log(`queryResult: ${JSON.stringify(queryResult)}`)
+    // console.log(`Total results: ${queryResult?.totalResults || 0}`)
+    // console.log(`Total page numbers: ${queryResult?.totalPages || 0}`)
+    // console.log(`current page: ${page}`)
+    setTotalResults(queryResult?.totalResults || 0)
+    setTotalPagesNumber(queryResult?.totalPages || 0)
+  }
+
+  const onSearch = async (args?: SearchParams): Promise<void> => {
+    const {
+      text = searchText,
+      tags = tagsFilter,
+      staticOptions = staticFilter,
+      currentPage = page,
+      sort = sortType,
+      sortOrder = sortDirection
+    } = args || {}
+
+    const tagsFilters: Array<Filter> = tags.map((item: Keyword) => item.filter)
+
+    const staticFilters: Array<Filter> = staticOptions.map(
+      (item: StaticOption) => item.filter
+    )
+
+    console.log(`sort: ${sort}`)
+    console.log(`sortOrder: ${sortOrder}`)
+
+    const assets: PagedAssets = await getResults(
+      {
+        text,
+        filters: [...tagsFilters, ...staticFilters],
+        sort,
+        sortDirection: sortOrder,
+        page: currentPage
+      },
+      chainIds,
+      newCancelToken()
+    )
+    console.log(aggregations)
+    setPageAssets(assets)
+  }
+
+  useEffect((): void => {
+    onSearch()
+  }, [page, tagsFilter, staticFilter, sortDirection, sortType])
+
+  useEffect((): void => {
+    if ((queryResult?.totalPages || 1) < page) {
+      setPage(1)
+    }
+  }, [queryResult])
+
+  const onSetTags = async (tags: Array<Keyword>): Promise<void> => {
+    setTagsFilter(tags)
+  }
+
+  const onClearFilter = async (): Promise<void> => {
+    setTagsFilter([])
+    setStaticFilter([])
+    setSearchText('')
+  }
+
+  const onTextValueChange = (value: string): void => {
+    setSearchText(value)
+  }
+
+  const onTextSearch = async (value: string): Promise<void> => {
+    await onSearch({ text: value })
+  }
+
+  const onSetStaticFilter = async (
+    options: Array<StaticOption>
+  ): Promise<void> => {
+    setStaticFilter(options)
+  }
+
+  const onPageChange = async (value: number): Promise<void> => {
+    setPage(value)
+  }
+
+  const onSetSortDirection = async (value: string): Promise<void> => {
+    setSortDirection(value)
+  }
+
+  const onSetSortType = async (value: string): Promise<void> => {
+    setSortType(value)
+  }
 
   return (
     <>
       <div className={styles.search}>
         <div className={styles.row}>
-          <Filters
-            serviceType={serviceType}
-            accessType={accessType}
-            complianceType={complianceType}
-            setServiceType={setServiceType}
-            setAccessType={setAccessType}
-            setComplianceType={setComplianceType}
-            addFiltersToUrl
-          />
+          <div className={styles.searchBar}>
+            <FacetedTextSearchBar
+              placeholder="Search for service offerings"
+              isSearchPage={true}
+              initialValue={searchText}
+              onValueChange={onTextValueChange}
+              onSearch={onTextSearch}
+            />
+          </div>
           <Sort
             sortType={sortType}
             sortDirection={sortDirection}
-            setSortType={setSortType}
-            setSortDirection={setSortDirection}
+            setSortType={onSetSortType}
+            setSortDirection={onSetSortDirection}
           />
         </div>
       </div>
-      <div className={styles.results}>
-        <AssetList
-          assets={queryResult?.results}
-          showPagination
-          isLoading={loading}
-          page={queryResult?.page}
-          totalPages={queryResult?.totalPages}
-          onPageChange={updatePage}
-          showAssetViewSelector
-        />
+
+      <div className={styles.container}>
+        <div className={styles.facetedSearch}>
+          {aggregations && (
+            <FacetedSearch
+              searchCategories={aggregations}
+              onClearFilter={onClearFilter}
+              onSetTagsFilter={onSetTags}
+              onSetStaticFilter={onSetStaticFilter}
+            />
+          )}
+        </div>
+        <div className={styles.results}>
+          <AssetList
+            assets={queryResult?.results}
+            showPagination
+            isLoading={loading}
+            page={queryResult?.page}
+            totalPages={queryResult?.totalPages}
+            onPageChange={onPageChange}
+            showAssetViewSelector
+          />
+        </div>
       </div>
     </>
   )

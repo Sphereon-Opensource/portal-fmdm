@@ -116,9 +116,17 @@ export function generateBaseQuery(
             ? []
             : [getFilterTerm('purgatory.state', false)]),
           [
-            ...(baseQueryParams.range || []),
             {
               bool: {
+                must: [
+                  ...baseQueryParams.andOrFilters.map((el) => {
+                    return {
+                      bool: {
+                        should: [...el]
+                      }
+                    }
+                  })
+                ],
                 must_not: [
                   !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
                   getDynamicPricingMustNot()

@@ -8,10 +8,7 @@ import {
 } from '@utils/aquarius'
 import queryString from 'query-string'
 import { CancelToken } from 'axios'
-import {
-  SortDirectionOptions,
-  SortTermOptions
-} from '../../@types/aquarius/SearchQuery'
+import { SortTermOptions } from '../../@types/aquarius/SearchQuery'
 
 export function updateQueryStringParameter(
   uri: string,
@@ -28,19 +25,27 @@ export function updateQueryStringParameter(
   }
 }
 
+export type StaticOption = Keyword & {
+  category: string
+  isSelected: boolean
+}
+
+export interface Range {
+  operation: 'gt' | 'lt' | 'gte' | 'lte'
+  value: string
+}
+
 export interface Filter {
+  category: string
   location: string
-  range?: {
-    operation: 'gt' | 'lt' | 'gte' | 'lte'
-    value: string
-  }[]
+  range?: Range[]
   term?: { value: string | string[] }
 }
 
 export function getSearchQuery(
   params: {
     text?: string
-    page?: string
+    page?: number
     offset?: string
     sort?: string
     sortDirection?: string
@@ -51,8 +56,7 @@ export function getSearchQuery(
   const { page, offset, sort, sortDirection, filters } = params
   const text = escapeEsReservedCharacters(params.text)
   const emptySearchTerm = text === undefined || text === ''
-  const filterTerms: FilterTerm[] = []
-  const filterRanges: { bool: { should: FilterRange[] } }[] = []
+  const filterTerms = new Map<string, Array<FilterTerm | FilterRange>>()
   let searchTerm = text || ''
   searchTerm = searchTerm.trim()
   const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
@@ -120,22 +124,26 @@ export function getSearchQuery(
   }
   filters &&
     filters.forEach((filter) => {
-      if (filter?.term) {
-        filterTerms.push(
-          ...filters.map((filter) =>
+      if (filterTerms.has(filter.category)) {
+        if (filter?.term) {
+          const terms = filterTerms.get(filter.category)
+          terms.push(getFilterTerm(filter.location, filter.term?.value))
+          filterTerms.set(filter.category, terms)
+        } else if (filter?.range) {
+          const terms = filterTerms.get(filter.category)
+          terms.push(getFilterRange(filter.location, filter.range))
+          filterTerms.set(filter.category, terms)
+        }
+      } else {
+        if (filter?.term) {
+          filterTerms.set(filter.category, [
             getFilterTerm(filter.location, filter.term?.value)
-          )
-        )
-      } else if (filter?.range.length > 0) {
-        filterRanges.push({
-          bool: {
-            should: [
-              ...filters.map((filter) =>
-                getFilterRange(filter.location, filter.range)
-              )
-            ]
-          }
-        })
+          ])
+        } else if (filter?.range) {
+          filterTerms.set(filter.category, [
+            getFilterRange(filter.location, filter.range)
+          ])
+        }
       }
     })
   const baseQueryParams = {
@@ -146,16 +154,19 @@ export function getSearchQuery(
       size: Number(offset) >= 0 ? Number(offset) : 21
     },
     sortOptions: sort && { sortBy: sort, sortDirection },
-    filters: filterTerms,
-    range: filterRanges
+    andOrFilters: Array.from(filterTerms.values())
   } as BaseQueryParams
 
-  const query = generateBaseQuery(baseQueryParams)
-  return query
+  return generateBaseQuery(baseQueryParams)
 }
 
 export interface AggregationQuery {
   [x: string]: { terms: { field: string; size?: number } }
+}
+
+export interface AggregationResult {
+  category: string
+  keywords: Array<Keyword>
 }
 
 export interface Keyword {
@@ -163,11 +174,6 @@ export interface Keyword {
   location?: string
   filter: Filter
   count: number
-}
-
-export interface AggregationResult {
-  category: string
-  keywords: Keyword[]
 }
 
 export interface AggregationResultUI {
@@ -247,7 +253,7 @@ export const facetedQuery = (): AggregationQuery => {
 export async function getResults(
   params: {
     text?: string
-    page?: string
+    page?: number
     offset?: string
     sort?: string
     sortDirection?: string
@@ -285,7 +291,7 @@ export async function addExistingParamsToUrl(
     // sort should be relevance when fixed in aqua
     urlLocation = `${urlLocation}sort=${encodeURIComponent(
       SortTermOptions.Created
-    )}&sortOrder=${SortDirectionOptions.Descending}&`
+    )}&`
   }
   urlLocation = urlLocation.slice(0, -1)
   return urlLocation
@@ -306,6 +312,7 @@ export function formatGraphQLResults(
         label: b.key_as_string ?? b.key,
         location: metadata.location,
         filter: {
+          category: metadata.label,
           location: metadata.location,
           term: { value: b.key }
         },
@@ -325,7 +332,11 @@ export const formatTermsConditionsVerifiedResults = (
   return {
     category: 'Verified and Terms & Conditions',
     keywords: termsConditionsVerified.flatMap((tcv) => {
-      const filters = { ...tcv.keywords[0].filter, term: { value: 'true' } }
+      const filters = {
+        ...tcv.keywords[0].filter,
+        category: 'Verified and Terms & Conditions',
+        term: { value: 'true' }
+      }
       if (
         tcv.keywords.find((a) => a.label === 'true') &&
         tcv.category === 'Is Verified'
@@ -360,6 +371,7 @@ export const formatPriceResults = (
         return {
           label: a.label,
           filter: {
+            category: a.filter.category,
             ...b.filter,
             location: b.filter.location,
             term: { value: 0 }
@@ -367,7 +379,7 @@ export const formatPriceResults = (
           count: a.count + b.count
         }
       },
-      { label: 'free', filter: {}, count: 0 }
+      { label: 'free', filter: { category: 'Price' }, count: 0 }
     ) as Keyword
   const paid = price.keywords
     .filter((k) => +k.label > 0)
@@ -376,13 +388,14 @@ export const formatPriceResults = (
         return {
           label: a.label,
           filter: {
+            category: a.filter.category,
             location: b.filter.location,
-            range: [{ op: 'gt', value: 0 }]
+            range: [{ operation: 'gt', value: 0 }]
           },
           count: a.count + b.count
         }
       },
-      { label: 'paid', filter: {}, count: 0 }
+      { label: 'paid', filter: { category: 'Price' }, count: 0 }
     ) as Keyword
 
   price.keywords = [free, paid]
@@ -396,7 +409,7 @@ export const formatLanguagesResults = (
   // eslint-disable-next-line array-callback-return
   languages.keywords = languages?.keywords.map((lang) => {
     if (typeof lang.label === 'string' && lang.label.includes('Dockerfile')) {
-      return { ...lang, label: (lang.label = 'Custom Docker Image') }
+      return { ...lang, label: (lang.label = 'custom docker image') }
     }
     return lang
   })
