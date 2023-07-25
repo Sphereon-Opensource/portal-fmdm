@@ -51,7 +51,7 @@ export function getFilterRange(
   filterField: string,
   range: Range[]
 ): FilterRange {
-  if (range.length < 1 || range.length > 2) {
+  if (!(range.length === 1 || range.length === 2)) {
     throw Error('Range: Minimum: 1, Maximum 2 operations allowed')
   }
   return {
