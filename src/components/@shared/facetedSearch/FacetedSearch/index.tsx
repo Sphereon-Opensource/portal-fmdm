@@ -102,7 +102,7 @@ export default function FacetedSearch({
         <FacetedSearchClearFilterButton onClick={clearFilters} />
         <FacetedSearchFilterAutoComplete
           onValueChange={autoCompleteOnValueChange}
-          value={filterTags} // FIXME
+          value={filterTags}
           name={'facetedSearch'}
           placeholder={'Filter on tags'}
           tags={searchCategories?.tags || []}

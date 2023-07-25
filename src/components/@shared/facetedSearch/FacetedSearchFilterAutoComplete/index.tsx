@@ -12,7 +12,7 @@ export interface AutoCompleteOption {
 
 export default function FacetedSearchFilterAutoComplete({
   ...props
-}: InputProps & {
+}: Omit<InputProps, 'value'> & {
   value: MultiValue<AutoCompleteOption>
   onValueChange: (value: AutoCompleteOption[]) => Promise<void>
   tags: Array<Keyword>
