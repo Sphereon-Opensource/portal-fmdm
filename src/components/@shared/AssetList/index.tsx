@@ -117,7 +117,6 @@ export default function AssetList({
 
   // // This changes the page field inside the query
   function handlePageChange(selected: number) {
-    // console.log(`PAGE CHANGED: ${selected + 1}`)
     onPageChange(selected + 1)
   }
 

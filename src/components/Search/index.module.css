@@ -7,7 +7,6 @@
 }
 
 .row > div {
-  /*margin-left: auto;*/
   margin-bottom: calc(var(--spacer) / 2);
 }
 

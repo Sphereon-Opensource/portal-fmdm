@@ -50,10 +50,7 @@ export default function SearchPage({
 
   useEffect(() => {
     const parsed = queryString.parse(location.search)
-    // const { sort, sortOrder } = parsed
     setParsed(parsed)
-    // setSortDirection(sortOrder as string)
-    // setSortType(sort as string)
   }, [router])
 
   const updatePage = useCallback(
@@ -100,7 +97,6 @@ export default function SearchPage({
 
   useEffect((): void => {
     if (!parsed || !queryResult) return
-    // console.log(aggregations)
     const { page } = parsed
     if (queryResult.totalPages < Number(page)) {
       updatePage(1)
@@ -114,10 +110,6 @@ export default function SearchPage({
 
   const setPageAssets = (queryResult: PagedAssets): void => {
     setQueryResult(queryResult)
-    // console.log(`queryResult: ${JSON.stringify(queryResult)}`)
-    // console.log(`Total results: ${queryResult?.totalResults || 0}`)
-    // console.log(`Total page numbers: ${queryResult?.totalPages || 0}`)
-    // console.log(`current page: ${page}`)
     setTotalResults(queryResult?.totalResults || 0)
     setTotalPagesNumber(queryResult?.totalPages || 0)
   }
@@ -137,9 +129,6 @@ export default function SearchPage({
     const staticFilters: Array<Filter> = staticOptions.map(
       (item: StaticOption) => item.filter
     )
-
-    console.log(`sort: ${sort}`)
-    console.log(`sortOrder: ${sortOrder}`)
 
     const assets: PagedAssets = await getResults(
       {

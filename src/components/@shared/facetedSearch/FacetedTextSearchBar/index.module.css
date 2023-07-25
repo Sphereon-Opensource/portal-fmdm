@@ -1,13 +1,10 @@
 .search {
   --button-size: 38px;
-
   overflow: hidden;
   display: flex;
   flex-direction: row-reverse;
   justify-content: left;
   width: 100%;
-  /*padding: 5px 0;*/
-  /*padding-bottom: calc(var(--spacer) / 2);*/
   position: relative;
 }
 
