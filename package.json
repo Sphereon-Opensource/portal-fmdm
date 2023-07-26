@@ -23,6 +23,8 @@
     "storybook:build": "cross-env NODE_ENV=test build-storybook"
   },
   "dependencies": {
+    "@apollo/server": "^4.7.5",
+    "@as-integrations/next": "^2.0.1",
     "@coingecko/cryptoformat": "^0.5.4",
     "@loadable/component": "^5.15.2",
     "@oceanprotocol/art": "^3.2.0",
@@ -44,6 +46,7 @@
     "dotenv": "^16.0.3",
     "filesize": "^10.0.5",
     "formik": "^2.2.9",
+    "graphql-tag": "^2.12.6",
     "gray-matter": "^4.0.3",
     "is-ipfs": "^7.0.3",
     "is-url-superb": "^6.1.0",

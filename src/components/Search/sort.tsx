@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react'
-import { addExistingParamsToUrl } from './utils'
 import Button from '@shared/atoms/Button'
 import styles from './sort.module.css'
 import classNames from 'classnames/bind'
@@ -7,7 +6,6 @@ import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
-import { useRouter } from 'next/router'
 
 const cx = classNames.bind(styles)
 
@@ -21,7 +19,7 @@ const sortItems = [
 export default function Sort({
   sortType,
   setSortType,
-  sortDirection,
+  sortDirection = SortDirectionOptions.Descending,
   setSortDirection
 }: {
   sortType: string
@@ -29,34 +27,32 @@ export default function Sort({
   sortDirection: string
   setSortDirection: React.Dispatch<React.SetStateAction<string>>
 }): ReactElement {
-  const router = useRouter()
   const directionArrow = String.fromCharCode(
     sortDirection === SortDirectionOptions.Ascending ? 9650 : 9660
   )
-  async function sortResults(sortBy?: string, direction?: string) {
-    let urlLocation: string
+  async function sortResults(
+    sortBy?: string,
+    direction?: string
+  ): Promise<void> {
     if (sortBy) {
-      urlLocation = await addExistingParamsToUrl(location, ['sort'])
-      urlLocation = `${urlLocation}&sort=${sortBy}`
       setSortType(sortBy)
     } else if (direction) {
-      urlLocation = await addExistingParamsToUrl(location, ['sortOrder'])
-      urlLocation = `${urlLocation}&sortOrder=${direction}`
       setSortDirection(direction)
     }
-    router.push(urlLocation)
   }
-  function handleSortButtonClick(value: string) {
+
+  async function handleSortButtonClick(value: string) {
     if (value === sortType) {
       if (sortDirection === SortDirectionOptions.Descending) {
-        sortResults(null, SortDirectionOptions.Ascending)
+        await sortResults(null, SortDirectionOptions.Ascending)
       } else {
-        sortResults(null, SortDirectionOptions.Descending)
+        await sortResults(null, SortDirectionOptions.Descending)
       }
     } else {
-      sortResults(value, null)
+      await sortResults(value, null)
     }
   }
+
   return (
     <div className={styles.sortList}>
       <label className={styles.sortLabel}>Sort</label>
@@ -70,14 +66,14 @@ export default function Sort({
             key={index}
             className={sorted}
             size="small"
-            onClick={() => {
-              handleSortButtonClick(e.value)
+            onClick={async (): Promise<void> => {
+              await handleSortButtonClick(e.value)
             }}
           >
             {e.display}
-            {e.value === sortType ? (
+            {e.value === sortType && (
               <span className={styles.direction}>{directionArrow}</span>
-            ) : null}
+            )}
           </Button>
         )
       })}
