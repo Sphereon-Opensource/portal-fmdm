@@ -16,7 +16,7 @@
 }
 
 .content {
-  max-width: 32rem;
+  max-width: 48rem;
   margin: auto 0;
 }
 
@@ -97,6 +97,9 @@
     margin-top: 10%;
   }
   .title {
-    font-size: 3.5rem;
+    font-size: calc(var(--font-size-h1) * 0.666666);
+  }
+  .body {
+    font-size: calc(var(--font-size-base) * 1.2);
   }
 }
