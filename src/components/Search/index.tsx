@@ -3,6 +3,7 @@ import AssetList from '@shared/AssetList'
 import queryString from 'query-string'
 import Sort from './sort'
 import {
+  AggregationResult,
   AggregationResultUI,
   Filter,
   formatUIResults,
@@ -87,7 +88,7 @@ export default function SearchPage({
       setTotalResults(undefined)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
       const aggregationResult = await getResults(
-        { faceted: true, offset: '0' },
+        { faceted: true, offset: 0 },
         chainIds,
         newCancelToken()
       )
@@ -110,6 +111,64 @@ export default function SearchPage({
     if (!parsed || !chainIds) return
     fetchAssets(parsed, chainIds)
   }, [parsed, chainIds, newCancelToken, fetchAssets])
+
+  async function onUpdateMenu(
+    args?: Omit<SearchParams, 'currentPage' | 'sort' | 'sortOrder'>
+  ): Promise<void> {
+    const {
+      text = searchText,
+      tags = tagsFilter,
+      staticOptions = staticFilter
+    } = args || {}
+    const tagsFilters: Array<Filter> = tags.map((item: Keyword) => item.filter)
+
+    const staticFilters: Array<Filter> = staticOptions.map(
+      (item: StaticOption) => item.filter
+    )
+
+    const facetedResult: AggregationResultUI = formatUIResults(
+      await getResults(
+        {
+          text,
+          filters: [...tagsFilters, ...staticFilters],
+          offset: 0,
+          faceted: true
+        },
+        chainIds,
+        newCancelToken()
+      )
+    )
+
+    if (aggregations) {
+      const updatedAggregationResult: AggregationResult[] =
+        aggregations.static.map(
+          (item: AggregationResult): AggregationResult => {
+            const commonCategory: AggregationResult = facetedResult.static.find(
+              (a: AggregationResult): boolean => a.category === item.category
+            )
+            return {
+              category: item.category,
+              keywords: item.keywords.map((a: Keyword): Keyword => {
+                const facetedResult: Keyword = commonCategory.keywords.find(
+                  (b: Keyword): boolean => b.label === a.label
+                )
+                if (facetedResult) {
+                  return facetedResult
+                }
+                return {
+                  ...a,
+                  count: 0
+                }
+              })
+            }
+          }
+        )
+      setAggregations({
+        static: [...updatedAggregationResult],
+        tags: [...aggregations.tags]
+      })
+    }
+  }
 
   const onSearch = async (args?: SearchParams): Promise<void> => {
     const {
@@ -139,6 +198,7 @@ export default function SearchPage({
       newCancelToken()
     )
 
+    await onUpdateMenu()
     setPageAssets(assets)
   }
 

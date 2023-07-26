@@ -43,7 +43,7 @@ declare global {
   interface FilterRange {
     range: {
       [property: string]: {
-        [property: string]: string | number
+        [property: string]: number
       }
     }
   }

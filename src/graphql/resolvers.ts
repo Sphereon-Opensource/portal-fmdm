@@ -5,9 +5,11 @@ import {
   getResults
 } from '@components/Search/utils'
 
+const deprecatedNetworks: number[] = [3, 4]
+
 export const getChainIds = async (): Promise<number[]> => {
   const { chainIds } = appConfig
-  return chainIds.filter((id) => id !== 3 && id !== 4)
+  return chainIds.filter((id) => !deprecatedNetworks.includes(id))
 }
 
 const resolvers = {
@@ -16,7 +18,7 @@ const resolvers = {
       const results = await getResults(
         {
           faceted: true,
-          offset: '0'
+          offset: 0
         },
         await getChainIds()
       )

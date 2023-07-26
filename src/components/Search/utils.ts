@@ -32,21 +32,25 @@ export type StaticOption = Keyword & {
 
 export interface Range {
   operation: 'gt' | 'lt' | 'gte' | 'lte'
-  value: string
+  value: number
+}
+
+interface Term {
+  value: string | string[]
 }
 
 export interface Filter {
   category: string
   location: string
   range?: Range[]
-  term?: { value: string | string[] }
+  term?: Term
 }
 
 export function getSearchQuery(
   params: {
     text?: string
     page?: number
-    offset?: string
+    offset?: number
     sort?: string
     sortDirection?: string
     filters?: Filter[]
@@ -150,11 +154,11 @@ export function getSearchQuery(
     chainIds,
     nestedQuery,
     esPaginationOptions: {
-      from: (Number(page) - 1 || 0) * (Number(offset) || 21),
-      size: Number(offset) >= 0 ? Number(offset) : 21
+      from: (page - 1 || 0) * (offset || 21),
+      size: offset >= 0 ? offset : 21
     },
     sortOptions: sort && { sortBy: sort, sortDirection },
-    andOrFilters: Array.from(filterTerms.values())
+    staticFilters: Array.from(filterTerms.values())
   } as BaseQueryParams
 
   return generateBaseQuery(baseQueryParams)
@@ -254,7 +258,7 @@ export async function getResults(
   params: {
     text?: string
     page?: number
-    offset?: string
+    offset?: number
     sort?: string
     sortDirection?: string
     filters?: Filter[]
@@ -332,25 +336,27 @@ export const formatTermsConditionsVerifiedResults = (
   return {
     category: 'Verified and Terms & Conditions',
     keywords: termsConditionsVerified.flatMap((tcv) => {
-      const filters = {
-        ...tcv.keywords[0].filter,
-        category: 'Verified and Terms & Conditions',
-        term: { value: 'true' }
-      }
-      if (
-        tcv.keywords.find((a) => a.label === 'true') &&
-        tcv.category === 'Is Verified'
-      ) {
-        tcv.keywords = [
-          { ...tcv.keywords[0], label: 'verified', filter: filters }
-        ]
-      } else if (
-        tcv.keywords.find((a) => a.label === 'true') &&
-        tcv.category === 'Terms and Conditions'
-      ) {
-        tcv.keywords = [
-          { ...tcv.keywords[0], label: 'terms & conditions', filter: filters }
-        ]
+      if (tcv.keywords.length > 0) {
+        const filters = {
+          ...tcv.keywords[0].filter,
+          category: 'Verified and Terms & Conditions',
+          term: { value: 'true' }
+        }
+        if (
+          tcv.keywords.find((a) => a.label === 'true') &&
+          tcv.category === 'Is Verified'
+        ) {
+          tcv.keywords = [
+            { ...tcv.keywords[0], label: 'verified', filter: filters }
+          ]
+        } else if (
+          tcv.keywords.find((a) => a.label === 'true') &&
+          tcv.category === 'Terms and Conditions'
+        ) {
+          tcv.keywords = [
+            { ...tcv.keywords[0], label: 'terms & conditions', filter: filters }
+          ]
+        }
       }
       return tcv.keywords
     })
@@ -408,7 +414,7 @@ export const formatLanguagesResults = (
   const languages = aggregationResults.find((ar) => ar.category === 'Languages')
   // eslint-disable-next-line array-callback-return
   languages.keywords = languages?.keywords.map((lang) => {
-    if (typeof lang.label === 'string' && lang.label.includes('Dockerfile')) {
+    if (lang.label.includes('Dockerfile')) {
       return { ...lang, label: (lang.label = 'custom docker image') }
     }
     return lang
