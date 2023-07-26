@@ -1,7 +1,7 @@
 {
   "header": {
     "title": "About this platform",
-    "body": "The EnerygSHR platform has been built for TU Delft and Erasmus University Rotterdam as part of their cooperation in [Convergence](http://www.google.com).\n\nEnergySHR aims at practically experiencing how data and algorithms, preferably tensely linked to each other, can be shared, as a basis for better cooperation on energy transition research and innovation between scientists from academia, public and private sector, to accelerate research, collaboration and innovation in the energy transition."
+    "body": "The EnerygSHR platform has been built for TU Delft and Erasmus University Rotterdam as part of their cooperation in [Convergence](https://convergence.nl/nl/).\n\nEnergySHR aims at practically experiencing how data and algorithms, preferably tensely linked to each other, can be shared, as a basis for better cooperation on energy transition research and innovation between scientists from academia, public and private sector, to accelerate research, collaboration and innovation in the energy transition."
   },
   "main": {
     "title": "Objectives",
@@ -11,5 +11,5 @@
     "title": "How to join?",
     "body": "For more information on this platform and how to get involved please contact:\n\nCaroline Duterloo, Innovation manager AI, TU Delft\n\nDoron Gollnast, Business Developer Energy Transition, Erasmus University Rotterdam\n\nHarmen van der Kooij"
   },
-  "image": "/images/about/solar_panel.svg"
+  "image": "/images/about/about.svg"
 }

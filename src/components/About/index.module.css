@@ -128,6 +128,14 @@
   object-fit: cover;
 }
 
+.imageContainer {
+  margin-top: 2rem;
+}
+
+.imageContainer > img {
+  max-width: 107%;
+}
+
 @media screen and (min-width: 55rem) {
   .wrapper {
     width: 80%;
