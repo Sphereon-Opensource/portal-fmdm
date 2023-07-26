@@ -114,7 +114,7 @@ export function generateBaseQuery(
             {
               bool: {
                 must: [
-                  ...baseQueryParams.staticFilters.map((el) => {
+                  ...(baseQueryParams.staticFilters || []).map((el) => {
                     return {
                       bool: {
                         should: [...el]
