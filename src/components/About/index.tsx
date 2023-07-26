@@ -43,7 +43,7 @@ export default function AboutPage(): ReactElement {
           <Markdown className={styles.body} text={footer.body} />
         </Container>
       </div>
-      <div style={{ marginTop: '2rem' }}>
+      <div className={styles.imageContainer}>
         <img src={image} className={styles.image} />
       </div>
     </div>
