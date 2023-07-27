@@ -23,7 +23,7 @@
   color: var(--sphereon-white);
   font-family: var(--font-family-heading);
   font-weight: var(--font-weight-bolder);
-  font-size: 18px;
+  font-size: var(--font-size-large);
   margin-bottom: calc(var(--spacer) * 0.5);
 }
 
@@ -151,13 +151,13 @@
   }
   .content h2 {
     font-family: var(--font-family-heading);
-    font-size: 22px;
+    font-size: var(--font-size-larger);
     font-weight: var(--font-weight-bolder);
     color: var(--ocean-grey-dark);
   }
   .content p {
     font-family: var(--font-family-heading);
-    font-size: 15px;
+    font-size: var(--font-size-base);
     color: var(--sphereon-black);
   }
   .media {
@@ -180,7 +180,7 @@
     justify-content: space-between;
   }
   .contactsContainer h2 {
-    font-size: 22px;
+    font-size: var(--font-size-larger);
     font-weight: var(--font-weight-bolder);
     color: var(--ocean-grey-dark);
   }

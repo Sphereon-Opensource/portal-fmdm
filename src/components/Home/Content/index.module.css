@@ -36,7 +36,7 @@
 .learnMore {
   color: var(--ocean-grey-dark);
   font-weight: var(--font-weight-bolder);
-  font-size: 18px;
+  font-size: var(--font-size-large);
 }
 
 .learnMore:hover,
@@ -81,7 +81,7 @@
 .highlightBox > div a {
   color: var(--sphereon-white-gray);
   font-weight: var(--font-weight-bolder);
-  font-size: 18px;
+  font-size: var(--font-size-large);
 }
 
 .highlightBox > div:first-child a:hover,
@@ -140,7 +140,7 @@
     width: 87%;
   }
   .teaser h2 {
-    font-size: 22px;
+    font-size: var(--font-size-larger);
   }
   .secondarySection {
     width: 40%;
