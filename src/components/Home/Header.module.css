@@ -16,7 +16,7 @@
 }
 
 .content {
-  max-width: 32rem;
+  max-width: 48rem;
   margin: auto 0;
 }
 
@@ -39,7 +39,7 @@
 .actions > a {
   color: var(--sphereon-white-gray);
   font-weight: var(--font-weight-bolder);
-  font-size: 18px;
+  font-size: var(--font-size-large);
 }
 
 .actions > a:hover,
@@ -97,6 +97,9 @@
     margin-top: 10%;
   }
   .title {
-    font-size: 3.5rem;
+    font-size: var(--font-size-h1-small);
+  }
+  .body {
+    font-size: var(--font-size-large);
   }
 }
