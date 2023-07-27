@@ -140,7 +140,7 @@
     width: 87%;
   }
   .teaser h2 {
-    font-size: calc(var(--font-size-h2) * 0.586666);
+    font-size: 22px;
   }
   .secondarySection {
     width: 40%;

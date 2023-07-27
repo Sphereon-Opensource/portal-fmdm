@@ -57,13 +57,13 @@
   },
   "getInvolved": {
     "title": "Get involved",
-    "text": "Lorem ipsum dolor sit amet consectetur. Non vel risus integer aliquam. Parturient ac vulputate.",
+    "text": "Contact us for more info on how to participate in the development of EnergySHR",
     "buttonLabel": "Schedule a call",
     "link": "https://www.triall.io/contact"
   },
   "firstTimeVisiting": {
     "title": "First time visiting",
-    "text": "Lorem ipsum dolor sit amet consectetur. Non vel risus integer aliquam. Parturient ac vulputate.",
+    "text": "This guide will ensure you have the correct setup for interacting with all CIX demo functionalities.",
     "buttonLabel": "Quick start guide",
     "link": "onboarding"
   }
