@@ -208,7 +208,7 @@ export const getSearchMetadata = (): SearchMetadata[] => {
       size: 100
     },
     {
-      label: 'Languages',
+      label: 'Download Media Types',
       graphQLLabel: 'language',
       location: 'metadata.algorithm.language.keyword',
       size: 100
@@ -328,29 +328,30 @@ export function formatGraphQLResults(
 
 export const formatTermsConditionsVerifiedResults = (
   aggregationResults: AggregationResult[]
-) => {
-  const termsConditionsVerified = aggregationResults.filter(
-    (ar) =>
-      ar.category === 'Is Verified' || ar.category === 'Terms and Conditions'
-  )
+): AggregationResult => {
+  const termsConditionsVerified: AggregationResult[] =
+    aggregationResults.filter(
+      (ar: AggregationResult) =>
+        ar.category === 'Is Verified' || ar.category === 'Terms and Conditions'
+    )
   return {
     category: 'Verified and Terms & Conditions',
-    keywords: termsConditionsVerified.flatMap((tcv) => {
+    keywords: termsConditionsVerified.flatMap((tcv: AggregationResult) => {
       if (tcv.keywords.length > 0) {
-        const filters = {
+        const filters: Filter = {
           ...tcv.keywords[0].filter,
           category: 'Verified and Terms & Conditions',
           term: { value: 'true' }
         }
         if (
-          tcv.keywords.find((a) => a.label === 'true') &&
+          tcv.keywords.find((a: Keyword): boolean => a.label === 'true') &&
           tcv.category === 'Is Verified'
         ) {
           tcv.keywords = [
             { ...tcv.keywords[0], label: 'verified', filter: filters }
           ]
         } else if (
-          tcv.keywords.find((a) => a.label === 'true') &&
+          tcv.keywords.find((a: Keyword): boolean => a.label === 'true') &&
           tcv.category === 'Terms and Conditions'
         ) {
           tcv.keywords = [
@@ -367,30 +368,34 @@ export const formatPriceResults = (
   aggregationResults: AggregationResult[]
 ): AggregationResult => {
   const price: AggregationResult = aggregationResults.find(
-    (ar) => ar.category === 'Price'
+    (ar: AggregationResult): boolean => ar.category === 'Price'
   )
 
-  const free = price.keywords
-    .filter((k) => +k.label === 0)
+  const free: Keyword = price.keywords
+    .filter((k: Keyword): boolean => +k.label === 0)
     .reduce(
-      (a, b) => {
+      (a: Keyword, b: Keyword): Keyword => {
         return {
           label: a.label,
           filter: {
-            category: a.filter.category,
             ...b.filter,
+            category: a.filter.category,
             location: b.filter.location,
-            term: { value: 0 }
+            term: { value: '0' }
           },
           count: a.count + b.count
         }
       },
-      { label: 'free', filter: { category: 'Price' }, count: 0 }
-    ) as Keyword
-  const paid = price.keywords
-    .filter((k) => +k.label > 0)
+      {
+        label: 'free',
+        filter: { category: 'Price', location: 'stats.price.value' },
+        count: 0
+      }
+    )
+  const paid: Keyword = price.keywords
+    .filter((k: Keyword): boolean => +k.label > 0)
     .reduce(
-      (a, b) => {
+      (a: Keyword, b: Keyword): Keyword => {
         return {
           label: a.label,
           filter: {
@@ -401,46 +406,75 @@ export const formatPriceResults = (
           count: a.count + b.count
         }
       },
-      { label: 'paid', filter: { category: 'Price' }, count: 0 }
-    ) as Keyword
-
-  price.keywords = [free, paid]
+      {
+        label: 'paid',
+        filter: { category: 'Price', location: 'stats.price.value' },
+        count: 0
+      }
+    )
+  price.keywords = [free, paid].filter((p: Keyword): boolean => p.count !== 0)
   return price
 }
 
 export const formatLanguagesResults = (
   aggregationResults: AggregationResult[]
 ): AggregationResult => {
-  const languages = aggregationResults.find((ar) => ar.category === 'Languages')
-  // eslint-disable-next-line array-callback-return
-  languages.keywords = languages?.keywords.map((lang) => {
+  const languages: AggregationResult = aggregationResults.find(
+    (ar: AggregationResult): boolean => ar.category === 'Download Media Types'
+  )
+  languages.keywords = languages?.keywords.map((lang: Keyword): Keyword => {
+    // Change the labels below
     if (lang.label.includes('Dockerfile')) {
       return { ...lang, label: (lang.label = 'custom docker image') }
+    }
+    if (lang.label === 'about:blank') {
+      return { ...lang, label: (lang.label = 'no type') }
     }
     return lang
   })
   return languages
 }
 
-export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
-  const aggregationResults = formatGraphQLResults(results)
+const formatAccessTypeResults = (
+  aggregationResults: AggregationResult[]
+): AggregationResult => {
+  const accessTypes: AggregationResult = aggregationResults.find(
+    (ar: AggregationResult): boolean => ar.category === 'Access Type'
+  )
+  accessTypes.keywords = accessTypes?.keywords.map(
+    (accessType: Keyword): Keyword => {
+      if (accessType.label === 'access') {
+        return { ...accessType, label: (accessType.label = 'download') }
+      }
+      return accessType
+    }
+  )
+  return accessTypes
+}
 
-  const everythingElse = aggregationResults.filter(
-    (ar) =>
+export const formatUIResults = (results: PagedAssets): AggregationResultUI => {
+  const aggregationResults: AggregationResult[] = formatGraphQLResults(results)
+
+  const everythingElse: AggregationResult[] = aggregationResults.filter(
+    (ar: AggregationResult) =>
       ar.category !== 'Is Verified' &&
       ar.category !== 'Terms and Conditions' &&
       ar.category !== 'Tags' &&
       ar.category !== 'Price' &&
-      ar.category !== 'Languages'
+      ar.category !== 'Download Media Types' &&
+      ar.category !== 'Access Type'
   )
 
   return {
     static: [
       ...everythingElse,
+      formatAccessTypeResults(aggregationResults),
       formatTermsConditionsVerifiedResults(aggregationResults),
       formatPriceResults(aggregationResults),
       formatLanguagesResults(aggregationResults)
     ],
-    tags: aggregationResults.find((ar) => ar.category === 'Tags').keywords
+    tags: aggregationResults.find(
+      (ar: AggregationResult): boolean => ar.category === 'Tags'
+    ).keywords
   }
 }

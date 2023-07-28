@@ -65,7 +65,9 @@ export default function AssetTeaser({
             <Publisher
               account={owner}
               verifiedServiceProviderName={
-                isCompliant
+                isCompliant ||
+                asset?.metadata?.additionalInformation.gaiaXInformation
+                  .serviceSD.isVerified
                   ? publisherNameOrOwner
                   : `${accountTruncate(publisherNameOrOwner)} (unverified)`
               }
