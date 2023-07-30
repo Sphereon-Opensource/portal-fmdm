@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import { Col, Row } from 'react-bootstrap'
 import AuthenticationQR from './AuthenticationQR'
+import {
+  siopDownloadSSIWalletLink,
+  siopIssueFromLink
+} from '../../../../app.config'
 import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
 
 interface SSIAuthModalProps {
@@ -48,7 +52,7 @@ export default class SSIAuthModal extends Component<
             <h6 style={{ marginBottom: 25, fontSize: 12, color: '#303030' }}>
               Install a compliant{' '}
               <a
-                href={process.env.NEXT_PUBLIC_DOWNLOAD_SSI_WALLET_LINK}
+                href={siopDownloadSSIWalletLink}
                 rel="noreferrer"
                 target="_blank"
                 className={'modal-link'}
@@ -64,7 +68,7 @@ export default class SSIAuthModal extends Component<
             <h6 style={{ marginBottom: 25, color: '#303030', fontSize: 12 }}>
               Request a Guest credential via{' '}
               <a
-                href={process.env.NEXT_PUBLIC_OID4VCI_ISSSUE_FORM_LINK}
+                href={siopIssueFromLink}
                 rel="noreferrer"
                 target="_blank"
                 className={'modal-link'}
@@ -100,7 +104,6 @@ export default class SSIAuthModal extends Component<
                     authRequestRetrieved: true
                   })
                 }}
-                onSignInComplete={this.props.onSignInComplete}
               />
             </div>
           </Col>
