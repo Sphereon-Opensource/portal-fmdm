@@ -17,7 +17,7 @@ import { OidcConfiguration, OidcProvider } from '@axa-fr/react-oidc'
 import {
   isOIDCActivated,
   oidcAuthority,
-  oidcClientName,
+  oidcClientId,
   oidcRedirectUri,
   oidcScope,
   oidcSilentRedirectUri
@@ -32,7 +32,7 @@ type AppContentProps = {
 }
 
 const oidcConfig: OidcConfiguration = {
-  client_id: oidcClientName ?? 'energySHRPortal',
+  client_id: oidcClientId ?? 'energySHRPortal',
   redirect_uri:
     oidcRedirectUri ?? 'http://localhost:8000/authentication/callback',
   silent_redirect_uri: oidcSilentRedirectUri ?? `https://localhost:8080/silent`,
