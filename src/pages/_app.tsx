@@ -25,12 +25,12 @@ import store from '../store'
 import { Provider } from 'react-redux'
 
 const oidcConfig: OidcConfiguration = {
-  client_id: oidcClientName || 'shr',
+  client_id: oidcClientName ?? 'energySHRPortal',
   redirect_uri:
-    oidcRedirectUri || 'http://localhost:8000/authentication/callback',
-  silent_redirect_uri: oidcSilentRedirectUri || `https://localhost:8080/silent`,
-  scope: oidcScope || 'openid profile email',
-  authority: oidcAuthority || 'http://localhost:8888/auth/realms/conext',
+    oidcRedirectUri ?? 'http://localhost:8000/authentication/callback',
+  silent_redirect_uri: oidcSilentRedirectUri ?? `https://localhost:8080/silent`,
+  scope: oidcScope ?? 'openid profile email',
+  authority: oidcAuthority ?? 'http://localhost:8888/auth/realms/conext',
   // service_worker_relative_url: '/OidcServiceWorker.js',
   service_worker_only: false
 }
