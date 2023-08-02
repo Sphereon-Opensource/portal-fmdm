@@ -89,7 +89,7 @@ module.exports = {
   siopQRCodeExpiresAfterSec:
     process.env.NEXT_PUBLIC_SSI_QR_CODE_EXPIRES_AFTER_SEC,
   // Form where you can request/get a Credential using OpenID for Verifiable Credential issuance
-  siopIssueFromLink: process.env.NEXT_PUBLIC_OID4VCI_ISSSUE_FORM_LINK,
+  siopIssueFromLink: process.env.NEXT_PUBLIC_OID4VCI_ISSUE_FORM_LINK,
   // Page where compliant wallets are listed and can be downloaded
   siopDownloadSSIWalletLink: process.env.NEXT_PUBLIC_DOWNLOAD_SSI_WALLET_LINK
 }
