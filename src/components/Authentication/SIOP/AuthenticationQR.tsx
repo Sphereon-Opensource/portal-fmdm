@@ -207,8 +207,9 @@ class AuthenticationQR extends Component<AuthenticationQRProps> {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  setAuthState: (authState: AuthenticationStatus) =>
+  setAuthState: (authState: AuthenticationStatus) => {
     dispatch(setAuthState(authState))
+  }
 })
 
 export default connect(null, mapDispatchToProps)(AuthenticationQR)

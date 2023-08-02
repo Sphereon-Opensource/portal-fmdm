@@ -7,5 +7,4 @@ export enum AuthenticationStatus {
 
 export interface AuthenticationState {
   authenticationStatus: AuthenticationStatus
-  loginModalOpen: boolean
 }

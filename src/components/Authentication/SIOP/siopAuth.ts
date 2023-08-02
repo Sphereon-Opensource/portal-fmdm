@@ -10,11 +10,7 @@ import {
 } from '@sphereon/ssi-sdk.qr-code-generator'
 import Debug from 'debug'
 import { RootState } from '../../../store'
-import {
-  closeLoginModal,
-  openLoginModal,
-  setAuthState
-} from '../../../store/actions/authentication.actions'
+import { setAuthState } from '../../../store/actions/authentication.actions'
 import { AuthenticationStatus } from '@components/Authentication/authentication.types'
 
 const debug = Debug('sphereon:portal:ssi:AuthenticationQR')
@@ -77,15 +73,12 @@ export const useSIOP = () => {
   }, [])
 
   const login = async () => {
-    if (authenticationState === 'NOT_AUTHENTICATED') {
-      dispatch(openLoginModal())
-    }
+    // handle login here
   }
 
   const logout = () => {
     if (authenticationState !== AuthenticationStatus.NOT_AUTHENTICATED) {
       dispatch(setAuthState(AuthenticationStatus.NOT_AUTHENTICATED))
-      dispatch(closeLoginModal())
     }
   }
 

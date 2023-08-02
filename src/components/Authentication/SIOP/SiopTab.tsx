@@ -17,7 +17,7 @@ interface SSIAuthModalState {
   qrCodeData: string
 }
 
-export default class SSIAuthModal extends Component<
+export default class SiopTab extends Component<
   SSIAuthModalProps,
   SSIAuthModalState
 > {

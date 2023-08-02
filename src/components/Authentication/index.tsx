@@ -1,49 +1,40 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Modal, Nav } from 'react-bootstrap'
-import SSIAuthModal from './SIOP/SSIAuthModal'
+import SiopTab from './SIOP/SiopTab'
 import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
-import OIDCModal from './OIDC'
+import OidcTab from './OIDC'
 import {
   oidcModalTabName,
   isOIDCActivated,
   isSiopActivated
 } from '../../../app.config'
-import { useSelector, useDispatch } from 'react-redux'
-import { closeLoginModal } from '../../store/actions/authentication.actions'
-import { RootState } from '../../store'
+import { useOidc } from '@axa-fr/react-oidc'
 
-const LoginModal = () => {
-  const dispatch = useDispatch()
-  let show = useSelector(
-    (state: RootState) => state.authentication.loginModalOpen
-  )
+interface LoginModalProps {
+  onCloseClicked?: () => void
+}
+
+const LoginModal = ({ onCloseClicked }: LoginModalProps) => {
   const [payload, setPayload] = useState<AuthorizationResponsePayload>()
-  // here both our login ways are disabled. so we can't login. we need to somehow add the metamask to this mix. this needs some input from @nklomp
   const showOIDC = JSON.parse(isOIDCActivated)
   const showSIOP = JSON.parse(isSiopActivated)
-
-  if (!showOIDC && !showSIOP) {
-    console.log(`in the if for closing the modal..`)
-    show = false
-    dispatch(closeLoginModal())
-    console.log(`modal should be closed at this point`)
-  }
+  const [showModal, setShowModal] = useState(showOIDC || showSIOP)
   const initialTab = showOIDC ? 'oidc' : 'siop'
   const [activeTab, setActiveTab] = useState(initialTab)
 
-  useEffect(() => {
-    if (payload) {
-      dispatch(closeLoginModal())
-    }
-  }, [payload, dispatch])
-
+  const { isAuthenticated: oidcAuthenticated } = useOidc()
   const handleTabChange = (tab) => {
     setActiveTab(tab)
   }
 
+  const handleClose = () => {
+    setShowModal(false)
+    onCloseClicked?.()
+  }
+
   return (
-    <Modal show={show} onHide={() => dispatch(closeLoginModal())}>
-      <Modal.Header closeButton>
+    <Modal show={showModal && !oidcAuthenticated} onHide={handleClose}>
+      <Modal.Header closeButton onClick={handleClose}>
         <Modal.Title>Login</Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ height: '100%' }}>
@@ -60,9 +51,9 @@ const LoginModal = () => {
           )}
         </Nav>
         {activeTab === 'siop' && showSIOP && (
-          <SSIAuthModal onSignInComplete={setPayload} />
+          <SiopTab onSignInComplete={setPayload} />
         )}
-        {activeTab === 'oidc' && showOIDC && <OIDCModal />}
+        {activeTab === 'oidc' && showOIDC && <OidcTab />}
       </Modal.Body>
     </Modal>
   )

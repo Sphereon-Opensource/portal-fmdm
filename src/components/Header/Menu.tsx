@@ -11,7 +11,10 @@ import MenuDropdown from '@components/@shared/MenuDropdown'
 import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import Container from '@components/@shared/atoms/Container'
-import Auth from '@components/Authentication/SIOP/Auth/Auth'
+import Auth from '@components/Authentication/Auth'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import { AuthenticationStatus } from '@components/Authentication/authentication.types'
 
 const Wallet = loadable(() => import('./Wallet'))
 
@@ -48,6 +51,9 @@ export function MenuLink({ name, link, className }: MenuItem) {
 
 export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
+  const authenticationStatus = useSelector(
+    (state: RootState) => state.authentication.authenticationStatus
+  )
 
   return (
     <Container>
@@ -57,15 +63,25 @@ export default function Menu(): ReactElement {
         </Link>
 
         <ul className={styles.navigation}>
-          {siteContent?.menu.map((item: MenuItem) => (
-            <li key={item.name}>
-              {item?.subItems ? (
-                <MenuDropdown label={item.name} items={item.subItems} />
-              ) : (
-                <MenuLink {...item} />
-              )}
-            </li>
-          ))}
+          {siteContent?.menu.map((item: MenuItem) => {
+            if (
+              item.name === 'Publish' &&
+              authenticationStatus !== AuthenticationStatus.OIDC &&
+              authenticationStatus !== AuthenticationStatus.SIOP
+            ) {
+              return null
+            }
+
+            return (
+              <li key={item.name}>
+                {item?.subItems ? (
+                  <MenuDropdown label={item.name} items={item.subItems} />
+                ) : (
+                  <MenuLink {...item} />
+                )}
+              </li>
+            )
+          })}
         </ul>
 
         <div className={styles.actions}>

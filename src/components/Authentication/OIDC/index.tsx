@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from 'react-bootstrap'
 import { useOidc } from '@axa-fr/react-oidc'
 
-const OIDCModal: React.FC = () => {
+const OidcTab: React.FC = () => {
   const { login } = useOidc()
 
   const handleLogin = async () => {
@@ -56,4 +56,4 @@ const OIDCModal: React.FC = () => {
   )
 }
 
-export default OIDCModal
+export default OidcTab

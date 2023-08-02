@@ -1,7 +1,5 @@
 import {
   AuthenticationActionTypes,
-  CLOSE_LOGIN_MODAL,
-  OPEN_LOGIN_MODAL,
   SET_AUTH_STATE
 } from '../actions/authentication.actions'
 import {
@@ -10,8 +8,7 @@ import {
 } from '@components/Authentication/authentication.types'
 
 const initialState: AuthenticationState = {
-  authenticationStatus: AuthenticationStatus.NOT_AUTHENTICATED,
-  loginModalOpen: false
+  authenticationStatus: AuthenticationStatus.NOT_AUTHENTICATED
 }
 
 export default function authenticationReducer(
@@ -23,16 +20,6 @@ export default function authenticationReducer(
       return {
         ...state,
         authenticationStatus: action.payload
-      }
-    case OPEN_LOGIN_MODAL:
-      return {
-        ...state,
-        loginModalOpen: true
-      }
-    case CLOSE_LOGIN_MODAL:
-      return {
-        ...state,
-        loginModalOpen: false
       }
     default:
       return state
