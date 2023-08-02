@@ -70,10 +70,10 @@ module.exports = {
   purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI,
 
   // Authentication part 1: OIDC
-  isOIDCActivated: process.env.NEXT_PUBLIC_AUTH_OIDC_ACTIVATED,
+  isOIDCActivated: process.env.NEXT_PUBLIC_AUTH_OIDC_ACTIVATED ?? 'false',
   oidcModalTabName: process.env.NEXT_PUBLIC_OIDC_MODAL_TAB_NAME,
   oidcAuthority: process.env.NEXT_PUBLIC_OIDC_AUTHORITY,
-  oidcClientName: process.env.OIDC_CLIENT_NAME,
+  oidcClientName: process.env.NEXT_PUBLIC_OIDC_CLIENT_NAME,
   oidcClientSecret: process.env.OIDC_CLIENT_SECRET,
   oidcRedirectUri: process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI,
   oidcScope: process.env.NEXT_PUBLIC_OIDC_SCOPE,
@@ -81,7 +81,7 @@ module.exports = {
   oidcIssuerUrl: process.env.NEXT_PUBLIC_OIDC_ISSUER_URL,
 
   // Authentication part 2: SIOP
-  isSiopActivated: process.env.NEXT_PUBLIC_AUTH_SIOP_ACTIVATED,
+  isSiopActivated: process.env.NEXT_PUBLIC_AUTH_SIOP_ACTIVATED ?? 'false',
   // Base URL of the SSI agent capable of OpenID for Verifiable Presentations
   siopAgentBaseURL: process.env.NEXT_PUBLIC_OID4VP_AGENT_BASE_URL,
   // Presentation Definition hosted by the SSI agent
