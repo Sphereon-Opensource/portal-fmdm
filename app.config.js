@@ -67,5 +67,30 @@ module.exports = {
   defaultAccessTerms: process.env.NEXT_PUBLIC_DEFAULT_ACCESS_TERMS,
 
   // Purgatory URI, leave as an empty string to disable the API call
-  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI
+  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI,
+
+  // Authentication part 1: OIDC
+  isOIDCActivated: process.env.NEXT_PUBLIC_AUTH_OIDC_ACTIVATED ?? 'false',
+  oidcModalTabName: process.env.NEXT_PUBLIC_OIDC_MODAL_TAB_NAME,
+  oidcAuthority: process.env.NEXT_PUBLIC_OIDC_AUTHORITY,
+  oidcClientName: process.env.NEXT_PUBLIC_OIDC_CLIENT_NAME,
+  oidcClientSecret: process.env.OIDC_CLIENT_SECRET,
+  oidcRedirectUri: process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI,
+  oidcScope: process.env.NEXT_PUBLIC_OIDC_SCOPE,
+  oidcSilentRedirectUri: process.env.NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI,
+  oidcIssuerUrl: process.env.NEXT_PUBLIC_OIDC_ISSUER_URL,
+
+  // Authentication part 2: SIOP
+  isSiopActivated: process.env.NEXT_PUBLIC_AUTH_SIOP_ACTIVATED ?? 'false',
+  // Base URL of the SSI agent capable of OpenID for Verifiable Presentations
+  siopAgentBaseURL: process.env.NEXT_PUBLIC_OID4VP_AGENT_BASE_URL,
+  // Presentation Definition hosted by the SSI agent
+  siopPresentationDefID: process.env.NEXT_PUBLIC_OID4VP_PRESENTATION_DEF_ID,
+  // Interval in seconds to refresh the QR code
+  siopQRCodeExpiresAfterSec:
+    process.env.NEXT_PUBLIC_SSI_QR_CODE_EXPIRES_AFTER_SEC,
+  // Form where you can request/get a Credential using OpenID for Verifiable Credential issuance
+  siopIssueFromLink: process.env.NEXT_PUBLIC_OID4VCI_ISSSUE_FORM_LINK,
+  // Page where compliant wallets are listed and can be downloaded
+  siopDownloadSSIWalletLink: process.env.NEXT_PUBLIC_DOWNLOAD_SSI_WALLET_LINK
 }

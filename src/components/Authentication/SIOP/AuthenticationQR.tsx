@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Dispatch } from 'redux'
+
 import { BallTriangle } from 'react-loader-spinner'
 import {
   AuthorizationResponseStateStatus,
@@ -12,25 +15,29 @@ import {
   ValueResult
 } from '@sphereon/ssi-sdk.qr-code-generator'
 
-import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
-import agent from '@components/ssi/AuthenticationModal/agent'
+import agent from '@components/Authentication/SIOP/agent'
 import Debug from 'debug'
-import { DEFINITION_ID_REQUIRED_ERROR } from '@components/ssi/AuthenticationModal/constants'
+import { DEFINITION_ID_REQUIRED_ERROR } from '@components/Authentication/SIOP/constants'
+import { AuthenticationStatus } from '@components/Authentication/authentication.types'
+import { setAuthState } from '../../../store/actions/authentication.actions'
 
 const debug = Debug('sphereon:portal:ssi:AuthenticationQR')
 
+interface DispatchProps {
+  setAuthState: (authState: AuthenticationStatus) => void
+}
+
 export type AuthenticationQRProps = {
   onAuthRequestRetrieved: () => void
-  onSignInComplete: (payload: AuthorizationResponsePayload) => void
   setQrCodeData: (text: string) => void
-}
+} & DispatchProps
 
 export interface AuthenticationQRState {
   authRequestURIResponse?: GenerateAuthRequestURIResponse
   qrCode?: JSX.Element
 }
 
-export default class AuthenticationQR extends Component<AuthenticationQRProps> {
+class AuthenticationQR extends Component<AuthenticationQRProps> {
   state: AuthenticationQRState = {}
 
   private registerStateSent = false
@@ -184,7 +191,8 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
         authStatus.payload
       ) {
         clearInterval(interval)
-        return this.props.onSignInComplete(authStatus.payload)
+        this.props.setAuthState(AuthenticationStatus.SIOP)
+        return
       } else {
         debug(`status during polling: ${JSON.stringify(authStatus)}`)
       }
@@ -197,3 +205,11 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
     }, 2000)
   }
 }
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  setAuthState: (authState: AuthenticationStatus) => {
+    dispatch(setAuthState(authState))
+  }
+})
+
+export default connect(null, mapDispatchToProps)(AuthenticationQR)

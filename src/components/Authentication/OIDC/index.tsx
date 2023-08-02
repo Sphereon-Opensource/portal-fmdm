@@ -2,11 +2,11 @@ import React from 'react'
 import { Button } from 'react-bootstrap'
 import { useOidc } from '@axa-fr/react-oidc'
 
-const SURFModal: React.FC = () => {
+const OidcTab: React.FC = () => {
   const { login } = useOidc()
 
-  const handleLogin = () => {
-    login()
+  const handleLogin = async () => {
+    await login()
   }
 
   return (
@@ -45,7 +45,7 @@ const SURFModal: React.FC = () => {
             style={{
               borderRadius: '9px',
               backgroundColor: '#48A4ED',
-              width: '100%'
+              width: '50%'
             }}
           >
             Met je instellingsaccount
@@ -56,4 +56,4 @@ const SURFModal: React.FC = () => {
   )
 }
 
-export default SURFModal
+export default OidcTab

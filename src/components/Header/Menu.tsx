@@ -10,8 +10,10 @@ import classNames from 'classnames/bind'
 import MenuDropdown from '@components/@shared/MenuDropdown'
 import Button from '@components/@shared/atoms/Button'
 import Container from '@components/@shared/atoms/Container'
-import Auth from '@components/ssi/Auth/Auth'
-import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
+import Auth from '@components/Authentication/Auth'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import { AuthenticationStatus } from '@components/Authentication/authentication.types'
 
 const Wallet = loadable(() => import('./Wallet'))
 
@@ -46,16 +48,11 @@ export function MenuLink({ name, link, className }: MenuItem) {
   )
 }
 
-export default function Menu({
-  setShow,
-  payload,
-  setPayload
-}: {
-  setShow: React.Dispatch<React.SetStateAction<boolean>>
-  payload: AuthorizationResponsePayload
-  setPayload: React.Dispatch<React.SetStateAction<AuthorizationResponsePayload>>
-}): ReactElement {
+export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
+  const authenticationStatus = useSelector(
+    (state: RootState) => state.authentication.authenticationStatus
+  )
 
   return (
     <Container>
@@ -70,27 +67,31 @@ export default function Menu({
         </Link>
 
         <ul className={styles.navigation}>
-          {siteContent?.menu.map((item: MenuItem) => (
-            <li key={item.name}>
-              {item?.subItems ? (
-                <MenuDropdown label={item.name} items={item.subItems} />
-              ) : (
-                <MenuLink {...item} />
-              )}
-            </li>
-          ))}
-          <li>
-            <Auth
-              className={styles.link}
-              setShow={() => setShow(true)}
-              payload={payload}
-              setPayload={setPayload}
-            />
-          </li>
+          {siteContent?.menu.map((item: MenuItem) => {
+            if (
+              item.name === 'Publish' &&
+              authenticationStatus !== AuthenticationStatus.OIDC &&
+              authenticationStatus !== AuthenticationStatus.SIOP
+            ) {
+              return null
+            }
+
+            return (
+              <li key={item.name}>
+                {item?.subItems ? (
+                  <MenuDropdown label={item.name} items={item.subItems} />
+                ) : (
+                  <MenuLink {...item} />
+                )}
+              </li>
+            )
+          })}
         </ul>
 
         <div className={styles.actions}>
+          <SearchButton />
           {appConfig.chainIdsSupported.length > 1 && <Networks />}
+          <Auth />
         </div>
       </nav>
     </Container>
