@@ -39,7 +39,7 @@
 .actions > a {
   color: var(--sphereon-white-gray);
   font-weight: var(--font-weight-bolder);
-  font-size: 18px;
+  font-size: var(--font-size-large);
 }
 
 .actions > a:hover,
@@ -97,9 +97,9 @@
     margin-top: 10%;
   }
   .title {
-    font-size: calc(var(--font-size-h1) * 0.666666);
+    font-size: var(--font-size-h1-small);
   }
   .body {
-    font-size: calc(var(--font-size-base) * 1.2);
+    font-size: var(--font-size-large);
   }
 }
