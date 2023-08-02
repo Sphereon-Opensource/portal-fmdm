@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react'
 import Link from 'next/link'
-import loadable from '@loadable/component'
 import Logo from '@shared/atoms/Logo'
 import Networks from './UserPreferences/Networks'
 import styles from './Menu.module.css'
@@ -14,8 +13,6 @@ import Auth from '@components/Authentication/Auth'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
 import { AuthenticationStatus } from '@components/Authentication/authentication.types'
-
-const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
 
@@ -86,12 +83,13 @@ export default function Menu(): ReactElement {
               </li>
             )
           })}
+          <li>
+            <Auth />
+          </li>
         </ul>
 
         <div className={styles.actions}>
-          <SearchButton />
           {appConfig.chainIdsSupported.length > 1 && <Networks />}
-          <Auth />
         </div>
       </nav>
     </Container>
