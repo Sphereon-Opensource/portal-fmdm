@@ -22,7 +22,12 @@ const LoginModal = ({ onCloseClicked }: LoginModalProps) => {
   const initialTab = showOIDC ? 'oidc' : 'siop'
   const [activeTab, setActiveTab] = useState(initialTab)
 
-  const { isAuthenticated: oidcAuthenticated } = useOidc()
+  let isOidcAuthenticated
+  if (JSON.parse(isOIDCActivated)) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { isAuthenticated: oidcAuthenticated } = useOidc()
+    isOidcAuthenticated = oidcAuthenticated
+  }
   const handleTabChange = (tab) => {
     setActiveTab(tab)
   }
@@ -33,7 +38,7 @@ const LoginModal = ({ onCloseClicked }: LoginModalProps) => {
   }
 
   return (
-    <Modal show={showModal && !oidcAuthenticated} onHide={handleClose}>
+    <Modal show={showModal && !isOidcAuthenticated} onHide={handleClose}>
       <Modal.Header closeButton onClick={handleClose}>
         <Modal.Title>Login</Modal.Title>
       </Modal.Header>
