@@ -15,6 +15,7 @@ import Decimal from 'decimal.js'
 
 import { OidcConfiguration, OidcProvider } from '@axa-fr/react-oidc'
 import {
+  isOIDCActivated,
   oidcAuthority,
   oidcClientName,
   oidcRedirectUri,
@@ -23,6 +24,12 @@ import {
 } from '../../app.config'
 import store from '../store'
 import { Provider } from 'react-redux'
+import { NextComponentType, NextPageContext } from 'next'
+
+type AppContentProps = {
+  Component: NextComponentType<NextPageContext, any, any>
+  pageProps: any
+}
 
 const oidcConfig: OidcConfiguration = {
   client_id: oidcClientName || 'shr',
@@ -35,6 +42,31 @@ const oidcConfig: OidcConfiguration = {
   service_worker_only: false
 }
 
+function wrapAuthProviders({
+  Component,
+  pageProps
+}: AppContentProps): ReactElement {
+  if (JSON.parse(isOIDCActivated)) {
+    return (
+      <OidcProvider configuration={oidcConfig}>
+        <Provider store={store}>
+          <App>
+            <Component {...pageProps} />
+          </App>
+        </Provider>
+      </OidcProvider>
+    )
+  }
+
+  return (
+    <Provider store={store}>
+      <App>
+        <Component {...pageProps} />
+      </App>
+    </Provider>
+  )
+}
+
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
   return (
@@ -44,13 +76,7 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
           <UserPreferencesProvider>
             <ConsentProvider>
               <SearchBarStatusProvider>
-                <OidcProvider configuration={oidcConfig}>
-                  <Provider store={store}>
-                    <App>
-                      <Component {...pageProps} />
-                    </App>
-                  </Provider>
-                </OidcProvider>
+                {wrapAuthProviders({ Component, pageProps })}
               </SearchBarStatusProvider>
             </ConsentProvider>
           </UserPreferencesProvider>

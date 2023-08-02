@@ -7,18 +7,15 @@ import { RootState } from '../../store'
 import { useOidc } from '@axa-fr/react-oidc'
 import { useSIOP } from '@components/Authentication/SIOP/siopAuth'
 import LoginModal from '@components/Authentication/index'
-
+import { isOIDCActivated } from '../../../app.config'
 export default function Auth() {
-  const {
-    login: oidcLogin,
-    logout: oidcLogout,
-    isAuthenticated: oidcAuthenticated
-  } = useOidc()
-  const {
-    login: siopLogin,
-    logout: siopLogout,
-    isAuthenticated: siopAuthenticated
-  } = useSIOP()
+  let oidcLogoutFunc
+  if (JSON.parse(isOIDCActivated)) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { logout: oidcLogout } = useOidc()
+    oidcLogoutFunc = oidcLogout
+  }
+  const { logout: siopLogout } = useSIOP()
   const dispatch = useDispatch()
   const authenticationState = useSelector(
     (state: RootState) => state.authentication.authenticationStatus
@@ -29,7 +26,7 @@ export default function Auth() {
   const handleLogout = () => {
     switch (authenticationState) {
       case AuthenticationStatus.OIDC:
-        oidcLogout()
+        oidcLogoutFunc()
         break
       case AuthenticationStatus.SIOP:
         siopLogout()
