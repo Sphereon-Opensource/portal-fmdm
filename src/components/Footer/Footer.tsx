@@ -19,11 +19,31 @@ export default function Footer(): ReactElement {
 
   return (
     <footer className={styles.footer}>
+      <div
+        style={{ border: '1px solid var(--sphereon-black)', width: '57%' }}
+      ></div>
       <Container className={styles.container}>
         <div className={styles.logo}>
-          <Logo inverted />
+          <Logo />
         </div>
         <div className={styles.content}>
+          <div className={styles.partners}>
+            <p className={styles.partnerText}>{footer.partners}</p>
+            <div className={styles.partnerImageContainer}>
+              <div>
+                <img
+                  src="/images/partners/1-TU-Delft_logo.png"
+                  alt="TU Delft"
+                />
+              </div>
+              <div>
+                <img
+                  src="/images/partners/2-erasmus_uni_logo.png"
+                  alt="Erasmus University"
+                />
+              </div>
+            </div>
+          </div>
           <div className={styles.links}>
             {footer.links.map((e) => (
               <Button

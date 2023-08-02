@@ -29,10 +29,7 @@
 .button.initial {
   color: var(--menu-font-color);
   border-radius: var(--menu-border-radius);
-}
-
-.button.initial span {
-  display: none;
+  display: inline;
 }
 
 .address {

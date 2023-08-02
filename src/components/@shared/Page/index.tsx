@@ -2,7 +2,6 @@ import React, { ReactNode, ReactElement } from 'react'
 import PageHeader from './PageHeader'
 import Seo from './Seo'
 import Container from '@shared/atoms/Container'
-import SearchBar from '@components/Header/SearchBar'
 import { useUserPreferences } from '@context/UserPreferences'
 import ExternalContentWarning from '../ExternalContentWarning'
 
@@ -26,17 +25,12 @@ export default function Page({
   const { allowExternalContent } = useUserPreferences()
 
   const isHome = uri === '/'
-  const isSearchPage = uri.startsWith('/search')
   const isAssetPage = uri.startsWith('/asset')
 
   return (
     <>
       <Seo title={title} description={description} uri={uri} />
       <Container>
-        <SearchBar
-          placeholder="Search for service offerings"
-          isSearchPage={isSearchPage}
-        />
         {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
         {title && !noPageHeader && (
           <PageHeader

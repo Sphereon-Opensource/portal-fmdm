@@ -36,7 +36,7 @@
 .sorted:hover,
 .sorted:focus,
 .sorted.selected {
-  color: var(--filter-hover-font-color);
+  color: var(--ocean-grey-dark);
   background: inherit;
   transform: none;
   box-shadow: none;

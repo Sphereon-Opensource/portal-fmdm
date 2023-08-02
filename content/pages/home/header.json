@@ -1,16 +1,13 @@
 {
-  "body": "Find or publish datasets and AI algorithms for solving challenges in mobility. Experience and leverage decentralized technologies and the European Gaia-X data sharing concepts. Facilitating public-private, cross-sector, cross-border collaboration while maintaining digital sovereignty.",
+  "body": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition. Leveraging the European Gaia-X data sharing concepts to facilitate public-private, cross-sector, cross-border collaboration while maintaining digital sovereignty.",
   "cta": [
     {
-      "label": "Go to catalogue",
+      "label": "View catalogue",
       "link": "/search?sort=_score&sortOrder=desc&text="
-    },
-    { "label": "About this demo", "link": "/about" }
+    }
   ],
   "carousel": [
-    "/images/headerCarousel/1-road.jpeg",
-    "/images/headerCarousel/2-bikes.jpeg",
-    "/images/headerCarousel/3-ev-charge.jpeg",
-    "/images/headerCarousel/4-e-scooter.jpeg"
+    "/images/headerCarousel/1-Energy-SHR.png",
+    "/images/headerCarousel/1-Energy-SHR.png"
   ]
 }
