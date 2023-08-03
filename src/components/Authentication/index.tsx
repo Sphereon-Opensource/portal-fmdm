@@ -12,13 +12,13 @@ import { useOidc } from '@axa-fr/react-oidc'
 
 interface LoginModalProps {
   onCloseClicked?: () => void
+  showModal: boolean
 }
 
-const LoginModal = ({ onCloseClicked }: LoginModalProps) => {
+const LoginModal = ({ onCloseClicked, showModal }: LoginModalProps) => {
   const [payload, setPayload] = useState<AuthorizationResponsePayload>()
   const showOIDC = JSON.parse(isOIDCActivated)
   const showSIOP = JSON.parse(isSiopActivated)
-  const [showModal, setShowModal] = useState(showOIDC || showSIOP)
   const initialTab = showOIDC ? 'oidc' : 'siop'
   const [activeTab, setActiveTab] = useState(initialTab)
 
@@ -33,7 +33,6 @@ const LoginModal = ({ onCloseClicked }: LoginModalProps) => {
   }
 
   const handleClose = () => {
-    setShowModal(false)
     onCloseClicked?.()
   }
 

@@ -74,7 +74,6 @@ module.exports = {
   oidcModalTabName: process.env.NEXT_PUBLIC_OIDC_MODAL_TAB_NAME ?? 'OIDC',
   oidcAuthority: process.env.NEXT_PUBLIC_OIDC_AUTHORITY,
   oidcClientId: process.env.NEXT_PUBLIC_OIDC_CLIENT_ID,
-  // oidcClientSecret: process.env.NEXT_PUBLIC_OIDC_CLIENT_SECRET,
   oidcRedirectUri: process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI,
   oidcScope: process.env.NEXT_PUBLIC_OIDC_SCOPE,
   oidcSilentRedirectUri: process.env.NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI,
