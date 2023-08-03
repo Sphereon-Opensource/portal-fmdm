@@ -10,11 +10,17 @@ import { useSelector } from 'react-redux'
 import { useOidcUser } from '@axa-fr/react-oidc'
 import { RootState } from '../../store'
 import { AuthenticationStatus } from '@components/Authentication/authentication.types'
+import { isOIDCActivated } from '../../../app.config'
 
 export default function PageProfile(): ReactElement {
   const router = useRouter()
   const { accountId } = useWeb3()
-  const { oidcUser } = useOidcUser()
+  let authUser
+  if (JSON.parse(isOIDCActivated)) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { oidcUser } = useOidcUser()
+    authUser = oidcUser
+  }
   const authenticationStatus = useSelector(
     (state: RootState) => state.authentication.authenticationStatus
   )
@@ -46,14 +52,14 @@ export default function PageProfile(): ReactElement {
       }
 
       // Path has OIDC user information
-      if (authenticationStatus === AuthenticationStatus.OIDC && oidcUser) {
+      if (authenticationStatus === AuthenticationStatus.OIDC && authUser) {
         // Set the finalAccountId to the oidcUser username
-        setFinalAccountId(oidcUser.preferred_username)
+        setFinalAccountId(authUser.preferred_username)
         setOwnAccount(true)
       }
     }
     init()
-  }, [router, accountId, authenticationStatus, oidcUser])
+  }, [router, accountId, authenticationStatus, authUser])
 
   return (
     <Page

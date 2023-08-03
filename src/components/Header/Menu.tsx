@@ -48,15 +48,7 @@ export function MenuLink({ name, link, className }: MenuItem) {
   )
 }
 
-export default function Menu({
-  setShow,
-  payload,
-  setPayload
-}: {
-  setShow: React.Dispatch<React.SetStateAction<boolean>>
-  payload: AuthorizationResponsePayload
-  setPayload: React.Dispatch<React.SetStateAction<AuthorizationResponsePayload>>
-}): ReactElement {
+export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
   const authenticationStatus = useSelector(
     (state: RootState) => state.authentication.authenticationStatus

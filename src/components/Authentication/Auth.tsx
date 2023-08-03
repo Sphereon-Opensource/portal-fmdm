@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import styles from './SIOP/Auth/Auth.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { AuthenticationStatus } from './authentication.types'
 import { logout } from '../../store/actions/authentication.actions'
@@ -8,7 +7,9 @@ import { useOidc } from '@axa-fr/react-oidc'
 import { useSIOP } from '@components/Authentication/SIOP/siopAuth'
 import LoginModal from '@components/Authentication/index'
 import { isOIDCActivated } from '../../../app.config'
-export default function Auth() {
+import Button from '@shared/atoms/Button'
+
+export default function Auth({ className }: { className?: string }) {
   let oidcLogoutFunc
   if (JSON.parse(isOIDCActivated)) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -47,21 +48,15 @@ export default function Auth() {
     <>
       {authenticationState === AuthenticationStatus.NOT_AUTHENTICATED ? (
         <>
-          <button
-            className={`${styles.button} ${styles.initial}`}
-            onClick={handleLoginClick}
-          >
+          <Button style="text" className={className} onClick={handleLoginClick}>
             Login
-          </button>
+          </Button>
           {isModalOpen && <LoginModal onCloseClicked={handleModalClose} />}
         </>
       ) : (
-        <button
-          className={`${styles.button} ${styles.initial}`}
-          onClick={handleLogout}
-        >
+        <Button style="text" className={className} onClick={handleLogout}>
           Logout
-        </button>
+        </Button>
       )}
     </>
   )
