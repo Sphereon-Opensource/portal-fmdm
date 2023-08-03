@@ -73,12 +73,11 @@ module.exports = {
   isOIDCActivated: process.env.NEXT_PUBLIC_AUTH_OIDC_ACTIVATED ?? 'false',
   oidcModalTabName: process.env.NEXT_PUBLIC_OIDC_MODAL_TAB_NAME ?? 'OIDC',
   oidcAuthority: process.env.NEXT_PUBLIC_OIDC_AUTHORITY,
-  oidcClientName: process.env.NEXT_PUBLIC_OIDC_CLIENT_NAME,
-  oidcClientSecret: process.env.OIDC_CLIENT_SECRET,
+  oidcClientId: process.env.NEXT_PUBLIC_OIDC_CLIENT_ID,
+  // oidcClientSecret: process.env.NEXT_PUBLIC_OIDC_CLIENT_SECRET,
   oidcRedirectUri: process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI,
   oidcScope: process.env.NEXT_PUBLIC_OIDC_SCOPE,
   oidcSilentRedirectUri: process.env.NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI,
-  oidcIssuerUrl: process.env.NEXT_PUBLIC_OIDC_ISSUER_URL,
 
   // Authentication part 2: SIOP
   isSiopActivated: process.env.NEXT_PUBLIC_AUTH_SIOP_ACTIVATED ?? 'false',
