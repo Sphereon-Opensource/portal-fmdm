@@ -84,7 +84,7 @@ export default function Menu(): ReactElement {
             )
           })}
           <li>
-            <Auth />
+            <Auth className={styles.link} />
           </li>
         </ul>
 

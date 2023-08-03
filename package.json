@@ -48,7 +48,6 @@
     "dotenv": "^16.0.3",
     "filesize": "^10.0.5",
     "formik": "^2.2.9",
-    "graphql-tag": "^2.12.6",
     "gray-matter": "^4.0.3",
     "is-ipfs": "^7.0.3",
     "is-url-superb": "^6.1.0",

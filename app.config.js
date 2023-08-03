@@ -71,7 +71,7 @@ module.exports = {
 
   // Authentication part 1: OIDC
   isOIDCActivated: process.env.NEXT_PUBLIC_AUTH_OIDC_ACTIVATED ?? 'false',
-  oidcModalTabName: process.env.NEXT_PUBLIC_OIDC_MODAL_TAB_NAME,
+  oidcModalTabName: process.env.NEXT_PUBLIC_OIDC_MODAL_TAB_NAME ?? 'OIDC',
   oidcAuthority: process.env.NEXT_PUBLIC_OIDC_AUTHORITY,
   oidcClientId: process.env.NEXT_PUBLIC_OIDC_CLIENT_ID,
   // oidcClientSecret: process.env.NEXT_PUBLIC_OIDC_CLIENT_SECRET,
