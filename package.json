@@ -5,6 +5,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "npm run pregenerate && next dev",
+    "start:prod": "npm run pregenerate && next -p ${PORT:-8000}",
     "build": "npm run pregenerate && next build",
     "build:static": "npm run build && next export",
     "serve": "serve -s public/",
