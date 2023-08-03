@@ -13,8 +13,7 @@ const CallbackPage = () => {
   useEffect(() => {
     if (oidcUserLoadingState === OidcUserStatus.Loaded) {
       dispatch(setAuthState(AuthenticationStatus.OIDC))
-      // fixme: for now redirecting to profile, but later maybe some other page or root?
-      router.push('/profile')
+      router.push('/search')
     }
   }, [oidcUserLoadingState, dispatch, router])
 

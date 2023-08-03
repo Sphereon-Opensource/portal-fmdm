@@ -51,7 +51,9 @@ export default function Auth({ className }: { className?: string }) {
           <Button style="text" className={className} onClick={handleLoginClick}>
             Login
           </Button>
-          {isModalOpen && <LoginModal onCloseClicked={handleModalClose} />}
+          {isModalOpen && (
+            <LoginModal showModal={true} onCloseClicked={handleModalClose} />
+          )}
         </>
       ) : (
         <Button style="text" className={className} onClick={handleLogout}>
