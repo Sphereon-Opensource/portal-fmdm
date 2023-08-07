@@ -23,7 +23,6 @@
 a.link:hover,
 a.link:focus {
   box-shadow: var(--teaser-hover-box-shadow);
-  color: rgba(147, 147, 147);
 }
 
 .detailLine {
@@ -40,13 +39,11 @@ a.link:focus {
 
 .content p {
   margin-bottom: calc(var(--spacer) / 3);
-  color: #939393;
 }
 
 .title {
   font-size: var(--font-size-large);
   color: var(--teaser-title-font-color);
-  font-weight: var(--font-weight-bold);
   margin: 0;
   padding-bottom: calc(var(--spacer) / 6);
   overflow-wrap: break-word;

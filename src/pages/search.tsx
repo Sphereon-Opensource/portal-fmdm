@@ -20,7 +20,7 @@ export default function PageSearch(): ReactElement {
     categories
   const title = owner
     ? `Published by ${accountTruncate(owner as string)}`
-    : `Catalogue - ${
+    : `${
         totalResults !== undefined
           ? searchValue && searchValue !== ' '
             ? totalResults === 0

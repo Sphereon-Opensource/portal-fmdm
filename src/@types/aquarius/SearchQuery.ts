@@ -40,14 +40,6 @@ declare global {
     }
   }
 
-  interface FilterRange {
-    range: {
-      [property: string]: {
-        [property: string]: number
-      }
-    }
-  }
-
   type Filters = FilterByTypeOptions | FilterByAccessOptions | ComplianceType
 
   interface SearchQuery {

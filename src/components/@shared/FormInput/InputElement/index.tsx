@@ -169,10 +169,8 @@ const InputElement = forwardRef(
             {...props}
           />
         )
-      case 'tags': {
+      case 'tags':
         return <TagsAutoComplete {...field} {...props} />
-      }
-
       default:
         return prefix || postfix ? (
           <div

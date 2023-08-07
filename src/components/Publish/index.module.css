@@ -3,10 +3,6 @@
   margin-bottom: var(--spacer);
 }
 
-.header > header > h1 {
-  color: var(--color-primary);
-}
-
 @media (min-width: 40rem) {
   .form {
     padding-left: calc(var(--spacer) * 2);

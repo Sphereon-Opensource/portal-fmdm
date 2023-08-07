@@ -1,17 +1,26 @@
 {
-  "siteTitle": "EnergySHR Marketplace",
-  "siteTagline": "Solving energy transition challenges",
+  "siteTitle": "Future Mobility Data Marketplace",
+  "siteTagline": "Solving mobility challenges",
   "siteUrl": "https://portal.minimal-gaia-x.eu",
   "siteImage": "/share.png",
   "copyright": "All Rights Reserved.",
   "menu": [
     {
       "name": "About",
-      "link": "/about"
+      "subItems": [
+        {
+          "name": "This demo",
+          "link": "/about"
+        },
+        {
+          "name": "Gaia-X",
+          "link": "/gaia-x"
+        }
+      ]
     },
     {
       "name": "Catalogue",
-      "link": "/search"
+      "link": "/search?sort=nft.created&sortOrder=desc"
     },
     {
       "name": "Publish",
@@ -27,14 +36,13 @@
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
   },
   "footer": {
-    "designedBy": "",
-    "partners": "Centre for Energy System Intelligence",
+    "designedBy": "Designed by The Goodplace",
     "links": [
       { "label": "About this demo", "link": "/about" },
       { "label": "About Gaia-X", "link": "/gaia-x" },
       {
         "label": "Catalogue",
-        "link": "/search"
+        "link": "/search?sort=nft.created&sortOrder=desc"
       },
       { "label": "First time visiting", "link": "/onboarding" }
     ]

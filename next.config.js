@@ -6,11 +6,6 @@ module.exports = (phase, { defaultConfig }) => {
     webpack: (config, options) => {
       config.module.rules.push(
         {
-          test: /\.(graphql|gql)/,
-          exclude: /node_modules/,
-          loader: 'graphql-tag/loader'
-        },
-        {
           test: /\.svg$/,
           issuer: /\.(tsx|ts)$/,
           use: [{ loader: '@svgr/webpack', options: { icon: true } }]
