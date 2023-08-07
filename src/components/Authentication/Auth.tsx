@@ -36,13 +36,8 @@ export default function Auth({ className }: { className?: string }) {
     dispatch(logout())
   }
 
-  const handleLoginClick = () => {
-    setIsModalOpen(true)
-  }
-
-  const handleModalClose = () => {
-    setIsModalOpen(false)
-  }
+  const handleLoginClick = () => setIsModalOpen(true)
+  const handleModalClose = () => setIsModalOpen(false)
 
   return (
     <>

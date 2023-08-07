@@ -19,12 +19,13 @@ import {
   oidcAuthority,
   oidcClientId,
   oidcRedirectUri,
-  oidcScope,
-  oidcSilentRedirectUri
+  oidcScope
 } from '../../app.config'
 import store from '../store'
-import { Provider } from 'react-redux'
+import { Provider, useDispatch } from 'react-redux'
 import { NextComponentType, NextPageContext } from 'next'
+import { setAuthState } from '../store/actions/authentication.actions'
+import { AuthenticationStatus } from '@components/Authentication/authentication.types'
 
 type AppContentProps = {
   Component: NextComponentType<NextPageContext, any, any>
@@ -43,11 +44,15 @@ const oidcConfig: OidcConfiguration = {
 
 function wrapAuthProviders({
   Component,
-  pageProps
-}: AppContentProps): ReactElement {
+  pageProps,
+  onSessionLostHandler
+}: AppContentProps & { onSessionLostHandler: () => void }): ReactElement {
   if (JSON.parse(isOIDCActivated)) {
     return (
-      <OidcProvider configuration={oidcConfig}>
+      <OidcProvider
+        configuration={oidcConfig}
+        onSessionLost={onSessionLostHandler}
+      >
         <Provider store={store}>
           <App>
             <Component {...pageProps} />
@@ -68,20 +73,39 @@ function wrapAuthProviders({
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
+
+  const MyAppWithDispatch = () => {
+    const dispatch = useDispatch()
+
+    const handleSessionLost = () => {
+      dispatch(setAuthState(AuthenticationStatus.NOT_AUTHENTICATED))
+    }
+
+    return (
+      <MarketMetadataProvider>
+        <Web3Provider>
+          <UrqlProvider>
+            <UserPreferencesProvider>
+              <ConsentProvider>
+                <SearchBarStatusProvider>
+                  {wrapAuthProviders({
+                    Component,
+                    pageProps,
+                    onSessionLostHandler: handleSessionLost
+                  })}
+                </SearchBarStatusProvider>
+              </ConsentProvider>
+            </UserPreferencesProvider>
+          </UrqlProvider>
+        </Web3Provider>
+      </MarketMetadataProvider>
+    )
+  }
+
   return (
-    <MarketMetadataProvider>
-      <Web3Provider>
-        <UrqlProvider>
-          <UserPreferencesProvider>
-            <ConsentProvider>
-              <SearchBarStatusProvider>
-                {wrapAuthProviders({ Component, pageProps })}
-              </SearchBarStatusProvider>
-            </ConsentProvider>
-          </UserPreferencesProvider>
-        </UrqlProvider>
-      </Web3Provider>
-    </MarketMetadataProvider>
+    <Provider store={store}>
+      <MyAppWithDispatch />
+    </Provider>
   )
 }
 
