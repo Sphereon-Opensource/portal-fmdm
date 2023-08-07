@@ -4,10 +4,7 @@
 }
 
 .title {
-  margin-left: 18rem;
   font-size: var(--font-size-h3);
-  color: var(--ocean-grey-dark);
-  font-weight: var(--font-weight-bold);
   margin-top: 0;
   margin-bottom: 0;
   display: inline-flex;

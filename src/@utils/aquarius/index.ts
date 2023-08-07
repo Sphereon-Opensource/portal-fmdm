@@ -10,7 +10,6 @@ import {
 import { transformAssetToAssetSelection } from '../assetConvertor'
 import addressConfig from '../../../address.config'
 import { isValidDid } from '../ddo'
-import { Range } from '@components/Search/utils'
 
 export interface UserSales {
   id: string
@@ -45,22 +44,6 @@ export function getFilterTerm(
       [filterField]: value
     }
   }
-}
-
-export function getFilterRange(
-  filterField: string,
-  range: Range[]
-): FilterRange {
-  if (!(range.length === 1 || range.length === 2)) {
-    throw Error('Range: Minimum: 1, Maximum 2 operations allowed')
-  }
-  return {
-    range: {
-      [filterField]: {
-        ...range.reduce((obj, prop) => ({ [prop.operation]: prop.value }), {})
-      }
-    }
-  } as FilterRange
 }
 
 export function getWhitelistShould(): // eslint-disable-next-line camelcase
@@ -113,15 +96,6 @@ export function generateBaseQuery(
           [
             {
               bool: {
-                must: [
-                  ...(baseQueryParams.staticFilters || []).map((el) => {
-                    return {
-                      bool: {
-                        should: [...el]
-                      }
-                    }
-                  })
-                ],
                 must_not: [
                   !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
                   getDynamicPricingMustNot()

@@ -280,15 +280,11 @@ export default function PublishPage({
     >
       {({ values }) => (
         <>
-          <div className={styles.header}>
-            <PageHeader
-              title={<Title networkId={values.user.chainId} />}
-              description={content.description}
-            />
-          </div>
-          <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
-            <Wallet />
-          </div>
+          <PageHeader
+            title={<Title networkId={values.user.chainId} />}
+            description={content.description}
+          />
+          <Wallet />
           <Form className={styles.form} ref={scrollToRef}>
             <Navigation />
             <Steps feedback={feedback} />

@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import CreatableSelect from 'react-select/creatable'
+import { OnChangeValue } from 'react-select'
 import { useField } from 'formik'
 import { InputProps } from '../..'
 import { getTagsList } from '@utils/aquarius'
@@ -21,7 +22,7 @@ export default function TagsAutoComplete({
   const [matchedTagsList, setMatchedTagsList] = useState<AutoCompleteOption[]>(
     []
   )
-  const [field] = useField(name)
+  const [field, meta, helpers] = useField(name)
   const [input, setInput] = useState<string>()
 
   const newCancelToken = useCancelToken()
@@ -48,6 +49,12 @@ export default function TagsAutoComplete({
     generateTagsList()
   }, [newCancelToken])
 
+  const handleChange = (userInput: OnChangeValue<AutoCompleteOption, true>) => {
+    const normalizedInput = userInput.map((input) => input.value)
+    helpers.setValue(normalizedInput)
+    helpers.setTouched(true)
+  }
+
   const handleOptionsFilter = (
     options: AutoCompleteOption[],
     input: string
@@ -71,6 +78,7 @@ export default function TagsAutoComplete({
       noOptionsMessage={() =>
         'Start typing to get suggestions based on tags from all published assets.'
       }
+      onChange={(value: AutoCompleteOption[]) => handleChange(value)}
       onInputChange={(value) => handleOptionsFilter(tagsList, value)}
       openMenuOnClick
       options={!input || input?.length < 1 ? [] : matchedTagsList}
