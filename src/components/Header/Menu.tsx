@@ -65,13 +65,14 @@ export default function Menu(): ReactElement {
 
         <ul className={styles.navigation}>
           {siteContent?.menu.map((item: MenuItem) => {
-            if (
+            /*if (
               item.name === 'Publish' &&
-              authenticationStatus !== AuthenticationStatus.OIDC &&
-              authenticationStatus !== AuthenticationStatus.SIOP
+              (true ||
+                (authenticationStatus !== AuthenticationStatus.OIDC &&
+                  authenticationStatus !== AuthenticationStatus.SIOP))
             ) {
               return null
-            }
+            }*/
 
             return (
               <li key={item.name}>

@@ -3,7 +3,8 @@ import { Col, Row } from 'react-bootstrap'
 import AuthenticationQR from './AuthenticationQR'
 import {
   siopDownloadSSIWalletLink,
-  siopIssueFromLink
+  siopIssueFormLink,
+  siopCredentialName
 } from '../../../../app.config'
 import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
 
@@ -63,12 +64,12 @@ export default class SiopTab extends Component<
             <h5
               style={{ marginBottom: 6, fontWeight: 'bold', color: '#303030' }}
             >
-              Step 2. Get the Guest credential
+              Step 2. Get the {siopCredentialName} credential
             </h5>
             <h6 style={{ marginBottom: 25, color: '#303030', fontSize: 12 }}>
-              Request a Guest credential via{' '}
+              Request a {siopCredentialName} credential via{' '}
               <a
-                href={siopIssueFromLink}
+                href={siopIssueFormLink}
                 rel="noreferrer"
                 target="_blank"
                 className={'modal-link'}

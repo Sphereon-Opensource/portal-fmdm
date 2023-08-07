@@ -1,6 +1,6 @@
 ---
 title: Privacy Policy
-description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO) processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
+description: This privacy policy informs you about how Sphereon IDTech B.V. (in the following Sphereon) processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
 ---
 
 ## Table of contents
@@ -9,47 +9,52 @@ description: This privacy policy informs you about how deltaDAO AG (in the follo
 
 The controller pursuant to the EU General Data Protection Regulation ("GDPR") for the processing of your personal data is:
 
-deltaDAO AG  
-Katharinenstraße 30a  
-20457 Hamburg  
-Germany  
-E-mail: contact@delta-dao.com
+Sphereon IDTech B.V.  
+Spadinalaan 132,
+1031KB Amsterdam
+The Netherlands  
+E-mail: support@sphereon.com
 
-If you have any questions about the protection of your personal data at deltaDAO, please contact our Data Protection Officer:
+If you have any questions about the protection of your personal data at Sphereon, please contact our Data Protection Officer:
 
 Data Protection Officer  
-deltaDAO AG  
-Katharinenstraße 30a  
-20457 Hamburg  
-Germany  
-E-mail: <privacy@delta-dao.com>
+Sphereon IDTech B.V.
+Niels Klomp
+Spadinalaan 132,
+1031KB Amsterdam
+The Netherlands
+E-mail: <privacy@sphereon.com>
 
 ## 2. What's personal data?
 
-Personal data is any information that can be (directly or indirectly) related to you. deltaDAO processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
+Personal data is any information that can be (directly or indirectly) related to you. Sphereon processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
 
 - **IP address:** Your IP address is processed when visiting our portal demonstrator.
-- **E-mail:** If you contact deltaDAO via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
+- **E-mail:** If you contact Sphereon via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
 
 For detailed information about the processing operations, lawfulness, purposes, and how your personal data serves to reach these purposes, please take a look at the chapter "Processing operations according to Article 13 GDPR".
 
 ## 3. Recipients and cross-border data transfer
 
 **Visiting our portal demonstrator**  
-When visiting our portal demonstrator, your IP address is processed by Netlify, a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Netlify using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely be processed on a Netlify server within the EEA. We signed Standard Contractual Clauses (SCC) with Netlify to ensure a data protection compliant processing of your personal data. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+When visiting our portal demonstrator, your IP address is processed by Strato, a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Strato using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely be processed on a Strato server within the EEA. We signed Standard Contractual Clauses (SCC) with Strato to ensure a data protection compliant processing of your personal data. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@sphereon.com>.
+
+- Here you can find Netlify&#39;s [**privacy policy** &#8599;](https://www.strato.nl/privacybeleid/).
+
+When visiting our portal demonstrator, your IP address is processed by Netlify, a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Netlify using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely be processed on a Netlify server within the EEA. We signed Standard Contractual Clauses (SCC) with Netlify to ensure a data protection compliant processing of your personal data. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@sphereon.com>.
 
 - Here you can find Netlify&#39;s current [**SCC** &#8599;](https://www.netlify.com/v3/static/pdf/netlify-dpa.pdf).
 - Here you can find Netlify&#39;s [**privacy policy** &#8599;](https://www.netlify.com/gdpr-ccpa).
 
 **Contact via e-mail**  
-When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@sphereon.com>.
 
 ## 4. Processing operations according to Article 13 GDPR
 
 We process your personal data for the following purposes.
 
 **4.1 Providing our portal demonstrator and its functionalities and creating logfiles**  
-We collect and use your IP address for providing our portal demonstrator and its functionalities. Our portal demonstrator is hosted externally by our service provider Netlify (see also chapter 3), which stores your IP address in a server logfile. deltaDAO does not store your data and will not receive your personal data from Netlify.
+We collect and use your IP address for providing our portal demonstrator and its functionalities. Our portal demonstrator is hosted externally by our service provider Netlify (see also chapter 3), which stores your IP address in a server logfile. Sphereon does not store your data and will not receive your personal data from Netlify.
 
 **Purposes:**  
 Collecting and using your IP address is necessary for providing our portal demonstrator and its functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator.
@@ -68,7 +73,7 @@ Your IP address is stored by Netlify in a logfile because of the legitimate inte
 Netlify stores your IP address for 30 days.
 
 **4.2 Contact via e-mail**  
-If you contact us via e-mail, deltaDAO collects, uses and stores your e-mail address, and any other information you provide us in your message, such as your name.
+If you contact us via e-mail, Sphereon collects, uses and stores your e-mail address, and any other information you provide us in your message, such as your name.
 
 **Purpose:**  
 We collect, use and store this personal data to respond to your inquiries.
@@ -80,7 +85,7 @@ The legal basis for this processing is our legitimate interest, according to Art
 Our legitimate interest is to answer your inquiries.
 
 **Retention period:**  
-deltaDAO deletes your personal data as soon as we no longer require them for processing your inquiry, except deltaDAO is obliged to comply with legal retention periods or in case of legal disputes.
+Sphereon deletes your personal data as soon as we no longer require them for processing your inquiry, except Sphereon is obliged to comply with legal retention periods or in case of legal disputes.
 
 ## 5. Automated decision making including profiling according to Article 13(2)(f) GDPR
 
@@ -94,14 +99,14 @@ Our portal demonstrator does not use cookies or web storage for analytics or mar
 
 ## 7. External links
 
-Our portal demonstrator contains links to external websites that are beyond the control and responsibility of deltaDAO.
+Our portal demonstrator contains links to external websites that are beyond the control and responsibility of Sphereon.
 
 ## 8. Your rights
 
 If you want to make use of your rights described below, do not hesitate to contact us.
 
 **8.1 Right of access (Art. 15 GDPR)**  
-You have the right to obtain confirmation as to whether deltaDAO processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information defined in Art. 15 GDPR.
+You have the right to obtain confirmation as to whether Sphereon processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information defined in Art. 15 GDPR.
 
 **8.2 Right to rectification (Art. 16 GDPR)**  
 You have the right to obtain without undue delay the rectification of inaccurate personal data about you. Additionally, you have the right that incomplete personal data about you are completed.
@@ -116,10 +121,10 @@ Moreover, you have the right to obtain the restriction of processing your person
 You have the right to receive your personal data in a structured, commonly used, and machine-readable format. Additionally, you have the right to transmit those data to another controller without hindrance, where the defined legal grounds in Art. 20 GDPR apply. You can make use of your right to data portability by contacting us.
 
 **8.6 Right to object (Art. 21 GDPR)**  
-On grounds relating to your particular situation, you have the right to object to the processing of your personal data where we based the processing on legitimate interests (Art. 6(1)(f) GDPR). If you object, deltaDAO will no longer process your personal data unless we can demonstrate compelling legitimate grounds for the processing, overriding your rights, freedoms, and interests, or if the processing is required to establish, exercise, or defend legal claims.
+On grounds relating to your particular situation, you have the right to object to the processing of your personal data where we based the processing on legitimate interests (Art. 6(1)(f) GDPR). If you object, Sphereon will no longer process your personal data unless we can demonstrate compelling legitimate grounds for the processing, overriding your rights, freedoms, and interests, or if the processing is required to establish, exercise, or defend legal claims.
 
 **8.7 Right to lodge a complaint (Art. 77 GDPR)**  
-You have the right to lodge a complaint with a supervisory authority if you consider the processing of your personal data by deltaDAO to infringe the GDPR. You can lodge a complaint in particular
+You have the right to lodge a complaint with a supervisory authority if you consider the processing of your personal data by Sphereon to infringe the GDPR. You can lodge a complaint in particular
 
 - in the Member State of your habitual residence,
 - in the Member State of your place of work, and
@@ -127,7 +132,7 @@ You have the right to lodge a complaint with a supervisory authority if you cons
 
 ## 9. Questions
 
-For any requests regarding our privacy policy, please send us an e-mail to <privacy@delta-dao.com>.
+For any requests regarding our privacy policy, please send us an e-mail to <privacy@sphereon.com>.
 
 ## 10. Changes to the Privacy Policy
 

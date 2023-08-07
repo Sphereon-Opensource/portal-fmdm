@@ -70,7 +70,7 @@ module.exports = {
   purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI,
 
   // Authentication part 1: OIDC
-  isOIDCActivated: process.env.NEXT_PUBLIC_AUTH_OIDC_ACTIVATED ?? 'false',
+  isOIDCActivated: process.env.NEXT_PUBLIC_AUTH_OIDC_ACTIVATED ?? 'true',
   oidcModalTabName: process.env.NEXT_PUBLIC_OIDC_MODAL_TAB_NAME ?? 'OIDC',
   oidcAuthority: process.env.NEXT_PUBLIC_OIDC_AUTHORITY,
   oidcClientId: process.env.NEXT_PUBLIC_OIDC_CLIENT_ID,
@@ -88,7 +88,8 @@ module.exports = {
   siopQRCodeExpiresAfterSec:
     process.env.NEXT_PUBLIC_SSI_QR_CODE_EXPIRES_AFTER_SEC,
   // Form where you can request/get a Credential using OpenID for Verifiable Credential issuance
-  siopIssueFromLink: process.env.NEXT_PUBLIC_OID4VCI_ISSUE_FORM_LINK,
+  siopIssueFormLink: process.env.NEXT_PUBLIC_OID4VCI_ISSUE_FORM_LINK,
+  siopCredentialName: process.env.NEXT_PUBLIC_OID4VP_CREDENTIAL_NAME ?? 'Guest',
   // Page where compliant wallets are listed and can be downloaded
   siopDownloadSSIWalletLink: process.env.NEXT_PUBLIC_DOWNLOAD_SSI_WALLET_LINK
 }
