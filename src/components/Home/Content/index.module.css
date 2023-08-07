@@ -2,6 +2,11 @@
   margin-top: calc(var(--spacer) * 2);
 }
 
+.wrapper > h2 {
+  color: var(--font-color-text-inverted);
+  font-weight: var(--font-weight-bolder);
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -9,12 +14,86 @@
 
 .teaser p {
   margin-bottom: calc(var(--spacer) * 1.5);
+  color: var(--font-color-text-inverted);
+}
+
+.teaser ul,
+.teaser h2 {
+  color: var(--font-color-text-inverted);
+  font-weight: var(--font-weight-bolder);
+}
+
+.subtitleGrey {
+  color: var(--sphereon-light-gray);
 }
 
 .secondarySection {
   display: flex;
   flex-direction: column;
   gap: calc(var(--spacer) * 2);
+}
+
+.learnMore {
+  color: var(--ocean-grey-dark);
+  font-weight: var(--font-weight-bolder);
+  font-size: var(--font-size-large);
+}
+
+.learnMore:hover,
+.learnMore:active {
+  color: var(--sphereon-light-blue);
+}
+
+.highlightBox > div {
+  border-radius: 12px;
+}
+
+.highlightBox > div:first-child {
+  width: 340px;
+  height: 240px;
+  background: var(--sphereon-light-blue);
+}
+
+.highlightBox > div:nth-child(2) {
+  width: 340px;
+  height: 240px;
+  background: var(--sphereon-light-green);
+}
+
+.highlightBox > div > h3 {
+  font-weight: var(--font-weight-bolder);
+}
+
+.highlightBox div > p,
+.highlightBox div > a {
+  font-weight: var(--font-weight-base);
+}
+
+.highlightBox > div p {
+  color: var(--sphereon-white-gray);
+}
+
+.highlightBox > div h3 {
+  color: var(--sphereon-white-gray);
+  font-weight: var(--font-weight-bolder);
+}
+
+.highlightBox > div a {
+  color: var(--sphereon-white-gray);
+  font-weight: var(--font-weight-bolder);
+  font-size: var(--font-size-large);
+}
+
+.highlightBox > div:first-child a:hover,
+.highlightBox > div:first-child a:focus,
+.highlightBox > div:first-child a:active {
+  color: var(--ocean-grey-dark);
+}
+
+.highlightBox > div:nth-child(2) a:hover,
+.highlightBox > div:nth-child(2) a:focus,
+.highlightBox > div:nth-child(2) a:active {
+  color: var(--ocean-grey-dark);
 }
 
 .points {
@@ -46,6 +125,7 @@
 
 .pointText p {
   margin-bottom: 0;
+  color: var(--font-color-text-inverted);
 }
 
 @media screen and (min-width: 55rem) {
@@ -57,7 +137,10 @@
     gap: calc(var(--spacer) * 3);
   }
   .teaser {
-    width: 60%;
+    width: 87%;
+  }
+  .teaser h2 {
+    font-size: var(--font-size-larger);
   }
   .secondarySection {
     width: 40%;

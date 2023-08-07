@@ -22,7 +22,8 @@
       "@context/*": ["./src/@context/*"],
       "@images/*": ["./src/@images/*"],
       "@utils/*": ["./src/@utils/*"],
-      "@content/*": ["./@content/*"]
+      "@content/*": ["./@content/*"],
+      "@graphql/*": ["./src/graphql/*"]
     }
   },
   "include": ["next-env.d.ts", "src/@types/env.d.ts", "**/*.ts", "**/*.tsx"],

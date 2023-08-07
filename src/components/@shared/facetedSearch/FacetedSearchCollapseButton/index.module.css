@@ -1,0 +1,11 @@
+.container {
+  height: 0.75rem;
+  width: 0.75rem;
+  background-color: #15d481;
+  border: 0.063rem solid #3f874b;
+  border-radius: 0.125rem;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}

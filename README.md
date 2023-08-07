@@ -458,6 +458,33 @@ The style can be changed by altering the `style` prop in the `PrivacyPreferenceC
 <PrivacyPreferenceCenter style="small" />
 ```
 
+## Security
+
+The portal has two ways of authentication. You can either use an OIDC server for your authentication or use SIOP+OID4VP. Both are available in this version of portal.
+There a couple of env variables that you should be aware when you want to configure authentication process in the portal.
+
+### OIDC
+
+The following variables are used in our environment for OIDC authentication. By default, this method of authentication is disabled.
+
+- `NEXT_PUBLIC_AUTH_OIDC_ACTIVATED`: Determines if the OIDC login mechanism is activated for the portal
+- `NEXT_PUBLIC_OIDC_MODAL_TAB_NAME`: If OIDC is activated, in the login modal, you'll see OIDC login with tab name that you set here
+- `NEXT_PUBLIC_OIDC_CLIENT_ID`: Client Identifier valid at the Authorization Server
+- `NEXT_PUBLIC_OIDC_REDIRECT_URI`: Redirection URI to which the response will be sent. This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider
+- `NEXT_PUBLIC_OIDC_SCOPE`: OpenID Connect requests MUST contain the openid scope value. If the openid scope value is not present, the behavior is entirely unspecified.
+- `NEXT_PUBLIC_OIDC_AUTHORITY`: The provider’s endpoint that will perform authentication and authorization.
+
+### SIOP
+
+The following variables are used in our environment for SIOP authentication. By default, this method of authentication is disabled.
+
+- `NEXT_PUBLIC_AUTH_SIOP_ACTIVATED`: Determines if the SIOP login mechanism is activated for the portal
+- `NEXT_PUBLIC_OID4VP_AGENT_BASE_URL`: Base URL of the SSI agent capable of OpenID for Verifiable Presentations
+- `NEXT_PUBLIC_OID4VP_PRESENTATION_DEF_ID`: Presentation Definition hosted by the SSI agent
+- `NEXT_PUBLIC_SSI_QR_CODE_EXPIRES_AFTER_SEC`: Interval in seconds to refresh the QR code
+- `NEXT_PUBLIC_OID4VCI_ISSUE_FORM_LINK`: Form where you can request/get a Credential using OpenID for Verifiable Credential issuance
+- `NEXT_PUBLIC_DOWNLOAD_SSI_WALLET_LINK`: Page where compliant wallets are listed and can be downloaded
+
 ## 🏛 License
 
 ```text

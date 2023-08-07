@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react'
 import Link from 'next/link'
-import loadable from '@loadable/component'
 import Logo from '@shared/atoms/Logo'
 import Networks from './UserPreferences/Networks'
 import styles from './Menu.module.css'
@@ -8,13 +7,12 @@ import { useRouter } from 'next/router'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import classNames from 'classnames/bind'
 import MenuDropdown from '@components/@shared/MenuDropdown'
-import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import Container from '@components/@shared/atoms/Container'
-import Auth from '@components/ssi/Auth/Auth'
-import { AuthorizationResponsePayload } from '@sphereon/did-auth-siop'
-
-const Wallet = loadable(() => import('./Wallet'))
+import Auth from '@components/Authentication/Auth'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import { AuthenticationStatus } from '@components/Authentication/authentication.types'
 
 const cx = classNames.bind(styles)
 
@@ -47,44 +45,52 @@ export function MenuLink({ name, link, className }: MenuItem) {
   )
 }
 
-export default function Menu({
-  setShow,
-  payload,
-  setPayload
-}: {
-  setShow: React.Dispatch<React.SetStateAction<boolean>>
-  payload: AuthorizationResponsePayload
-  setPayload: React.Dispatch<React.SetStateAction<AuthorizationResponsePayload>>
-}): ReactElement {
+export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
+  const authenticationStatus = useSelector(
+    (state: RootState) => state.authentication.authenticationStatus
+  )
 
   return (
     <Container>
       <nav className={styles.menu}>
         <Link href="/" className={styles.logo}>
-          <Logo />
+          <Logo
+            style={{
+              width: '20rem',
+              height: '5rem'
+            }}
+          />
         </Link>
 
         <ul className={styles.navigation}>
-          {siteContent?.menu.map((item: MenuItem) => (
-            <li key={item.name}>
-              {item?.subItems ? (
-                <MenuDropdown label={item.name} items={item.subItems} />
-              ) : (
-                <MenuLink {...item} />
-              )}
-            </li>
-          ))}
+          {siteContent?.menu.map((item: MenuItem) => {
+            /*if (
+              item.name === 'Publish' &&
+              (true ||
+                (authenticationStatus !== AuthenticationStatus.OIDC &&
+                  authenticationStatus !== AuthenticationStatus.SIOP))
+            ) {
+              return null
+            }*/
+
+            return (
+              <li key={item.name}>
+                {item?.subItems ? (
+                  <MenuDropdown label={item.name} items={item.subItems} />
+                ) : (
+                  <MenuLink {...item} />
+                )}
+              </li>
+            )
+          })}
+          <li>
+            <Auth className={styles.link} />
+          </li>
         </ul>
 
         <div className={styles.actions}>
-          <SearchButton />
           {appConfig.chainIdsSupported.length > 1 && <Networks />}
-          <Auth
-            setShow={() => setShow(true)}
-            payload={payload}
-            setPayload={setPayload}
-          />
         </div>
       </nav>
     </Container>
